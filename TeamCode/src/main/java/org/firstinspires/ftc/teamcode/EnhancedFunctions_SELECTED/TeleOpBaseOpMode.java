@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.util.PIVoltageMotor;
 
 import java.util.List;
 
@@ -12,11 +13,10 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public TeleOpBaseOpMode() {}
 
-    public BetterGamepad controller1;
-    public BetterGamepad controller2;
-
     //drive
     public volatile DcMotor left_front, right_front, left_back, right_back;
+
+    public volatile PIVoltageMotor intake;
 
     private volatile List<LynxModule> robotHubs;
 
@@ -53,6 +53,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         right_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightFrontMotorDeviceName);
         left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
+
+        intake = new PIVoltageMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
     }
 
     /// Provide traits

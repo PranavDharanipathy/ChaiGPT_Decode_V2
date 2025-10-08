@@ -18,6 +18,8 @@ public class Constants {
         public static String leftBackMotorDeviceName = "left_back";
         public static String rightFrontMotorDeviceName = "right_front";
         public static String rightBackMotorDeviceName = "right_back";
+
+        public static String intakeMotorDeviceName = "";
     }
 
 

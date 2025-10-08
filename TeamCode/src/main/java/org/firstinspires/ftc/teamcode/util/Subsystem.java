@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.util;
 
 /// Parent class of subsystems
-public interface Subsystem {
+public abstract class Subsystem {
 
-    void provideComponents();
+    protected void provideComponents() {}
 
-    void update();
+    public abstract void update();
 }
