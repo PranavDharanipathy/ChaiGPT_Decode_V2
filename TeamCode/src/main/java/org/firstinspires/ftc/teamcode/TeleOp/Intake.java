@@ -1,37 +1,24 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
-
-
-
-
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-
-
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
+public final class Intake extends Subsystem {
 
-public class Intake extends Subsystem {
+
+    private BetterGamepad controller1;
 
 
-    private BetterGamepad controller;
-
+    private BetterGamepad controller2;
 
     private BasicVeloMotor intake;
     private BasicVeloMotor transfer;
 
-
     // private DigitalChannel beam_break;
 
-
-    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor intakeBelt, BetterGamepad controller) {
-        this.controller = controller;
+    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor intakeBelt, BetterGamepad controller1, BetterGamepad controller2) {
         this.intake = intake;
     }
-
-
-
-
 
 
     @Override
@@ -46,91 +33,7 @@ public class Intake extends Subsystem {
             throw new RuntimeException(e);
         }
 
-
         intake.setVelocity(0);
         transfer.setVelocity(0);
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
