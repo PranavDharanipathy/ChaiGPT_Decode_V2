@@ -5,5 +5,5 @@ public abstract class Subsystem {
 
     protected void provideComponents() {}
 
-    public abstract void update();
+    abstract void update();
 }

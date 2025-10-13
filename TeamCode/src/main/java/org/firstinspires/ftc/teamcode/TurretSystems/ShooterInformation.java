@@ -1,29 +1,50 @@
 package org.firstinspires.ftc.teamcode.TurretSystems;
 
+import com.acmerobotics.dashboard.config.Config;
+
+import org.firstinspires.ftc.teamcode.Constants;
+
+@Config
 public class ShooterInformation {
 
     /// All math calculations relevant to the shooter are done in this class
-    public class Calculator extends ShooterInformation {
+    public strictfp class Calculator extends ShooterInformation {
+
+        public double getTotalFlywheelAssemblyWeight() {
+            return ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT + (ShooterConstants.MOI_DISC_WEIGHT * ShooterConstants.NUMBER_OF_MOI_DISCS);
+        }
 
         /// Calculates the height in inches at which the artifact exists the turret
-        public double getCurrentShootHeight() {
+        public double getPreferredShootHeight() {
             return 0;
         }
 
         /// Calculates the height in inches at which the artifact exists the turret
-        public double getCurrentShootAngle() {
+        public double getPreferredShootAngle() {
             return 0;
+        }
+
+        /// Calculates the horizontal distance from the goal in two different ways
+        /// Can overcome the slight inaccuracies from the acquiring of data from the camera
+        public double[] getHorizontalDistancesFromGoal(double angle, double distanceToGoalFromAngle) {
+
+            distanceToGoalFromAngle += CameraConstants.CAMERA_ANGLE;
+
+            return new double[] {
+                    Math.pow(distanceToGoalFromAngle, 2) - Math.pow(Constants.HEIGHT_OF_GOAL_APRIL_TAG, 2), //using pythagorean
+                    Math.sin(Math.toRadians(angle)) * distanceToGoalFromAngle //using trigonometry
+            };
         }
 
     }
 
     /// All Limelight3A camera constants
-    public class CameraConstants extends ShooterInformation {
+    public static class CameraConstants extends ShooterInformation {
 
         /// Camera angle in degrees
-        public double CAMERA_ANGLE = 30;
+        public static double CAMERA_ANGLE = 30;
         /// Camera height in inches
-        public double CAMERA_HEIGHT = 6;
+        public static double CAMERA_HEIGHT = 6;
     }
 
     /// All shooter constants
@@ -41,10 +62,25 @@ public class ShooterInformation {
         public static double DEFAULT_TURRET_HOOD_ANGLER_START_POSITION;
 
         /// Amount of degrees turret moves per degree that the hood angler moves
-        public static double TURRET_DEGREES_PER_HOOD_ANGLER_DEGREE = 1;
+        public static double TURRET_DEGREES_PER_HOOD_ANGLER_DEGREE = 48.0 / 392.0;
 
         /// Positional increment per degree moved by the hood angler servos
-        public static double HOOD_ANGLER_POSITIONAL_INCREMENT_PER_DEGREE;
+        public static double HOOD_ANGLER_POSITIONAL_INCREMENT_PER_DEGREE = 1.0 / 255.0;
+
+        /// Weight of the entire shooter (turret) in grams
+        public static double TURRET_WEIGHT = 2779;
+
+        /// Weight of the flywheel assembly in grams
+        public static double BASE_FLYWHEEL_ASSEMBLY_WEIGHT = 334;
+
+        /// Weight of an moment-of-inertia disc that goes on the flywheel in grams
+        public static double MOI_DISC_WEIGHT = 34;
+
+        public static int NUMBER_OF_MOI_DISCS = 0;
+
+        /// Min and max limits for hood angler
+        public static double HOOD_ANGLER_MIN_POSITION_LIMIT = 12;
+        public static double HOOD_ANGLER_MAX_POSITION_LIMIT = 220;
     }
 
 }

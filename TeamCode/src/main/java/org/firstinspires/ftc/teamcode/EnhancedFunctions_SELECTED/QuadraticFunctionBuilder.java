@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
+import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 
-public final class QuadraticFunctionBuilder {
+public final strictfp class QuadraticFunctionBuilder {
 
     /// @return a, b, and c from created quadratic equation
     /// @exception IllegalArgumentException Both X_DATA and Y_DATA must have 3 elements each!
@@ -42,17 +43,17 @@ public final class QuadraticFunctionBuilder {
         ArrayList<Double> equation1 = new ArrayList<>();
         ArrayList<Double> equation2 = new ArrayList<>();
 
-        equation1.add(toDouble(y1 - y2));
-        equation1.add(toDouble(a_x1 - a_x2));
-        equation1.add(toDouble(b_x1 - b_x2));
+        equation1.add(SimpleMathUtil.toDouble(y1 - y2));
+        equation1.add(SimpleMathUtil.toDouble(a_x1 - a_x2));
+        equation1.add(SimpleMathUtil.toDouble(b_x1 - b_x2));
 
-        equation2.add(toDouble(y2 - y3));
-        equation2.add(toDouble(a_x2 - a_x3));
-        equation2.add(toDouble(b_x2 - b_x3));
+        equation2.add(SimpleMathUtil.toDouble(y2 - y3));
+        equation2.add(SimpleMathUtil.toDouble(a_x2 - a_x3));
+        equation2.add(SimpleMathUtil.toDouble(b_x2 - b_x3));
 
         // Solve for a and b by elimination
 
-        //a
+        //*a*
         ArrayList<Double> modifiedEquation1 = new ArrayList<>();
         ArrayList<Double> modifiedEquation2 = new ArrayList<>();
 
@@ -69,7 +70,7 @@ public final class QuadraticFunctionBuilder {
 
         double a = (modifiedEquation1.get(0) - modifiedEquation2.get(0)) / (modifiedEquation1.get(1) - modifiedEquation2.get(1));
 
-        //b
+        //*b*
         modifiedEquation1.set(0, a_x2 - a_x3 * equation1.get(0));
         modifiedEquation1.set(1, a_x2 - a_x3 * equation1.get(2));
 
@@ -83,20 +84,15 @@ public final class QuadraticFunctionBuilder {
 
         double b = (modifiedEquation1.get(0) - modifiedEquation2.get(0)) / (modifiedEquation1.get(1) - modifiedEquation2.get(1));
 
-        //c
+        //*c*
         // go back to original equations
         // y1 = ax1^2 + bx1 + c
         // -c = ax1^2 + bx1 - y1
-        // c = -ax1^2 - bx1 + y1
+        // c = -ax1^2 - bx1 + y1 |OR| c = -(ax1^2 + bx1 - y1)
 
-        double c = -a * a_x1 - b * b_x1 + y1;
+        double c = -(a * a_x1 + b * b_x1 - y1);
 
         return new double[] {a, b, c};
-    }
-
-    /// I'm dumbfounded on how this works...
-    private static Double toDouble(double doubleValue) {
-        return doubleValue;
     }
 
 }

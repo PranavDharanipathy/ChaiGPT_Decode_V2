@@ -12,6 +12,7 @@ public class VMotor {
     /// exposed for child class usage
     DcMotorEx internalMotor;
 
+    /// for object usage
     public VoltageSensor internalBatteryVoltageSensor;
 
     public VMotor(HardwareMap hardwareMap, String deviceName, Constants.HUB_TYPE hub) {

@@ -1,9 +1,16 @@
-package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
+package org.firstinspires.ftc.teamcode.TurretSystems;
 
+import com.chaigptrobotics.shenanigans.PeakGlaze;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
+
+import javax.annotation.Nullable;
+
+@PeakGlaze
 /// USES EXTERNAL ENCODER - REV Through Bore Encoder is highly recommended.
 /// <p>|<p>
 /// PIDFVAS measured by external encoder.
@@ -14,21 +21,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 /// <p>V: Velocity Feedforward
 /// <p>A: Acceleration Feedforward
 /// <p>S: Static Friction
-public final class ExtremePrecisionVeloMotor {
+public final strictfp class ExtremePrecisionFlywheel {
 
-    private DcMotorEx internalMotor;
+    private final DcMotorEx leftFlyWheel;
+    private final DcMotorEx rightFlyWheel;
 
-    public ExtremePrecisionVeloMotor(HardwareMap hardwareMap, String deviceName) {
+    public ExtremePrecisionFlywheel(HardwareMap hardwareMap, String leftFlyWheelName, String rightFlyWheelName) {
 
-        internalMotor = hardwareMap.get(DcMotorEx.class, deviceName);
+        leftFlyWheel = hardwareMap.get(DcMotorEx.class, leftFlyWheelName);
+        rightFlyWheel = hardwareMap.get(DcMotorEx.class, rightFlyWheelName);
 
-        internalMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftFlyWheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
+        rightFlyWheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
 
-        internalMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void setDirection(DcMotorEx.RunMode direction) {
-        internalMotor.setMode(direction);
+        leftFlyWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public double kp;
@@ -55,31 +61,31 @@ public final class ExtremePrecisionVeloMotor {
 
     private double lastCurrentVelocity = 0;
 
+    private double burstVelocity = 0;
+    private double BURST_DECELERATION_RATE;
+
     private double targetAcceleration;
 
     private long currentPosition = 0;
     private long lastPosition;
 
-    private double EXTERNAL_ENCODER_RESOLUTION;
-
     private final double PI = StrictMath.PI;
 
-    /// @param EXTERNAL_ENCODER_RESOLUTION Is the encoder ticks needed by the external encoder for it to complete a full 360 degree turn,
-    ///     it may be listed on the website that it was bought from.
     /// @param MASS_IN_GRAMS Is the amount of mass in grams that is connected to the motor.
-    /// @param SHAFT_DIAMETER Is the diameter of shaft connecting to motor.
+    /// @param SHAFT_DIAMETER Is the diameter of shaft in millimeters connecting to motor.
     /// @param MOTOR_CORE_VOLTAGE Check the website you go the motor from, it may tell you what volt motor core the motor has.
     /// @param MOTOR_RPM Is the RPM of the motor.
-    public void setInternalParameters(double EXTERNAL_ENCODER_RESOLUTION, double MASS_IN_GRAMS, double SHAFT_DIAMETER, double MOTOR_CORE_VOLTAGE, double MOTOR_RPM) {
-
-        this.EXTERNAL_ENCODER_RESOLUTION = EXTERNAL_ENCODER_RESOLUTION;
+    /// @param BURST_DECELERATION_RATE Is the rate at which the burst decelerates.
+    public void setInternalParameters(double MASS_IN_GRAMS, double SHAFT_DIAMETER, double MOTOR_CORE_VOLTAGE, double MOTOR_RPM, double BURST_DECELERATION_RATE) {
 
         this.MOTOR_RPM = MOTOR_RPM;
 
         VbackEMF = MOTOR_CORE_VOLTAGE;
 
         this.SHAFT_RADIUS = SHAFT_DIAMETER / 2;
-        FN = /*gravity*/ 9.80665 * (/*converted mass in g to kg*/ MASS_IN_GRAMS * 1000);
+        FN = /*gravity*/ 9.80665 * (/*converted mass in g to kg*/ MASS_IN_GRAMS / 1000);
+
+        this.BURST_DECELERATION_RATE = BURST_DECELERATION_RATE;
     }
 
     // p i d f v a s
@@ -88,13 +94,13 @@ public final class ExtremePrecisionVeloMotor {
     public double v, a;
     public double s;
 
-    public Double i_max = Double.POSITIVE_INFINITY;
-    public Double i_min = Double.NEGATIVE_INFINITY;
+    public Double i_max = Double.MAX_VALUE;
+    public Double i_min = Double.MIN_VALUE;
 
-    public void setIConstraints(Double i_max, Double i_min) {
+    public void setIConstraints(Double i_min, Double i_max) {
 
-        this.i_max = i_max;
         this.i_min = i_min;
+        this.i_max = i_max;
     }
 
     public double[] getPIDFVAS() {
@@ -139,8 +145,27 @@ public final class ExtremePrecisionVeloMotor {
             i = 0; //resetting integral when target velocity changes to prevent integral windup
         }
 
+        burstVelocity = 0;
+
         lastTargetVelocity = targetVelocity;
         targetVelocity = velocity;
+    }
+
+    /// @param velocity in ticks per second
+    /// @param burst initial burst velocity in ticks per second added to 'velocity'
+    public void setVelocityWithBurst(double velocity, @Nullable Double burst, boolean allowIntegralReset) {
+
+        if (allowIntegralReset && targetVelocity != velocity) {
+            i = 0; //resetting integral when target velocity changes to prevent integral windup
+        }
+
+        if (burst != null) burstVelocity = burst;
+        else burstVelocity = 0;
+
+        lastTargetVelocity = targetVelocity;
+        targetVelocity = velocity;
+
+        targetVelocity += burstVelocity;
     }
 
     private double startTime;
@@ -152,28 +177,24 @@ public final class ExtremePrecisionVeloMotor {
         if (isSettingStartTime) {
 
             startTime = System.nanoTime();
-
-            lastPosition = currentPosition;
-            currentPosition = internalMotor.getCurrentPosition();
-
             isSettingStartTime = false;
         }
 
         double elapsedTime = System.nanoTime() - startTime;
         double dt = elapsedTime - prevTime;
 
-        double error;
+        burstVelocity = SimpleMathUtil.clamp(Math.abs(burstVelocity-=BURST_DECELERATION_RATE),0, Double.MAX_VALUE);
 
         lastCurrentVelocity = currentVelocity;
 
         lastPosition = currentPosition;
-        currentPosition = internalMotor.getCurrentPosition();
+        currentPosition = leftFlyWheel.getCurrentPosition();
 
         //setting current velocity in ticks per second (converting from nanosecond)
         long deltaTicks = currentPosition - lastPosition;
         currentVelocity = 1_000_000_000.0 * (deltaTicks / dt);
 
-        error = targetVelocity - currentVelocity;
+        double error = targetVelocity - currentVelocity;
 
         //proportional
         p = kp * error;
@@ -188,7 +209,7 @@ public final class ExtremePrecisionVeloMotor {
         d = kd * (error - prevError) / dt;
 
         //positional feedforward for holding
-        f = kf /* *cos(0 degrees) = 1 */;
+        f = kf /* cos(0 degrees) = 1 so no need to multiply kf by it */;
 
         //velocity feedforward
         v = kv * targetVelocity;
@@ -204,7 +225,13 @@ public final class ExtremePrecisionVeloMotor {
         s = (T / ke) * kPIDFUnitsPerVolt;
 
         double PIDFVAPower = p + i + d + (usingHoldingFeedforward ? f : 0) + v + a;
-        if (isMotorEnabled) internalMotor.setPower(PIDFVAPower + (s * Math.signum(PIDFVAPower)));
+
+        double power = PIDFVAPower + (s * Math.signum(PIDFVAPower));
+
+        if (isMotorEnabled) {
+            leftFlyWheel.setPower(power);
+            rightFlyWheel.setPower(power);
+        }
 
         prevError = error;
         prevTime = elapsedTime;
@@ -214,7 +241,7 @@ public final class ExtremePrecisionVeloMotor {
 
         DISABLE(false), ENABLE(true);
 
-        boolean value;
+        private boolean value;
 
         RunningMotor(boolean enableOrDisable) {
             value = enableOrDisable;
@@ -225,6 +252,7 @@ public final class ExtremePrecisionVeloMotor {
         }
     }
 
+    // default mode is enabled
     private boolean isMotorEnabled = true;
 
     public void runMotor(RunningMotor isMotorEnabled) {
@@ -235,9 +263,13 @@ public final class ExtremePrecisionVeloMotor {
     /// <p>
     ///Calculated by external encoder using ticks
     /// <p>
-    ///Gets past encoder overflow, if you're using a high resolution encoder like the REV Through-Bore and experiencing overflow, use this.
+    ///Gets past encoder overflow, if you're using a high resolution encoder like the REV Through-Bore, it's prone to these problems.
     public double getFrontendCalculatedVelocity() {
         return currentVelocity;
+    }
+
+    public double getBurstVelocity() {
+        return burstVelocity;
     }
 
     public double getTargetAcceleration() {
@@ -263,6 +295,7 @@ public final class ExtremePrecisionVeloMotor {
         return motorIsAtVelocityAndStable;
     }
 
+    // true by default
     private boolean usingHoldingFeedforward = true;
 
     /// Enables/disables holding feedforward
@@ -287,9 +320,13 @@ public final class ExtremePrecisionVeloMotor {
         lastPosition = 0;
         currentPosition = 0;
 
-        internalMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setVelocity(0, false); //allowIntegralReset is false to speed up computation
+        leftFlyWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setVelocity(0, false); //allowIntegralReset is false to speed up computation because of how '||' works - probably negligible
         i = 0; //integral reset
+    }
+
+    public double[] $getMotorPowers() {
+        return new double[] {leftFlyWheel.getPower(), rightFlyWheel.getPower()};
     }
 
 }
