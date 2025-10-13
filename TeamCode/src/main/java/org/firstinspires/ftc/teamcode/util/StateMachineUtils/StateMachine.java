@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 public class StateMachine {
 
-    //Object should be created using StateMachineFactory
-
     private Object[] states;
     private Object[] events;
 
@@ -25,8 +23,9 @@ public class StateMachine {
 
     }
 
+    //Object should be created using StateMachineFactory
     /// @param statesAndEvents - each argument must be provided in the form of a 2-item array (key-value) pair.
-    public StateMachine(Object[]... statesAndEvents) {
+    StateMachine(Object[]... statesAndEvents) {
 
         Object[][] parsedStatesAndEvents = parseCombinedStateAndEvents(statesAndEvents);
 
