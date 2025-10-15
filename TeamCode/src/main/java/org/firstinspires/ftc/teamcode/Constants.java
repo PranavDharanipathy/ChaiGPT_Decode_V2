@@ -13,6 +13,7 @@ public class Constants {
 
         public static double[] LEFT_SIDE_PIDF = {0,0,0,0};
         public static double[] RIGHT_SIDE_PIDF = {0,0,0,0};
+
     }
 
     public static class MapSetterConstants {
@@ -32,6 +33,10 @@ public class Constants {
 
         public static String turretBaseLeftServoDeviceName = "left_turret_base";
         public static String turretBaseRightServoDeviceName = "right_turret_base";
+
+        public static String intakeMotorDeviceName = "intake";
+
+        public static String transferMotorDeviceName = "transfer";
     }
 
 
@@ -82,5 +87,19 @@ public class Constants {
     };
 
     public static DcMotorSimple.Direction TURRET_BASE_DIRECTION = DcMotorSimple.Direction.FORWARD;
+
+    public static float TRIGGER_THRESHOLD = 0.07f;
+
+    public static double INTAKE_VELOCITY = 1200;
+
+    public static double REVERSE_INTAKE_VELOCITY = -1200;
+
+    public static double TRANSFER_VELOCITY = 1200;
+
+    public static double[] TRANSFER_PIDF_COEFFICIENTS = {30, 1.3, 1.5, 2};
+
+    public static double[] INTAKE_PIDF_COEFFICIENTS = {20, 2.3, 0, 10};
+
+
 
 }

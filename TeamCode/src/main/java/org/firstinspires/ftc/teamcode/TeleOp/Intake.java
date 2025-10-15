@@ -1,71 +1,59 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
 public final class Intake extends Subsystem {
 
-
     private BetterGamepad controller1;
-
-
-    private BetterGamepad controller2;
-
     private BasicVeloMotor intake;
     private BasicVeloMotor transfer;
 
-    private BasicVeloMotor left_front;
+    public void provideComponents(BasicVeloMotor intake, BetterGamepad controller1, BetterGamepad controller2) {
 
-    private BasicVeloMotor left_back;
-
-    private BasicVeloMotor right_front;
-    private BasicVeloMotor right_back;
-
-
-
-
-    // private DigitalChannel beam_break;
-
-    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor intakeBelt, BetterGamepad controller1, BetterGamepad controller2) {
         this.intake = intake;
-    }
+        this.transfer = transfer;
+        this.controller1 = controller1;
 
+    }
+    private boolean isBallToBeTransferred = false; //ball has not yet been transferred
+    private boolean isBallInIntake = false; //ball is well in the intake
+    private boolean isFullManualIntakeAllowed = true;
+    private boolean isBallReadyToBeShot = false;
+
+    private void beamBreakProcesses() {
+
+        if (isBallReadyToBeShot) {
+
+            isFullManualIntakeAllowed = true;
+            isBallInIntake = false;
+            isBallToBeTransferred = false;
+        }
+    }
 
     @Override
     public void update() {
+
+        beamBreakProcesses();
+
         //Start intake motor while going forward
-        intake.setVelocity(1200);
-        //move forward
-
-        left_front.setVelocity(200);
-        left_back.setVelocity(200);
-        right_front.setVelocity(200);
-        right_back.setVelocity(200);
-
-        WaitCommand.Wait(1500);
-        left_front.setVelocity(-200);
-        left_back.setVelocity(-200);
-        right_front.setVelocity(-200);
-        right_back.setVelocity(-200);
-
-        WaitCommand.Wait(1500);
-
-
-
-
-
-
-
-
-
-        try {
-            wait(50);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+            intake.setVelocity(Constants.INTAKE_VELOCITY);
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD) && isFullManualIntakeAllowed) {
+            intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
+        } else if (isFullManualIntakeAllowed) {
+            intake.setVelocity(0);
         }
 
-        intake.setVelocity(0);
-        transfer.setVelocity(0);
+        if (isBallInIntake) {
+
+            isFullManualIntakeAllowed = false;
+            intake.setVelocity(Constants.INTAKE_VELOCITY);
+            if (isBallToBeTransferred) transfer.setVelocity(Constants.TRANSFER_VELOCITY);
+        }
+
+
     }
 }

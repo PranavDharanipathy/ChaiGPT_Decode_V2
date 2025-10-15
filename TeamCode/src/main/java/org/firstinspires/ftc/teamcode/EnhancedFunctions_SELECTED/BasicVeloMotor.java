@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * motor for spinning at a constant, stable, velocity efficiently **/
 public class BasicVeloMotor {
 
-    private DcMotorEx motor;
+    private final DcMotorEx motor;
 
     public BasicVeloMotor(HardwareMap hardwareMap, String deviceName) {
 
@@ -32,6 +32,9 @@ public class BasicVeloMotor {
     public double getVelocity() {
         return motor.getVelocity(); //ticks per second
     }
+
+
+
 
     public double getPower() {
         return motor.getPower();
