@@ -4,32 +4,15 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.TeleOp.drive.HolonomicDrive;
-
 @Config
 public class Constants {
 
     public static class DriveConstants {
 
-        public enum HolonomicDriveSidesReversed {
+        public static double JOYSTICK_MINIMUM = 0.02;
 
-            FRONT_MOTOR(MapSetterConstants.leftFrontMotorDeviceName), BACK_MOTOR(MapSetterConstants.leftBackMotorDeviceName);
-
-            private String motorName;
-
-            HolonomicDriveSidesReversed(String motorName) {
-                this.motorName = motorName;
-            }
-
-            public String getStringValue() {
-                return motorName;
-            }
-        }
-
-        public static HolonomicDrive.TurnPolarity leftFrontTurnPolarity = HolonomicDrive.TurnPolarity.POSITIVE;
-        public static HolonomicDrive.TurnPolarity rightFrontTurnPolarity = HolonomicDrive.TurnPolarity.NEGATIVE;
-        public static HolonomicDrive.TurnPolarity leftBackTurnPolarity = HolonomicDrive.TurnPolarity.POSITIVE;
-        public static HolonomicDrive.TurnPolarity rightBackTurnPolarity = HolonomicDrive.TurnPolarity.NEGATIVE;
+        public static double[] LEFT_SIDE_PIDF = {0,0,0,0};
+        public static double[] RIGHT_SIDE_PIDF = {0,0,0,0};
     }
 
     public static class MapSetterConstants {
@@ -46,13 +29,28 @@ public class Constants {
 
         public static String leftFlywheelMotorDeviceName = "left_flywheel";
         public static String rightFlywheelMotorDeviceName = "right_flywheel";
+
+        public static String turretBaseLeftServoDeviceName = "left_turret_base";
+        public static String turretBaseRightServoDeviceName = "right_turret_base";
     }
 
 
 
     //OTHER CONSTANTS
 
-    public static int CONTROL_HUB_HZ = 80;
+    /// name of the obelisk xml file
+    public static String OBELISK_XML_FILE_NAME = "obelisk";
+    /// the key used when saving and loading data to the obelisk xml file
+    public static String OBELISK_XML_DATA_KEY = "id";
+    /// defaults to INVALID which is -1
+    public static int OBELISK_XML_DEFAULT_KEY = -1;
+
+    /// time driver has to enter the obelisk code manually
+    /// <p>
+    /// driver clicks multiple buttons to enter the code
+    public static int OBELISK_SELECTION_KEYBIND_TIME = 2250;
+
+    public static double CONTROL_HUB_HZ = 80;
 
     public enum HUB_TYPE {
 
@@ -82,5 +80,7 @@ public class Constants {
             /*left motor*/ DcMotorSimple.Direction.REVERSE,
             /*right motor*/ DcMotorSimple.Direction.FORWARD
     };
+
+    public static DcMotorSimple.Direction TURRET_BASE_DIRECTION = DcMotorSimple.Direction.FORWARD;
 
 }

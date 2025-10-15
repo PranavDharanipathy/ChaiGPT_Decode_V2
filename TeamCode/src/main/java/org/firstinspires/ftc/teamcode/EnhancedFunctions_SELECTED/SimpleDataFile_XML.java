@@ -16,15 +16,15 @@ public final class SimpleDataFile_XML {
         sharedPreferences = this.context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveData(String key, float value) { //save to XML file
+    public void saveData(String key, int value) { //save to XML file
 
         Editor editor = sharedPreferences.edit();
-        editor.putFloat(key, value);
+        editor.putInt(key, value);
         editor.apply();
     }
 
-    public float loadData(String key, float defaultValue) { //load from XML file
-        return sharedPreferences.getFloat(key, defaultValue);
+    public int loadData(String key, int defaultValue) { //load from XML file
+        return sharedPreferences.getInt(key, defaultValue);
     }
 
     public void remove(String key) { // deletes the key-value pair for the given key in the XML

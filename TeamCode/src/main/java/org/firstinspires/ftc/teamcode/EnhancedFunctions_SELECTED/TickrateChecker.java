@@ -23,6 +23,6 @@ public class TickrateChecker {
     /// Predicts CPU Usage at a low-level
     /// @return CPU Usage as a percentage
     public static double getTimeBasedCpuUsagePrediction() {
-        return (double) 100 * SimpleMathUtil.nanosecondsToMilliseconds((long) (currentTime - lastTime)) / SimpleMathUtil.secondsToMilliseconds(Constants.CONTROL_HUB_HZ);
+        return 100d * SimpleMathUtil.nanosecondsToMilliseconds((currentTime - lastTime)) / SimpleMathUtil.secondsToMilliseconds(Constants.CONTROL_HUB_HZ);
     }
 }

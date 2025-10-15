@@ -36,31 +36,28 @@ public class SimpleMathUtil {
         return doubleValue;
     }
 
-    public static long nanosecondsToMilliseconds(long nanoseconds) {
-        return nanoseconds / 1_000_000;
+    public static double nanosecondsToMilliseconds(double nanoseconds) {
+        return nanoseconds / 1_000_000.0;
     }
 
-    public static long millisecondsToNanoseconds(long milliseconds) {
-        return milliseconds * 1_000_000;
+    public static double millisecondsToNanoseconds(double milliseconds) {
+        return milliseconds * 1_000_000.0;
     }
 
-    public static long nanosecondsToSeconds(long nanoseconds) {
-        return nanoseconds / 1_000_000_000;
-    }
 
     public static double secondsToNanoseconds(double seconds) {
-        return seconds * 1_000_000_000;
+        return seconds * 1_000_000_000.0;
     }
 
     public static double nanosecondsToSeconds(double nanoseconds) {
-        return nanoseconds / 1_000_000_000;
+        return nanoseconds / 1_000_000_000.0;
     }
 
-    public static long secondsToMilliseconds(long seconds) {
-        return seconds / 1_000;
+    public static double secondsToMilliseconds(double seconds) {
+        return seconds * 1_000.0;
     }
 
-    public static long millisecondsToSeconds(long milliseconds) {
-        return milliseconds * 1_000;
+    public static double millisecondsToSeconds(double milliseconds) {
+        return milliseconds / 1_000.0;
     }
 }

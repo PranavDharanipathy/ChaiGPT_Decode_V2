@@ -38,6 +38,8 @@ public class BetterGamepad {
 
     public boolean main_button() { return gamepad.guide || gamepad.ps; }
 
+    public boolean isRumbling() { return gamepad.isRumbling(); }
+
     public boolean atRest() { return gamepad.atRest(); }
 
     //FLOATS

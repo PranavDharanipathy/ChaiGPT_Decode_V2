@@ -3,13 +3,13 @@ package org.firstinspires.ftc.teamcode.TurretSystems;
 import org.firstinspires.ftc.teamcode.TurretSystems.ShooterInformation.ShooterConstants;
 import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
 
-import com.chaigptrobotics.shenanigans.PeakGlaze;
+import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-@PeakGlaze
+@Peak
 /// Uses AXONs
 public class HoodAngler {
 

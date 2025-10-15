@@ -81,6 +81,14 @@ public class ShooterInformation {
         /// Min and max limits for hood angler
         public static double HOOD_ANGLER_MIN_POSITION_LIMIT = 12;
         public static double HOOD_ANGLER_MAX_POSITION_LIMIT = 220;
+
+        /// Min and max integral limits for turret base
+        public static double TURRET_BASE_MIN_INTEGRAL_LIMIT;
+        public static double TURRET_BASE_MAX_INTEGRAL_LIMIT;
+
+        /// Min and max integral limits for flywheel
+        public static double FLYWHEEL_MIN_INTEGRAL_LIMIT;
+        public static double FLYWHEEL_MAX_INTEGRAL_LIMIT;
     }
 
 }

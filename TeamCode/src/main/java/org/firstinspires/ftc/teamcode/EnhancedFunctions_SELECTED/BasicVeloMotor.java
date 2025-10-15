@@ -14,7 +14,7 @@ public class BasicVeloMotor {
     public BasicVeloMotor(HardwareMap hardwareMap, String deviceName) {
 
         motor = hardwareMap.get(DcMotorEx.class, deviceName);
-        motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //enables velocity with PIDF ('i' (integral) is not used though)
+        motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     public void setDirection(DcMotorSimple.Direction direction) {

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.TurretSystems;
 
-import com.chaigptrobotics.shenanigans.PeakGlaze;
+import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
 
 import javax.annotation.Nullable;
 
-@PeakGlaze
+@Peak
 /// USES EXTERNAL ENCODER - REV Through Bore Encoder is highly recommended.
 /// <p>|<p>
 /// PIDFVAS measured by external encoder.
@@ -171,6 +171,8 @@ public final strictfp class ExtremePrecisionFlywheel {
     private double startTime;
     private boolean isSettingStartTime = true;
 
+    private double power;
+
     public void update() {
 
         //setting start time
@@ -212,10 +214,9 @@ public final strictfp class ExtremePrecisionFlywheel {
         f = kf /* cos(0 degrees) = 1 so no need to multiply kf by it */;
 
         //velocity feedforward
-        v = kv * targetVelocity;
+        v = kv * VbackEMF / power;
 
-        //acceleration feedforward - in ticks per millisecond
-        targetAcceleration = 1_000_000.0 * (targetVelocity - lastTargetVelocity) / dt;
+        targetAcceleration = (targetVelocity - lastTargetVelocity) / dt;
         a = ka * targetAcceleration;
 
         //static friction
@@ -226,7 +227,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         double PIDFVAPower = p + i + d + (usingHoldingFeedforward ? f : 0) + v + a;
 
-        double power = PIDFVAPower + (s * Math.signum(PIDFVAPower));
+        power = PIDFVAPower + (s * Math.signum(PIDFVAPower));
 
         if (isMotorEnabled) {
             leftFlyWheel.setPower(power);

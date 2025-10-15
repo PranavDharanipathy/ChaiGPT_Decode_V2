@@ -55,6 +55,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Provide traits
     public void applyComponentTraits() {
 
+
     }
 
 }
