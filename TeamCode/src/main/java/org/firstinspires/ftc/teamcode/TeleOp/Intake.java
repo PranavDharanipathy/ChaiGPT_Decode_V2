@@ -39,8 +39,12 @@ public final class Intake extends Subsystem {
         beamBreakProcesses();
 
         //Start intake motor while going forward
+
+        //Intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.INTAKE_VELOCITY);
+
+            //Outtake code
         } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD) && isFullManualIntakeAllowed) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
         } else if (isFullManualIntakeAllowed) {
@@ -52,7 +56,23 @@ public final class Intake extends Subsystem {
             isFullManualIntakeAllowed = false;
             intake.setVelocity(Constants.INTAKE_VELOCITY);
             if (isBallToBeTransferred) transfer.setVelocity(Constants.TRANSFER_VELOCITY);
+
         }
+
+        //Transfer --> Shooter
+
+        else if (isBallReadyToBeShot) {
+            transfer.setVelocity(Constants.TRANSFER_VELOCITY);
+            intake.setVelocity(Constants.INTAKE_VELOCITY);
+
+
+        }
+
+        //Pranav's domain
+
+
+
+
 
 
     }
