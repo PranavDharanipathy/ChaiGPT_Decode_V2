@@ -8,7 +8,7 @@ public class BetterGamepad {
 
     private Gamepad gamepad;
 
-    public BetterGamepad(BetterGamepad gamepad) {
+    public BetterGamepad(Gamepad gamepad) {
         this.gamepad = gamepad;
     }
 
