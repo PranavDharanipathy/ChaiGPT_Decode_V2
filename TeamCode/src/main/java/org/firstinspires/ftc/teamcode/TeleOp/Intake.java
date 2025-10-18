@@ -99,7 +99,18 @@ public final class Intake extends Subsystem {
         if (isBallInIntake) {
             intake.setVelocity(intakeVelocity);
         }
-        //
+
+        //Nikhil TODO: fix positional PID Tuning
+
+        //Nikhil TODO: I am not doing transfer, but I am still doing transfer beambreak.
+
+        //Transfer subsystem shouldn't run during intake. IN intake youre st moving the 3 balls to the end, when the front beambreaks are broken, yuo switch the integral and continue runnign intake.
+
+
+        //Pranav TODO: When you click the shoot button, and it breaks the beambreak, it should move the ball to the shooter.
+        //Pranav TODO: Only run transfer when people click the shoot button
+
+        //Pranav: TODO: Get the shooter to align towards the apriltag when shooting.
         }
 
     }
