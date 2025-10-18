@@ -10,13 +10,13 @@ public final class Intake extends Subsystem {
 
     private BetterGamepad controller1;
     private BasicVeloMotor intake;
-    private BasicVeloMotor transfer;
 
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
+    BasicVeloMotor transfer;
 
-    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor transfer, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
+    public void provideComponents(Intake intake, BasicVeloMotor transfer, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
 
         this.intake = intake;
         this.transfer = transfer;
