@@ -2,15 +2,18 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PIDFControlDrive;
+import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @TeleOp (name = "V2TeleOp")
 public class V2TeleOp extends TeleOpBaseOpMode {
 
-    private PIDFControlDrive drive = new PIDFControlDrive();
+    private final Intake intake = new Intake();
 
     @Override
     public void runOpMode() {
@@ -20,6 +23,8 @@ public class V2TeleOp extends TeleOpBaseOpMode {
         applyComponentTraits();
 
         //initialize subsystems here
+
+        intake.provideComponents(intake, transfer, intakeBeambreak, transferBeambreak, controller1);
 
 
         //setup lynx module
@@ -38,8 +43,8 @@ public class V2TeleOp extends TeleOpBaseOpMode {
             // clear data at start of loop
             clearCacheOfLynxModule();
 
+            intake.update();
 
-            drive.update();
 
             controller1.getInformation();
             controller2.getInformation();
