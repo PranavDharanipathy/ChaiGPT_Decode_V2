@@ -94,9 +94,9 @@ public class Constants {
 
     public static float TRIGGER_THRESHOLD = 0.07f;
 
-    public static double BASE_INTAKE_VELOCITY = 1800;
+    public static double BASE_INTAKE_VELOCITY = 1900;
 
-    public static double INTAKE_VELOCITY_AFTER_INTAKE = 1200;
+    public static double INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER = 1200;
 
     public static double REVERSE_INTAKE_VELOCITY = -1200;
 
