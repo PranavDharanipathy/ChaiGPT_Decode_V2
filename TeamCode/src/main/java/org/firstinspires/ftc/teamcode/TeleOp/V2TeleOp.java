@@ -2,12 +2,8 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.PIDFControlDrive;
-import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @TeleOp (name = "V2TeleOp")
@@ -24,7 +20,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         //initialize subsystems here
 
-        intake.provideComponents(super.intake, transfer, intakeBeambreak, transferBeambreak, controller1);
+        intake.provideComponents(super.intake, transferVelo, transferPositional, intakeBeambreak, transferBeambreak, controller1);
 
 
         //setup lynx module

@@ -36,12 +36,13 @@ public class AdafruitBeambreakSensor {
         }
     }
 
+
     public BEAM_STATE isBeamBroken() {
 
         BEAM_STATE state;
 
         // beambreak.getState() = true means connected while false means that it's obstructed
-        if (receiver.getState()) {
+        if (!receiver.getState()) {
             //is connected
             state = BEAM_STATE.CONNECTED;
         }
