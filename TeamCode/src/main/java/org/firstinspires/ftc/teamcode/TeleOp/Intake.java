@@ -26,23 +26,13 @@ public final class Intake extends Subsystem {
 
         this.controller1 = controller1;
     }
-
-    private boolean isBallToBeTransferred = false; //ball has not yet been transferred
     private boolean isBallInIntake = false; //ball is well in the intake
-    private boolean isFullManualIntakeAllowed = true;
-    private boolean isBallReadyToBeShot = false;
+    private boolean isBallInTransfer = false;
 
     private void beamBreakProcesses() {
 
         isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
-
-
-        if (isBallReadyToBeShot) {
-
-            isFullManualIntakeAllowed = true;
-            isBallInIntake = false;
-            isBallToBeTransferred = false;
-        }
+        isBallInTransfer = transferBeambreak.isBeamBroken().getBoolean();
     }
 
 
@@ -53,25 +43,34 @@ public final class Intake extends Subsystem {
 
         //Start intake motor while going forward
 
-        //Intake
+        //Intake and reverse-intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.BASE_INTAKE_VELOCITY);
-
-            //Outtake code
-        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD) && isFullManualIntakeAllowed) {
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
-        } else if (isFullManualIntakeAllowed) {
+        } else {
             intake.setVelocity(0);
         }
 
-        //IF all is outside intake
-
-        if (isBallInIntake) {
-
-            isFullManualIntakeAllowed = false;
-            intake.setVelocity(Constants.BASE_INTAKE_VELOCITY);
-
+        // --| If one ball is in transfer, and one ball is in intake |-- \\
+        if (isBallInTransfer && isBallInIntake) {
+            //does not integral
+            intake.setVelocityPIDFCoefficients(
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[0],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[1],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[2],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[3]
+                    );
+        }
+        else {
+            //uses integral
+            intake.setVelocityPIDFCoefficients(
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
+                    );
+            }
         }
 
     }
-}
