@@ -37,6 +37,10 @@ public class Constants {
         public static String intakeMotorDeviceName = "intake";
 
         public static String transferMotorDeviceName = "transfer";
+
+        public static String[] transferBeambreakSensorNames = {"transfer_beambreak_power", "transfer_beambreak_receiver"};
+
+        public static String[] intakeBeambreakSensorNames = {"intake_beambreak_power", "intake_beambreak_receiver"};
     }
 
 
@@ -90,15 +94,20 @@ public class Constants {
 
     public static float TRIGGER_THRESHOLD = 0.07f;
 
-    public static double INTAKE_VELOCITY = 1200;
+    public static double BASE_INTAKE_VELOCITY = 1800;
+
+    public static double INTAKE_VELOCITY_AFTER_INTAKE = 1200;
 
     public static double REVERSE_INTAKE_VELOCITY = -1200;
 
     public static double TRANSFER_VELOCITY = 1200;
 
-    public static double[] TRANSFER_PIDF_COEFFICIENTS = {30, 1.3, 1.5, 2};
+    // public static double SHOOTER_THRESHOLD = 1f;
 
-    public static double[] INTAKE_PIDF_COEFFICIENTS = {20, 2.3, 0, 10};
+    public static double[] TRANSFER_PIDF_COEFFICIENTS = {20, 7, 1, 5};
+
+    public static double[] INTAKE_PIDF_DEFAULT_COEFFICIENTS = {20, 2.5, 0, 10};
+    public static double[] INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER = {20, 0, 0, 10}; //integral is not being utilized
 
 
 

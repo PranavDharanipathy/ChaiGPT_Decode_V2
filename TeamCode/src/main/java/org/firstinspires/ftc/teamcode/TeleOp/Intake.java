@@ -35,24 +35,10 @@ public final class Intake extends Subsystem {
         isBallInTransfer = transferBeambreak.isBeamBroken().getBoolean();
     }
 
+    private double intakeVelocity;
 
-    @Override
-    public void update() {
+    private void intakePIDFAndVelocityProcesses() {
 
-        beamBreakProcesses();
-
-        //Start intake motor while going forward
-
-        //Intake and reverse-intake
-        if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(Constants.BASE_INTAKE_VELOCITY);
-        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
-        } else {
-            intake.setVelocity(0);
-        }
-
-        // --| If one ball is in transfer, and one ball is in intake |-- \\
         if (isBallInTransfer && isBallInIntake) {
             //does not integral
             intake.setVelocityPIDFCoefficients(
@@ -60,7 +46,9 @@ public final class Intake extends Subsystem {
                     Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[1],
                     Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[2],
                     Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[3]
-                    );
+            );
+
+            intakeVelocity = Constants.INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER;
         }
         else {
             //uses integral
@@ -69,8 +57,32 @@ public final class Intake extends Subsystem {
                     Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
                     Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
                     Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
-                    );
-            }
+            );
+
+            intakeVelocity = Constants.BASE_INTAKE_VELOCITY;
+        }
+    }
+
+    @Override
+    public void update() {
+
+        beamBreakProcesses();
+
+        intakePIDFAndVelocityProcesses();
+
+        //Start intake motor while going forward
+
+        //Intake and reverse-intake
+        if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+            intake.setVelocity(intakeVelocity);
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
+            intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
+        } else {
+            intake.setVelocity(0);
+        }
+
+        // --| If one ball is in transfer, and one ball is in intake |-- \\
+
         }
 
     }
