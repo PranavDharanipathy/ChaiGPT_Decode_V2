@@ -94,7 +94,7 @@ public class Constants {
 
     public static float TRIGGER_THRESHOLD = 0.07f;
 
-    public static double BASE_INTAKE_VELOCITY = 1900;
+    public static double BASE_INTAKE_VELOCITY = 2000;
 
     public static double INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER = 1200;
 
@@ -104,7 +104,8 @@ public class Constants {
 
     // public static double SHOOTER_THRESHOLD = 1f;
 
-    public static double[] TRANSFER_PIDF_COEFFICIENTS = {20, 7, 1, 5};
+    public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
+    public static double[] TRANSFER_POSITIONAL_PIDF_COEFFICIENTS = {};
 
     public static double[] INTAKE_PIDF_DEFAULT_COEFFICIENTS = {20, 2.5, 0, 10};
     public static double[] INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER = {20, 0, 0, 10}; //integral is not being utilized

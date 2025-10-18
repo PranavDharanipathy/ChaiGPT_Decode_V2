@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.ModifiedPIDFMotor;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
@@ -14,12 +15,15 @@ public final class Intake extends Subsystem {
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
-    BasicVeloMotor transfer;
+    BasicVeloMotor transferVelo;
 
-    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor transfer, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
+    private ModifiedPIDFMotor transferPositional;
+
+    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor transferVelo, ModifiedPIDFMotor transferPositional, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
 
         this.intake = intake;
-        this.transfer = transfer;
+        this.transferVelo = transferVelo;
+        this.transferPositional = transferPositional;
 
         this.intakeBeambreak = intakeBeambreak;
         this.transferBeambreak = transferBeambreak;
@@ -38,6 +42,8 @@ public final class Intake extends Subsystem {
     private double intakeVelocity;
 
     private void intakePIDFAndVelocityProcesses() {
+
+        //If one ball is in Intake and one ball is in transfer
 
         if (isBallInTransfer && isBallInIntake) {
             //does not integral
@@ -77,12 +83,23 @@ public final class Intake extends Subsystem {
             intake.setVelocity(intakeVelocity);
         } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
-        } else {
+        } else if (!isBallInIntake) {
             intake.setVelocity(0);
         }
 
-        // --| If one ball is in transfer, and one ball is in intake |-- \\
+//Need to tune a positional PID for transfer
 
+        if (isBallInIntake && !isBallInTransfer) {
+            transferVelo.setVelocity(Constants.TRANSFER_VELOCITY);
+        }
+        else {
+            transferVelo.setVelocity(0);
+        }
+
+        if (isBallInIntake) {
+            intake.setVelocity(intakeVelocity);
+        }
+        //
         }
 
     }
