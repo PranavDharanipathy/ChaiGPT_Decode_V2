@@ -10,11 +10,11 @@ public final class Intake extends Subsystem {
 
     private BetterGamepad controller1;
     private BasicVeloMotor intake;
-    private BasicVeloMotor transfer;
 
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
+    BasicVeloMotor transfer;
 
     public void provideComponents(BasicVeloMotor intake, BasicVeloMotor transfer, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
 
@@ -26,52 +26,63 @@ public final class Intake extends Subsystem {
 
         this.controller1 = controller1;
     }
-
-    private boolean isBallToBeTransferred = false; //ball has not yet been transferred
     private boolean isBallInIntake = false; //ball is well in the intake
-    private boolean isFullManualIntakeAllowed = true;
-    private boolean isBallReadyToBeShot = false;
+    private boolean isBallInTransfer = false;
 
     private void beamBreakProcesses() {
 
         isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
-
-
-        if (isBallReadyToBeShot) {
-
-            isFullManualIntakeAllowed = true;
-            isBallInIntake = false;
-            isBallToBeTransferred = false;
-        }
+        isBallInTransfer = transferBeambreak.isBeamBroken().getBoolean();
     }
 
+    private double intakeVelocity;
+
+    private void intakePIDFAndVelocityProcesses() {
+
+        if (isBallInTransfer && isBallInIntake) {
+            //does not integral
+            intake.setVelocityPIDFCoefficients(
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[0],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[1],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[2],
+                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[3]
+            );
+
+            intakeVelocity = Constants.INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER;
+        }
+        else {
+            //uses integral
+            intake.setVelocityPIDFCoefficients(
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
+                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
+            );
+
+            intakeVelocity = Constants.BASE_INTAKE_VELOCITY;
+        }
+    }
 
     @Override
     public void update() {
 
         beamBreakProcesses();
 
+        intakePIDFAndVelocityProcesses();
+
         //Start intake motor while going forward
 
-        //Intake
+        //Intake and reverse-intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(Constants.BASE_INTAKE_VELOCITY);
-
-            //Outtake code
-        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD) && isFullManualIntakeAllowed) {
+            intake.setVelocity(intakeVelocity);
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
-        } else if (isFullManualIntakeAllowed) {
+        } else {
             intake.setVelocity(0);
         }
 
-        //IF all is outside intake
-
-        if (isBallInIntake) {
-
-            isFullManualIntakeAllowed = false;
-            intake.setVelocity(Constants.BASE_INTAKE_VELOCITY);
+        // --| If one ball is in transfer, and one ball is in intake |-- \\
 
         }
 
     }
-}
