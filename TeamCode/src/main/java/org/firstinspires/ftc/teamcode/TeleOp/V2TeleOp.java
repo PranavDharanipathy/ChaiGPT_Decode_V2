@@ -20,7 +20,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         //initialize subsystems here
 
-        intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
+        intake.provideComponents(super.intake, transferVelo, transferPositional, intakeBeambreak, transferBeambreak, controller1);
 
 
         //setup lynx module
