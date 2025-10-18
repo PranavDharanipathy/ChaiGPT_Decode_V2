@@ -36,6 +36,7 @@ public class AdafruitBeambreakSensor {
         }
     }
 
+
     public BEAM_STATE isBeamBroken() {
 
         BEAM_STATE state;
