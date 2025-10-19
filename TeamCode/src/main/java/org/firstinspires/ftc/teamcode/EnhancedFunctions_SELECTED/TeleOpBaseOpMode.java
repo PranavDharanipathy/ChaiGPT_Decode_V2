@@ -54,7 +54,6 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
         intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
         transferVelo = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
-        transferPositional = new ModifiedPIDFMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
         transferBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.transferBeambreakSensorNames[0], Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
@@ -68,7 +67,6 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         transferVelo.setDirection(DcMotorSimple.Direction.REVERSE);
-        transferPositional.setDirection(ModifiedPIDFMotor.Direction.REVERSE);
 
         intake.setVelocityPIDFCoefficients(
                 Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
