@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /** uses default PIDF because that is sufficient for a basic velocity
- * motor for spinning at a constant, stable, velocity efficiently **/
+ * motor for spinning at a constant, stable velocity efficiently **/
 public class BasicVeloMotor {
 
     private final DcMotorEx motor;

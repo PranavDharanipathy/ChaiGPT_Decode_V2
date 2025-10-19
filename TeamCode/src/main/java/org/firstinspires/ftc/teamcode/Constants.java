@@ -95,12 +95,13 @@ public class Constants {
     public static float TRIGGER_THRESHOLD = 0.07f;
 
     public static double BASE_INTAKE_VELOCITY = 1900;
-
     public static double INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER = 1200;
-
     public static double REVERSE_INTAKE_VELOCITY = -1200;
 
     public static double TRANSFER_VELOCITY = 1200;
+    public static double REVERSE_TRANSFER_VELOCITY = -1200;
+
+    public static final double TRANSFER_SLOW_REVERSE_VELOCITY = -300;
 
     // public static double SHOOTER_THRESHOLD = 1f;
 

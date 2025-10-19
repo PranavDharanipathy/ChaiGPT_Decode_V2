@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
@@ -24,6 +25,19 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         //initialize subsystems here
 
+        BasicVeloMotor intakeMotor = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
+        BasicVeloMotor transferMotor = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
+
+
+        AdafruitBeambreakSensor intakeSensor = new AdafruitBeambreakSensor(hardwareMap,
+                Constants.MapSetterConstants.intakeBeambreakSensorNames[0],
+                Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
+
+        AdafruitBeambreakSensor transferSensor = new AdafruitBeambreakSensor(hardwareMap,
+                Constants.MapSetterConstants.transferBeambreakSensorNames[0],
+                Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
+
+
         intake.provideComponents(super.intake, transfer, intakeBeambreak, transferBeambreak, controller1);
 
 
@@ -34,7 +48,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
         waitForStart();
 
         //run robot reset
-        RobotResetter robotReset = new PostAutonomousRobotReset();
+
 
         while (opModeIsActive()) {
 
@@ -56,8 +70,10 @@ public class V2TeleOp extends TeleOpBaseOpMode {
             telemetry.update();
 
             if(isStopRequested()) {
-                //end
+                intakeMotor.setVelocity(0);
+                transferMotor.setVelocity(0);
                 closeLynxModule();
+                //end
             }
         }
     }
