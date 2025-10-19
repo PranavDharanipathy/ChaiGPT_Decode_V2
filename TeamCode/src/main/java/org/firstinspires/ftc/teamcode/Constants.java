@@ -92,6 +92,7 @@ public class Constants {
 
     public static DcMotorSimple.Direction TURRET_BASE_DIRECTION = DcMotorSimple.Direction.FORWARD;
 
+
     public static float TRIGGER_THRESHOLD = 0.07f;
 
     public static double BASE_INTAKE_VELOCITY = 2000;
@@ -100,6 +101,8 @@ public class Constants {
 
     public static double REVERSE_INTAKE_VELOCITY = -1200;
 
+    /// in milliseconds
+    public static long IS_BALL_IN_INTAKE_DEADBAND_TIMER = 400;
     public static double TRANSFER_VELOCITY = 1200;
 
     // public static double SHOOTER_THRESHOLD = 1f;
