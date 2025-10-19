@@ -15,15 +15,10 @@ public final class Intake extends Subsystem {
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
-    BasicVeloMotor transferVelo;
 
-    private ModifiedPIDFMotor transferPositional;
-
-    public void provideComponents(BasicVeloMotor intake, BasicVeloMotor transferVelo, ModifiedPIDFMotor transferPositional, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
+    public void provideComponents(BasicVeloMotor intake, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
 
         this.intake = intake;
-        this.transferVelo = transferVelo;
-        this.transferPositional = transferPositional;
 
         this.intakeBeambreak = intakeBeambreak;
         this.transferBeambreak = transferBeambreak;
@@ -87,30 +82,28 @@ public final class Intake extends Subsystem {
             intake.setVelocity(0);
         }
 
-//Need to tune a positional PID for transfer
-
-        if (isBallInIntake && !isBallInTransfer) {
-            transferVelo.setVelocity(Constants.TRANSFER_VELOCITY);
-        }
-        else {
-            transferVelo.setVelocity(0);
-        }
 
         if (isBallInIntake) {
             intake.setVelocity(intakeVelocity);
         }
 
+
+
+
+
+        //GENERAL TODOS FROM 10/17/2025 BELOW:
+
+
         //Nikhil TODO: fix positional PID Tuning
 
         //Nikhil TODO: I am not doing transfer, but I am still doing transfer beambreak.
-
-        //Transfer subsystem shouldn't run during intake. IN intake youre st moving the 3 balls to the end, when the front beambreaks are broken, yuo switch the integral and continue runnign intake.
-
 
         //Pranav TODO: When you click the shoot button, and it breaks the beambreak, it should move the ball to the shooter.
         //Pranav TODO: Only run transfer when people click the shoot button
 
         //Pranav: TODO: Get the shooter to align towards the apriltag when shooting.
+
+
         }
 
     }
