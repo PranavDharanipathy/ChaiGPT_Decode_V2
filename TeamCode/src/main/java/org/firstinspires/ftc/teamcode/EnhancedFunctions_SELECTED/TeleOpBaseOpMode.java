@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 import java.util.List;
 
@@ -14,6 +15,10 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public volatile BetterGamepad controller1;
     public volatile BetterGamepad controller2;
+
+    public volatile BasicVeloMotor intake;
+    public volatile BasicVeloMotor transferVelo;
+    public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
     private volatile List<LynxModule> robotHubs;
 
@@ -46,7 +51,11 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Initializing devices
     public void initializeDevices() {
 
+        intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
+        transferVelo = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
+        intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
+        transferBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.transferBeambreakSensorNames[0], Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
 
         controller1 = new BetterGamepad(gamepad1);
         controller2 = new BetterGamepad(gamepad2);
@@ -55,7 +64,22 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Provide traits
     public void applyComponentTraits() {
 
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        transferVelo.setDirection(DcMotor.Direction.REVERSE);
 
+        intake.setVelocityPIDFCoefficients(
+                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
+                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
+                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
+                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
+        );
+
+        transferVelo.setVelocityPIDFCoefficients(
+                Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[0],
+                Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[1],
+                Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[2],
+                Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[3]
+        );
     }
 
 }

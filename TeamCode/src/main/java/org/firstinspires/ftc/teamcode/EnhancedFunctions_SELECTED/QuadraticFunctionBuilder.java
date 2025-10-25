@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
-import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
@@ -43,13 +43,13 @@ public final strictfp class QuadraticFunctionBuilder {
         ArrayList<Double> equation1 = new ArrayList<>();
         ArrayList<Double> equation2 = new ArrayList<>();
 
-        equation1.add(SimpleMathUtil.toDouble(y1 - y2));
-        equation1.add(SimpleMathUtil.toDouble(a_x1 - a_x2));
-        equation1.add(SimpleMathUtil.toDouble(b_x1 - b_x2));
+        equation1.add(MathUtil.toDouble(y1 - y2));
+        equation1.add(MathUtil.toDouble(a_x1 - a_x2));
+        equation1.add(MathUtil.toDouble(b_x1 - b_x2));
 
-        equation2.add(SimpleMathUtil.toDouble(y2 - y3));
-        equation2.add(SimpleMathUtil.toDouble(a_x2 - a_x3));
-        equation2.add(SimpleMathUtil.toDouble(b_x2 - b_x3));
+        equation2.add(MathUtil.toDouble(y2 - y3));
+        equation2.add(MathUtil.toDouble(a_x2 - a_x3));
+        equation2.add(MathUtil.toDouble(b_x2 - b_x3));
 
         // Solve for a and b by elimination
 

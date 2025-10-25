@@ -42,9 +42,9 @@ public class DrivetrainTest extends OpMode {
         double rfPower = controller1.left_stick_y() + controller1.right_stick_x() + controller1.left_stick_x();
         double rbPower = controller1.left_stick_y() + controller1.right_stick_x() - controller1.left_stick_x();
 
-        lf.setPower(Math.abs(lfPower) > Constants.DriveConstants.JOYSTICK_MINIMUM ? lfPower : 0);
-        rf.setPower(Math.abs(rfPower) > Constants.DriveConstants.JOYSTICK_MINIMUM ? rfPower : 0);
-        lb.setPower(Math.abs(lbPower) > Constants.DriveConstants.JOYSTICK_MINIMUM ? lbPower : 0);
-        rb.setPower(Math.abs(rbPower) > Constants.DriveConstants.JOYSTICK_MINIMUM ? rbPower : 0);
+        lf.setPower(Math.abs(lfPower) > Constants.JOYSTICK_MINIMUM ? lfPower : 0);
+        rf.setPower(Math.abs(rfPower) > Constants.JOYSTICK_MINIMUM ? rfPower : 0);
+        lb.setPower(Math.abs(lbPower) > Constants.JOYSTICK_MINIMUM ? lbPower : 0);
+        rb.setPower(Math.abs(rbPower) > Constants.JOYSTICK_MINIMUM ? rbPower : 0);
     }
 }

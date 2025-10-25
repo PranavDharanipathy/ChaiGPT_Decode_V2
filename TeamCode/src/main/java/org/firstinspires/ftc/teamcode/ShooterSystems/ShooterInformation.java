@@ -1,0 +1,82 @@
+package org.firstinspires.ftc.teamcode.ShooterSystems;
+
+import org.firstinspires.ftc.teamcode.Constants;
+
+public final class ShooterInformation {
+
+    /// All Limelight3A camera constants
+    public static class CameraConstants {
+
+        /// Camera angle in degrees
+        public static double CAMERA_ANGLE = 18;
+        /// Camera height in inches
+        public static double CAMERA_HEIGHT = 11;
+
+        /// Camera poll Hz rate
+        public static int CAMERA_POLL_RATE = 85;
+    }
+
+    /// All shooter constants
+    public static class ShooterConstants {
+
+        /// The radius in inches of the gear responsible for moving the hood and thus aiming the turret
+        public static double TURRET_GEAR_RADIUS;
+
+        /// Number of ticks the REV Through-Bore encoder needs to turn to turn 1 degree
+        public static double TURRET_ENCODER_DEGREE_MULTIPLIER = 8192.0 / 360.0;
+
+        /// Weight of the entire shooter (turret) in grams
+        public static double TURRET_WEIGHT = 2779;
+
+        /// Weight of the flywheel assembly in grams
+        public static double BASE_FLYWHEEL_ASSEMBLY_WEIGHT = 334;
+
+        /// Weight of an moment-of-inertia disc that goes on the flywheel in grams
+        public static double MOI_DISC_WEIGHT = 34;
+
+        public static int NUMBER_OF_MOI_DISCS = 0;
+
+        public static double SHAFT_DIAMETER = 8;
+
+        public static double MOTOR_CORE_VOLTAGE = 12;
+        public static double MOTOR_RPM = 6000;
+        public static double BURST_DECELERATION_RATE;
+
+        /// Min and max limits for hood angler
+        public static double HOOD_ANGLER_MIN_POSITION = 0.9;
+        public static double HOOD_ANGLER_MAX_POSITION = 0.1;
+
+        /// Min and max integral limits for turret base
+        public static double TURRET_BASE_MIN_INTEGRAL_LIMIT;
+        public static double TURRET_BASE_MAX_INTEGRAL_LIMIT;
+
+        public static double getTotalFlywheelAssemblyWeight() {
+            return ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT + (ShooterConstants.MOI_DISC_WEIGHT * ShooterConstants.NUMBER_OF_MOI_DISCS);
+        }
+
+        public static double getTotalShooterAssemblyWeight() {
+            return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
+        }
+
+        public static double convert2dGoalDistanceTo3dToAprilTag(double flatDistanceFromGoal) {
+            return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL_APRIL_TAG, 2));
+        }
+
+        public static double convert2dGoalDistanceTo3dToGoal(double flatDistanceFromGoal) {
+            return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL, 2));
+        }
+
+        public static double FLYWHEEL_SHOOT_VELOCITY = 30_000;
+
+    }
+
+    public static class Regressions {
+
+        public static double getDistanceFromRegression(double ty) {
+
+            //quadratic regression
+            return (0.34197 * Math.pow(ty, 2)) - (3.79725 * ty) + 53.01088;
+        }
+    }
+
+}

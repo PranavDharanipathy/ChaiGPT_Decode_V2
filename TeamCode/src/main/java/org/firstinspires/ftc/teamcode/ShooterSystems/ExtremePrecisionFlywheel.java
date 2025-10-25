@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.TurretSystems;
+package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
+import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import javax.annotation.Nullable;
 
@@ -23,18 +24,26 @@ import javax.annotation.Nullable;
 /// <p>S: Static Friction
 public final strictfp class ExtremePrecisionFlywheel {
 
-    private final DcMotorEx leftFlyWheel;
-    private final DcMotorEx rightFlyWheel;
+    private static final double EXTERNAL_ENCODER_VELOCITY_DIVISOR = 13.5617542039;
 
-    public ExtremePrecisionFlywheel(HardwareMap hardwareMap, String leftFlyWheelName, String rightFlyWheelName) {
+    private final Encoder encoder;
 
-        leftFlyWheel = hardwareMap.get(DcMotorEx.class, leftFlyWheelName);
-        rightFlyWheel = hardwareMap.get(DcMotorEx.class, rightFlyWheelName);
+    private final DcMotorEx leftFlywheel; //has encoder
+    private final DcMotorEx rightFlywheel; //follows leftFlywheel
 
-        leftFlyWheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
-        rightFlyWheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
+    public ExtremePrecisionFlywheel(DcMotorEx leftFlywheel, DcMotorEx rightFlywheel) {
 
-        leftFlyWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.leftFlywheel = leftFlywheel;
+        this.rightFlywheel = rightFlywheel;
+
+        this.leftFlywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
+        this.rightFlywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
+
+        encoder = new Encoder(leftFlywheel);
+        encoder.setDirection(Encoder.Direction.REVERSE);
+
+        this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.rightFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public double kp;
@@ -55,7 +64,6 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     private double SHAFT_RADIUS;
 
-    private double lastTargetVelocity = 0; //starts at 0
     private double targetVelocity;
     private double currentVelocity;
 
@@ -89,13 +97,13 @@ public final strictfp class ExtremePrecisionFlywheel {
     }
 
     // p i d f v a s
-    public double p, i, d;
-    public double f; //constant feedforward - can be enabled or disabled
-    public double v, a;
-    public double s;
+    public double p = 0, i = 0, d = 0;
+    public double f = 0; //constant feedforward - can be enabled or disabled
+    public double v = 0, a = 0;
+    public double s = 0;
 
     public Double i_max = Double.MAX_VALUE;
-    public Double i_min = Double.MIN_VALUE;
+    public Double i_min = -Double.MAX_VALUE;
 
     public void setIConstraints(Double i_min, Double i_max) {
 
@@ -136,6 +144,8 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
     }
 
+    private double currentTime = 0;
+
     private double prevTime = 0, prevError = 0;
 
     /// @param velocity in ticks per second
@@ -147,7 +157,6 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         burstVelocity = 0;
 
-        lastTargetVelocity = targetVelocity;
         targetVelocity = velocity;
     }
 
@@ -162,80 +171,86 @@ public final strictfp class ExtremePrecisionFlywheel {
         if (burst != null) burstVelocity = burst;
         else burstVelocity = 0;
 
-        lastTargetVelocity = targetVelocity;
         targetVelocity = velocity;
 
         targetVelocity += burstVelocity;
     }
 
-    private double startTime;
-    private boolean isSettingStartTime = true;
+    private boolean firstTick = true;
 
-    private double power;
+    private ElapsedTime timer = new ElapsedTime();
 
-    public void update() {
+    private double power = 0;
+
+    public void update(/*Telemetry telemetry*/) {
 
         //setting start time
-        if (isSettingStartTime) {
+        if (firstTick) {
 
-            startTime = System.nanoTime();
-            isSettingStartTime = false;
+            timer.reset();
+            firstTick = false;
         }
 
-        double elapsedTime = System.nanoTime() - startTime;
-        double dt = elapsedTime - prevTime;
+        prevTime = currentTime;
+        currentTime = timer.seconds();
+        double dt = currentTime - prevTime;
 
-        burstVelocity = SimpleMathUtil.clamp(Math.abs(burstVelocity-=BURST_DECELERATION_RATE),0, Double.MAX_VALUE);
+        burstVelocity = Math.max(0, burstVelocity - (BURST_DECELERATION_RATE * dt));
 
         lastCurrentVelocity = currentVelocity;
 
         lastPosition = currentPosition;
-        currentPosition = leftFlyWheel.getCurrentPosition();
+        currentPosition = encoder.getCurrentPosition();
 
-        //setting current velocity in ticks per second (converting from nanosecond)
-        long deltaTicks = currentPosition - lastPosition;
-        currentVelocity = 1_000_000_000.0 * (deltaTicks / dt);
+        currentVelocity = ((currentPosition - lastPosition) / dt) / EXTERNAL_ENCODER_VELOCITY_DIVISOR;
+
+        //telemetry.addData("current vel", currentVelocity);
 
         double error = targetVelocity - currentVelocity;
+
+        //telemetry.addData("error", error);
 
         //proportional
         p = kp * error;
 
         //integral - is in fact reset when target velocity changes IF ALLOWED
-        i += error * dt;
+        if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) i += ki * error * dt;
+        else i = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
         // i is prevented from getting too high or too low
-        if (Math.abs(i) > i_max) i = i_max;
-        else if (Math.abs(i) < i_min) i = i_min;
+        i = MathUtil.clamp(i, i_min, i_max);
 
         //derivative
         d = kd * (error - prevError) / dt;
 
         //positional feedforward for holding
-        f = kf /* cos(0 degrees) = 1 so no need to multiply kf by it */;
+        f = targetVelocity != 0 ? kf : 0; /* cos(0 degrees) = 1 so no need to multiply kf by it */;
 
         //velocity feedforward
-        v = kv * VbackEMF / power;
+        v = kv * targetVelocity;
 
-        targetAcceleration = (targetVelocity - lastTargetVelocity) / dt;
+        targetAcceleration = targetVelocity / dt;
         a = ka * targetAcceleration;
 
         //static friction
         double freeSpeed = (MOTOR_RPM * PI) / 30; // in rad/s
         double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculate accurately
         double T = ks * FN * SHAFT_RADIUS;
-        s = (T / ke) * kPIDFUnitsPerVolt;
+        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt : 0;
 
         double PIDFVAPower = p + i + d + (usingHoldingFeedforward ? f : 0) + v + a;
 
-        power = PIDFVAPower + (s * Math.signum(PIDFVAPower));
+        //telemetry.addData("PIDFVAPower", PIDFVAPower);
+
+        power = PIDFVAPower + (Math.signum(PIDFVAPower) >= 0 ? s : -s);
+
+        //telemetry.addData("power", power);
 
         if (isMotorEnabled) {
-            leftFlyWheel.setPower(power);
-            rightFlyWheel.setPower(power);
+            leftFlywheel.setPower(power);
+            rightFlywheel.setPower(power);
         }
 
         prevError = error;
-        prevTime = elapsedTime;
     }
 
     public enum RunningMotor {
@@ -255,6 +270,11 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     // default mode is enabled
     private boolean isMotorEnabled = true;
+
+    /// @return if motor is enabled
+    public boolean getMotorEnabled() {
+        return isMotorEnabled;
+    }
 
     public void runMotor(RunningMotor isMotorEnabled) {
         this.isMotorEnabled = isMotorEnabled.getValue();
@@ -277,6 +297,10 @@ public final strictfp class ExtremePrecisionFlywheel {
         return targetAcceleration;
     }
 
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
     /// CONDITIONS:
     /// <p>
     /// Is at velocity within a certain margin of error.
@@ -291,7 +315,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         double currentVelocity; //different for each type of calculation
         currentVelocity = Math.abs(this.currentVelocity);
 
-        if (Math.abs(targetVelocity) - currentVelocity <= velocityMarginOfError && currentVelocity - Math.abs(lastCurrentVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
+        if (Math.abs(Math.abs(targetVelocity - lastCurrentVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
 
         return motorIsAtVelocityAndStable;
     }
@@ -307,7 +331,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     public void reset() {
 
-        startTime = System.nanoTime();
+        currentTime = 0;
 
         prevError = 0;
         prevTime = 0;
@@ -316,18 +340,16 @@ public final strictfp class ExtremePrecisionFlywheel {
         currentVelocity = 0;
 
         lastCurrentVelocity = 0;
-        lastTargetVelocity = 0;
 
         lastPosition = 0;
         currentPosition = 0;
 
-        leftFlyWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setVelocity(0, false); //allowIntegralReset is false to speed up computation because of how '||' works - probably negligible
         i = 0; //integral reset
     }
 
     public double[] $getMotorPowers() {
-        return new double[] {leftFlyWheel.getPower(), rightFlyWheel.getPower()};
+        return new double[] {leftFlywheel.getPower(), rightFlywheel.getPower()};
     }
 
 }
