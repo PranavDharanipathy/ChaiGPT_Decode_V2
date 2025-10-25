@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.util.SimpleMathUtil;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class TickrateChecker {
 
@@ -22,7 +22,7 @@ public class TickrateChecker {
 
     /// Predicts CPU Usage at a low-level
     /// @return CPU Usage as a percentage
-    public static double getTimeBasedCpuUsagePrediction() {
-        return 100d * SimpleMathUtil.nanosecondsToMilliseconds((currentTime - lastTime)) / SimpleMathUtil.secondsToMilliseconds(Constants.CONTROL_HUB_HZ);
+    public static double getRunSpeedPercentage() {
+        return MathUtil.nanosecondsToMilliseconds((currentTime - lastTime)) / MathUtil.secondsToMilliseconds(Constants.CONTROL_HUB_HZ);
     }
 }

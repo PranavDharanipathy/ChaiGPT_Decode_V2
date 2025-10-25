@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.ModifiedPIDFMotor;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
@@ -96,12 +95,12 @@ public final class Intake extends Subsystem {
 
         intakePIDFAndVelocityProcesses();
 
-        boolean reverseIntake = controller1.left_trigger(Constants.TRIGGER_THRESHOLD);
+        boolean reverseIntake = controller1.left_trigger(Constants.INTAKE_TRIGGER_THRESHOLD);
 
         //Start intake motor while going forward
 
         //Intake and reverse-intake
-        if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+        if (controller1.right_trigger(Constants.INTAKE_TRIGGER_THRESHOLD)) {
             intake.setVelocity(intakeVelocity);
         } else if (reverseIntake) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
@@ -135,6 +134,6 @@ public final class Intake extends Subsystem {
         //Pranav: TODO: Get the shooter to align towards the apriltag when shooting.
 
 
-        }
-
     }
+
+}

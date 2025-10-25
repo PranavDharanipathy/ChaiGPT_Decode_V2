@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
@@ -18,7 +18,6 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public volatile BasicVeloMotor intake;
     public volatile BasicVeloMotor transferVelo;
-    public volatile ModifiedPIDFMotor transferPositional;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
     private volatile List<LynxModule> robotHubs;
@@ -65,8 +64,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Provide traits
     public void applyComponentTraits() {
 
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        transferVelo.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        transferVelo.setDirection(DcMotor.Direction.REVERSE);
 
         intake.setVelocityPIDFCoefficients(
                 Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
