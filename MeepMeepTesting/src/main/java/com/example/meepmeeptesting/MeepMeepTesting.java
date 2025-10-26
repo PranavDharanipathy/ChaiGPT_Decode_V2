@@ -1,57 +1,47 @@
 package com.example.meepmeeptesting;
 
-import com.acmerobotics.roadrunner.ParallelAction;
+
+
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-import java.util.Vector;
-
 public class MeepMeepTesting {
     public static void main(String[] args) {
+        
+        
         MeepMeep meepMeep = new MeepMeep(800);
+        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
+
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
+        /* IF YOU WANT TO ADD ANOTHER BOT
+                RoadRunnerBotEntity mySecondBot = new DefaultBotBuilder(meepMeep)
+                // We set this bot to be red
+                .setColorScheme(new ColorSchemeRedDark())
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .build();
+         */
+
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, 0))
+                .lineToX(12)
+                .setTangent(Math.toRadians(-90))
+                .lineToY(14)
+                .strafeTo(new Vector2d(44.5, 30))
+                .build());
 
-
-
-                .splineToSplineHeading(new Pose2d(-35, -64, -45), Math.toRadians(-90))
-
-                //FIRST INTAKE
-
-                //.splineTo(new Vector2d(-21, -27), -Math.PI / 2)
-                .splineTo(new Vector2d(-42, 0), -Math.PI / 2)
-
-                //GO TO shooting spot(big triangle)
-                .splineToSplineHeading(new Pose2d(-35, -64, -45), Math.toRadians(-90))
-
-                .waitSeconds(4)
-
-                //SECOND INTAKE
-                .splineTo(new Vector2d(-65, -0), 90)
-
-                //GO TO shooting spot(big triangle)
-
-                .splineToSplineHeading(new Pose2d(70, 0, -45), Math.toRadians(-90))
-                .waitSeconds(4)
-
-                .build()
-        );
-
-
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_LIGHT)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
                 .start();
+
     }
 }
