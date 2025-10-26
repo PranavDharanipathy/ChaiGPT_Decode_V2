@@ -26,6 +26,10 @@ public class V2Auton {
 
         //first motor --> drive forward
 
+        //TODO: make the robot move forward by finding the pose and putting it in the code below.
+
+        //Tangent = direction of robot.
+
         drive.setDrivePowers();
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
