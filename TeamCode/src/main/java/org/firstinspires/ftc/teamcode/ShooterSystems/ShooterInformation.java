@@ -14,6 +14,10 @@ public final class ShooterInformation {
 
         /// Camera poll Hz rate
         public static int CAMERA_POLL_RATE = 85;
+
+        /// Distance in inches
+        public static double CAMERA_TO_POINT_OF_ROTATION_2D = 6.25;
+
     }
 
     /// All shooter constants
