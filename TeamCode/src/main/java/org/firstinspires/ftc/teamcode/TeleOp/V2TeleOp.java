@@ -11,6 +11,8 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
     private final Intake intake = new Intake();
 
+    private final LiteralTransfer literalTransfer = new LiteralTransfer();
+
     @Override
     public void runOpMode() {
 
@@ -20,6 +22,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         //initialize subsystems here
         intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
+        literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
 
         //setup lynx module
         setUpLynxModule();
@@ -40,6 +43,8 @@ public class V2TeleOp extends TeleOpBaseOpMode {
             controller1.getInformation();
             controller2.getInformation();
 
+            intake.update();
+            literalTransfer.update();
 
             //background action processes
 

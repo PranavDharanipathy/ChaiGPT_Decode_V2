@@ -29,9 +29,9 @@ public final class Intake extends Subsystem {
     private boolean isBallInIntake = false;
     private boolean isBallInTransfer = false;
 
-    private ElapsedTime isBallinIntakeDeadBandTimer = new ElapsedTime();
+    private final ElapsedTime isBallinIntakeDeadBandTimer = new ElapsedTime();
 
-    private boolean isBallInIntakeDeadBandTriggered;
+    //private boolean isBallInIntakeDeadBandTriggered;
     private void beamBreakProcesses() {
 
 
@@ -40,7 +40,7 @@ public final class Intake extends Subsystem {
 
         if (RAW_isBallInIntake) {
             isBallInIntake = true;
-            isBallInIntakeDeadBandTriggered = true;
+            //isBallInIntakeDeadBandTriggered = true;
             isBallinIntakeDeadBandTimer.reset();
         }
 
@@ -49,7 +49,7 @@ public final class Intake extends Subsystem {
         }
         else {
             isBallInIntake = false;
-            isBallInIntakeDeadBandTriggered = false;
+            //isBallInIntakeDeadBandTriggered = false;
 
 
         }
@@ -97,8 +97,6 @@ public final class Intake extends Subsystem {
 
         boolean reverseIntake = controller1.left_trigger(Constants.INTAKE_TRIGGER_THRESHOLD);
 
-        //Start intake motor while going forward
-
         //Intake and reverse-intake
         if (controller1.right_trigger(Constants.INTAKE_TRIGGER_THRESHOLD)) {
             intake.setVelocity(intakeVelocity);
@@ -112,27 +110,6 @@ public final class Intake extends Subsystem {
         if (isBallInIntake && !reverseIntake) {
             intake.setVelocity(intakeVelocity);
         }
-
-        // If
-
-
-
-
-
-
-
-        //GENERAL TODOS FROM 10/17/2025 BELOW: <-- FINISHED TODOS
-
-
-        //Nikhil TODO: fix positional PID Tuning
-
-        //Nikhil TODO: I am not doing transfer, but I am still doing transfer beambreak.
-
-        //Pranav TODO: When you click the shoot button, and it breaks the beambreak, it should move the ball to the shooter.
-        //Pranav TODO: Only run transfer when people click the shoot button
-
-        //Pranav: TODO: Get the shooter to align towards the apriltag when shooting.
-
 
     }
 

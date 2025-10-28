@@ -22,20 +22,21 @@ public class Constants {
         public static double[] LEFT_SIDE_PIDF = {0,0,0,0};
         public static double[] RIGHT_SIDE_PIDF = {0,0,0,0};
     }
-    public static class IMUConstants {
 
+    public static class IMUConstants {
 
         public static RevHubOrientationOnRobot CONTROL_HUB_ORIENTATION_IMU_PARAMETER =
                 new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP);
 
         public static Rev9AxisImuOrientationOnRobot REV_9_AXIS_IMU_ORIENTATION_IMU_PARAMETER =
                 new Rev9AxisImuOrientationOnRobot(Rev9AxisImuOrientationOnRobot.LogoFacingDirection.UP, Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.BACKWARD);
-        public static Orientation getInternalImuOrientationStats(IMU internalIMU) {
+
+        public static Orientation getInternalIMUOrientationStats(IMU internalIMU) {
 
             return internalIMU.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         }
 
-        public static Orientation getRev9AxisImuOrientationStats(Rev9AxisImu rev9AxisIMU) {
+        public static Orientation getRev9AxisIMUOrientationStats(Rev9AxisImu rev9AxisIMU) {
 
             return rev9AxisIMU.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         }
@@ -51,9 +52,8 @@ public class Constants {
 
             return rev9axisIMUParams;
         }
-
-
     }
+
     public static class MapSetterConstants {
 
 
@@ -61,6 +61,8 @@ public class Constants {
 
         public static String rev9AxisIMUDeviceName = "rev9axisimu";
         public static String internalIMUDeviceName = "imu";
+
+        public static String pinpointOdometryComputerDeviceName = "pinpoint";
 
         public static String limelight3AUSBDeviceName = "limelight";
 
@@ -159,7 +161,11 @@ public class Constants {
 
     /// in milliseconds
     public static long IS_BALL_IN_INTAKE_DEADBAND_TIMER = 400;
+
     public static double TRANSFER_VELOCITY = 1200;
+
+    /// in milliseconds
+    public static double FULLY_TRANSFER_TIME = 1500;
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 
