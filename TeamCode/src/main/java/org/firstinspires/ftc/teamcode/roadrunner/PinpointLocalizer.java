@@ -23,7 +23,11 @@ public final class PinpointLocalizer implements Localizer {
     public static Params PARAMS = new Params();
 
     public final GoBildaPinpointDriver driver;
-    public final GoBildaPinpointDriver.EncoderDirection initialParDirection, initialPerpDirection;
+
+    // TODO: reverse encoder directions if needed
+    public static final GoBildaPinpointDriver.EncoderDirection INITIAL_PAR_DIRECTION = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+    public static final GoBildaPinpointDriver.EncoderDirection INITIAL_PERP_DIRECTION = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+
 
     private Pose2d txWorldPinpoint;
     private Pose2d txPinpointRobot = new Pose2d(0, 0, 0);
@@ -37,11 +41,7 @@ public final class PinpointLocalizer implements Localizer {
         driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
         driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
 
-        // TODO: reverse encoder directions if needed
-        initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
-        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
-
-        driver.setEncoderDirections(initialParDirection, initialPerpDirection);
+        driver.setEncoderDirections(INITIAL_PAR_DIRECTION, INITIAL_PERP_DIRECTION);
 
         driver.resetPosAndIMU();
 

@@ -14,7 +14,7 @@ public final class GeneralMap {
 
     /// Errors will only be revealed at runtime through ClassCastException
     /// @apiNote This method is NOT type-safe
-    public <Device extends HardwareDevice> Device get(String deviceName) {
-        return (Device) hardwareMap.get(HardwareDevice.class, deviceName);
+    public <T extends HardwareDevice> T get(String deviceName) {
+        return (T) hardwareMap.get(HardwareDevice.class, deviceName);
     }
 }

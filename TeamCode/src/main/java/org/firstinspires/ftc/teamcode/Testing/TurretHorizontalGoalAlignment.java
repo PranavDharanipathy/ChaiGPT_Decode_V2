@@ -23,7 +23,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     public static double TICKS_PER_DEGREE = 1; //it should include the turret gear ratio
 
-    public static double CAMERA_TO_POINT_OF_ROTATION = 1; //distance in inches
+    public static double CAMERA_TO_POINT_OF_ROTATION_2D = 1; //distance in inches
 
     private TurretBase turret;
 
@@ -65,37 +65,42 @@ public class TurretHorizontalGoalAlignment extends OpMode {
         double tx = result.getTx();
         double ty = result.getTy();
 
-        double flatDistanceFromGoal = ShooterInformation.Regressions.getDistanceFromRegression(ty);
-
         double currentPosition = turret.getCurrentPosition();
 
-        turret.setPosition(currentPosition + getPositionalIncrementToAlign(tx));
+        double flatDistance = ShooterInformation.Regressions.getDistanceFromRegression(ty);
+
+        turret.setPosition(currentPosition + getPositionalIncrementToAlign(tx, flatDistance));
         turret.update();
 
-        telemetry.addData("tx", tx);
-        telemetry.addData("regressed distance", "ty (x): %.4f, flat distance (y): %.4f", ty, flatDistanceFromGoal);
+        telemetry.addData("tx (y)", tx);
+        telemetry.addData("regressed distance", "ty (z): %.4f, flat distance (x): %.4f", ty, flatDistance);
         telemetry.addData("current position", currentPosition);
         telemetry.update();
     }
 
-    private double getPositionalIncrementToAlign(double tx) {
+    private double getPositionalIncrementToAlign(double tx, double flatDistanceFromCamera) {
 
-        /*             tx
-                   __________
-             theta \        / theta
-                    \      /
-                     \    /----CAMERA_TO_POINT_OF_ROTATION
-                      \  /
-                       \/
-                  adjusted_tx
+        //purposefully ignores 3d distancing and uses 2d
+        double halfCameraViewHorizontalDistanceInInches = Math.tan(tx / 2) * flatDistanceFromCamera;
+        double totalDistance2d = CAMERA_TO_POINT_OF_ROTATION_2D + flatDistanceFromCamera;
 
-        cos theta = 0.5tx / CAMERA_TO_POINT_OF_ROTATION
+        /* cameraViewHorizontalDistanceInInches
+                      ___________
+                      \    |    /
+                       \   |   /
+                        \  |--------totalDistance2d
+                         \ | /
+                          \|/
+                      adjusted_tx
 
-        adjusted_tx = 2 * cos^-1 (0.5tx / CAMERA_TO_POINT_OF_ROTATION)
+        cameraViewHorizontalDistanceInInches = 2(flatDistance * tan (0.5tx))
 
-        * */
+        adjusted_tx = 2 * tan^-1 (0.5cameraViewHorizontalDistanceInInches / totalDistance2d)
 
-        double adjusted_tx = 2 * Math.acos((tx / 2) / CAMERA_TO_POINT_OF_ROTATION);
+        */
+
+        //isosceles triangle is split into a right-angle triangle
+        double adjusted_tx = 2 * Math.atan(halfCameraViewHorizontalDistanceInInches / totalDistance2d);
 
         return ALIGNMENT_MULTIPLIER * adjusted_tx * TICKS_PER_DEGREE;
     }

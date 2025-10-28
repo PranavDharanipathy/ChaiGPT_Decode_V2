@@ -17,7 +17,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public volatile BetterGamepad controller2;
 
     public volatile BasicVeloMotor intake;
-    public volatile BasicVeloMotor transferVelo;
+    public volatile BasicVeloMotor transfer;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
     private volatile List<LynxModule> robotHubs;
@@ -52,7 +52,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public void initializeDevices() {
 
         intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
-        transferVelo = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
+        transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
         transferBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.transferBeambreakSensorNames[0], Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
@@ -65,7 +65,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public void applyComponentTraits() {
 
         intake.setDirection(DcMotor.Direction.REVERSE);
-        transferVelo.setDirection(DcMotor.Direction.REVERSE);
+        transfer.setDirection(DcMotor.Direction.REVERSE);
 
         intake.setVelocityPIDFCoefficients(
                 Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
@@ -74,7 +74,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
         );
 
-        transferVelo.setVelocityPIDFCoefficients(
+        transfer.setVelocityPIDFCoefficients(
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[0],
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[1],
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[2],
