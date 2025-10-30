@@ -55,6 +55,9 @@ public class LimelightMovementCalibration extends OpMode {
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 
         startPosition = turret.getCurrentPosition();
+
+        telemetry.addData("start position", startPosition);
+        telemetry.update();
     }
 
     /// true is right and false is left
@@ -78,10 +81,17 @@ public class LimelightMovementCalibration extends OpMode {
     private final ElapsedTime timer = new ElapsedTime();
 
     @Override
+    public void start() {
+
+        telemetry.clearAll();
+        limelight.start();
+    }
+
+    @Override
     public void loop() {
 
-        double shakeLeft = -SHAKE_DEGREES + startPosition;
-        double shakeRight = SHAKE_DEGREES + startPosition;
+        double shakeLeft = -SHAKE_DEGREES;
+        double shakeRight = SHAKE_DEGREES;
 
         double shake;
 
@@ -94,7 +104,7 @@ public class LimelightMovementCalibration extends OpMode {
         if (shakeType.getBoolean()) shake = shakeRight;
         else shake = shakeLeft;
 
-        turret.setPosition(shake * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+        turret.setPosition((shake * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE) + startPosition);
 
         turret.update();
 
@@ -107,6 +117,9 @@ public class LimelightMovementCalibration extends OpMode {
 
             if (result != null && result.isValid()) telemetry.addData("tx", result.getTx());
         }
+
+        telemetry.addData("is result valid?", limelight.getLatestResult().isValid());
+        telemetry.addData("result", limelight.getLatestResult().isValid());
 
         telemetry.addData("position", turret.getCurrentPosition());
         telemetry.addData("position error", turret.$getPositionError());

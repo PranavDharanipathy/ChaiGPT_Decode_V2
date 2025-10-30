@@ -48,6 +48,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     public double kp;
     public double ki;
+    public double kISmash;
     public double kd;
     public double kf;
     public double kv;
@@ -132,7 +133,7 @@ public final strictfp class ExtremePrecisionFlywheel {
     /// @param ks Static Friction
     /// <p>
     /// @param kPIDFUnitsPerVolt delta PIDF / delta volts
-    public void setVelocityPIDFVASCoefficients(double kp, double ki, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt) {
+    public void setVelocityPIDFVASCoefficients(double kp, double ki, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash) {
 
         this.kp = kp;
         this.ki = ki;
@@ -142,6 +143,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.ka = ka;
         this.ks = ks;
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
+        this.kISmash = kISmash;
     }
 
     private double currentTime = 0;
@@ -182,7 +184,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     private double power = 0;
 
-    public void update(/*Telemetry telemetry*/) {
+    public void update(/*, Telemetry telemetry*/) {
 
         //setting start time
         if (firstTick) {
@@ -208,7 +210,6 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         double error = targetVelocity - currentVelocity;
 
-        //telemetry.addData("error", error);
 
         //proportional
         p = kp * error;
@@ -218,6 +219,11 @@ public final strictfp class ExtremePrecisionFlywheel {
         else i = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
         // i is prevented from getting too high or too low
         i = MathUtil.clamp(i, i_min, i_max);
+
+        // i smashing
+        if (Math.signum(error) != Math.signum(prevError)) {
+            i *= kISmash;
+        }
 
         //derivative
         d = kd * (error - prevError) / dt;

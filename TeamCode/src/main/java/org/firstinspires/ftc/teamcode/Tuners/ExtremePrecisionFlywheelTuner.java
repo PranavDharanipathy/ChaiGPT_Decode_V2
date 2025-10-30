@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 @TeleOp (group = "tuning")
 public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
+    public static int LOOP_TIME = 50;
+
     public enum TUNING_STAGES {
 
         PIDFVAS /*1st*/, kPIDFUnitsPerVolt /*2nd*/, BURST_VELOCITY /*3rd*/, STABILITY /*4th*/
@@ -37,6 +39,7 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
     public static double KA = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
     public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
     public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
+    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
     public static double I_MIN = -Double.MAX_VALUE, I_MAX = Double.MAX_VALUE;
 
     public static double VELOCITY;
@@ -73,12 +76,14 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
      * Tune kf - try to keep it as low AS POSSIBLE, if it's even a bit too high, it can easily mess up your PIDFVAS system
      * Tune kp
      * Tune kd
-     * Tune ki - try to keep it as low as possible
+     * Tune ki - comfortably use integral and lower using kISmash
      * Set kPIDFUnitsPerVolt (kv, ka, and ks should not interfere when getting this)
      * Set everything except kPIDFUnitsPerVolt and ks to 0
      * Update ks - if needed
      * Add the other coefficients back
      * After tuning these, you may or may not want to change your kf - update your kPIDFUnitsPerVolt
+     *
+     * PLOT THE PIDVA!
      */
 
     @Override
@@ -106,13 +111,14 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
             flywheel.setIConstraints(I_MIN, I_MAX);
 
-            if (TUNING_STAGE == TUNING_STAGES.kPIDFUnitsPerVolt) flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, 0, 0, 0, kPIDFUnitsPerVolt);
-            else flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt);
+            if (TUNING_STAGE == TUNING_STAGES.kPIDFUnitsPerVolt) flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, 0, 0, 0, kPIDFUnitsPerVolt, kISmash);
+            else flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt, kISmash);
 
             if (TUNING_STAGE == TUNING_STAGES.BURST_VELOCITY) flywheel.setVelocityWithBurst(VELOCITY, BURST_VELOCITY, true);
             else flywheel.setVelocity(VELOCITY, true);
 
-            flywheel.update(/*telemetry*/);
+            flywheel.update(/*, telemetry*/);
+            sleep(LOOP_TIME);
 
             lastVoltage = currentVoltage;
             currentVoltage = batteryVoltageSensor.getVoltage();

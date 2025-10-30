@@ -19,7 +19,7 @@ public final class ShooterInformation {
         public static int CAMERA_POLL_RATE = 85;
 
         /// Distance in inches
-        public static double CAMERA_TO_POINT_OF_ROTATION_2D = 6.25;
+        public static double CAMERA_TO_POINT_OF_ROTATION_2D = 6.28085;
 
     }
 
@@ -53,6 +53,15 @@ public final class ShooterInformation {
         public static double HOOD_ANGLER_MIN_POSITION = 0.9;
         public static double HOOD_ANGLER_MAX_POSITION = 0.1;
 
+        public static double getAdjustedTx(double tx, Double flatDistanceFromCamera) {
+
+            double x = Math.tan(Math.toRadians(tx)) * flatDistanceFromCamera;
+
+            double adjusted_tx = Math.atan(x / (flatDistanceFromCamera + CameraConstants.CAMERA_TO_POINT_OF_ROTATION_2D));
+
+            return adjusted_tx;
+        }
+
         public static double getTotalFlywheelAssemblyWeight() {
             return ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT + (ShooterConstants.MOI_DISC_WEIGHT * ShooterConstants.NUMBER_OF_MOI_DISCS);
         }
@@ -69,15 +78,16 @@ public final class ShooterInformation {
             return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL, 2));
         }
 
-        public static double FLYWHEEL_SHOOT_VELOCITY = 32_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 30_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_000;
 
         //normalized
         public static double MIN_TURRET_POSITION_IN_DEGREES = -170, MAX_TURRET_POSITION_IN_DEGREES = 170;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
 
-        public static double ALIGNMENT_MULTIPLIER = 1;
-        public static double OVERSHOOT_MULTIPLIER = 10;
+        public static double CLOSE_MULTIPLIER = 1;
+        public static double FAR_MULTIPLIER = 0.9;
     }
 
     public static class Regressions {

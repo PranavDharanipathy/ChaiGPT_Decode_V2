@@ -169,7 +169,7 @@ public class BetterGamepad {
 
         prev_dpad_left = curr_dpad_left;
         curr_dpad_left = gamepad.dpad_left;
-        dpad_leftHasJustBeenPressed = !prev_dpad_down && curr_dpad_down;
+        dpad_leftHasJustBeenPressed = !prev_dpad_left && curr_dpad_left;
 
         prev_dpad_right = curr_dpad_right;
         curr_dpad_right = gamepad.dpad_right;

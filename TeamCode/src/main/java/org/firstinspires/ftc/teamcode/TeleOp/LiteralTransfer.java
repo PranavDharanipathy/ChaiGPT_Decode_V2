@@ -41,8 +41,12 @@ public class LiteralTransfer extends Subsystem {
                 fullyTransferTimer.reset();
             }
         }
+        else if (controller1.dpad_down()) {
+
+            transfer.setVelocity(Constants.REVERSE_TRANSFER_VELOCITY);
+        }
         else if (!fullyTransfer) {
-            transfer.setVelocity(0);
+            transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY);
         }
         else if (fullyTransferTimer.milliseconds() > Constants.FULLY_TRANSFER_TIME) {
             fullyTransfer = false;
