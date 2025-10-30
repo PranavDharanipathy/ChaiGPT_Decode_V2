@@ -16,6 +16,8 @@ public class TurretBase {
 
     private PIDController controller;
 
+    private double multiplier = 1;
+
     private double kp, ki, kd, kf;
 
     public TurretBase(HardwareMap hardwareMap, String leftCRServoDeviceName, String rightCRServoDeviceName) {
@@ -59,6 +61,10 @@ public class TurretBase {
         targetPosition = position;
     }
 
+    public void setMultiplier(double multiplier){
+        this.multiplier = multiplier;
+    }
+
     public double getTargetPosition() {
         return targetPosition;
     }
@@ -73,18 +79,22 @@ public class TurretBase {
         controller.setIntegrationBounds(MIN_I, MAX_I);
 
         double pid = controller.calculate(getCurrentPosition(), targetPosition);
-        double f = usingFeedforward ? (pid >= 0 ? kf : -kf) : 0;
+        double f = usingFeedforward ? (targetPosition - getCurrentPosition() >= 0 ? kf : -kf) : 0;
 
         double power = pid + f;
 
-        leftTurretBase.setPower(power);
-        rightTurretBase.setPower(power);
+        leftTurretBase.setPower(power * multiplier);
+        rightTurretBase.setPower(power * multiplier);
     }
 
     private boolean usingFeedforward = true;
 
     public void setUsingFeedforwardState(boolean usingFeedforward) {
         this.usingFeedforward = usingFeedforward;
+    }
+
+    public double $getPositionError() {
+        return controller.getPositionError();
     }
 
     /// used for tuning

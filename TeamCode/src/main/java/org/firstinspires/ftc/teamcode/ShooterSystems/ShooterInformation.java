@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.teamcode.Constants;
 
+@Config
 public final class ShooterInformation {
 
     /// All Limelight3A camera constants
@@ -38,21 +41,17 @@ public final class ShooterInformation {
         /// Weight of an moment-of-inertia disc that goes on the flywheel in grams
         public static double MOI_DISC_WEIGHT = 34;
 
-        public static int NUMBER_OF_MOI_DISCS = 0;
+        public static int NUMBER_OF_MOI_DISCS = 3;
 
         public static double SHAFT_DIAMETER = 8;
 
         public static double MOTOR_CORE_VOLTAGE = 12;
         public static double MOTOR_RPM = 6000;
-        public static double BURST_DECELERATION_RATE;
+        public static double BURST_DECELERATION_RATE = 400;
 
         /// Min and max limits for hood angler
         public static double HOOD_ANGLER_MIN_POSITION = 0.9;
         public static double HOOD_ANGLER_MAX_POSITION = 0.1;
-
-        /// Min and max integral limits for turret base
-        public static double TURRET_BASE_MIN_INTEGRAL_LIMIT;
-        public static double TURRET_BASE_MAX_INTEGRAL_LIMIT;
 
         public static double getTotalFlywheelAssemblyWeight() {
             return ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT + (ShooterConstants.MOI_DISC_WEIGHT * ShooterConstants.NUMBER_OF_MOI_DISCS);
@@ -70,8 +69,15 @@ public final class ShooterInformation {
             return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL, 2));
         }
 
-        public static double FLYWHEEL_SHOOT_VELOCITY = 30_000;
+        public static double FLYWHEEL_SHOOT_VELOCITY = 32_000;
 
+        //normalized
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -170, MAX_TURRET_POSITION_IN_DEGREES = 170;
+
+        public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
+
+        public static double ALIGNMENT_MULTIPLIER = 1;
+        public static double OVERSHOOT_MULTIPLIER = 10;
     }
 
     public static class Regressions {

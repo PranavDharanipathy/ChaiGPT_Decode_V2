@@ -249,6 +249,10 @@ public final strictfp class ExtremePrecisionFlywheel {
             leftFlywheel.setPower(power);
             rightFlywheel.setPower(power);
         }
+//        else {
+//            leftFlywheel.setPower(0);
+//            rightFlywheel.setPower(0);
+//        }
 
         prevError = error;
     }
