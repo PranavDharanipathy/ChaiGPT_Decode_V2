@@ -21,8 +21,8 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     public static int PIPELINE = 2;
 
-    public static double ALIGNMENT_MULTIPLIER = 1;
-    public static double OVERSHOOT_MULTIPLIER = 10;
+    public static double multiplier = 1;
+
 
     private double MIN_TURRET_POSITION, MAX_TURRET_POSITION;
 
@@ -42,10 +42,16 @@ public class TurretHorizontalGoalAlignment extends OpMode {
     private BetterGamepad gamepad1;
 
     public enum TUNING_STAGE {
-        AUTOAIM, TURRET_LIMITS
+        RUNNING, PAUSED
     }
 
-    public static TUNING_STAGE tuningStage = TUNING_STAGE.AUTOAIM;
+    public enum TX_TYPE {
+        RAW, ADJUSTED
+    }
+
+    public static TUNING_STAGE tuningStage = TUNING_STAGE.RUNNING;
+
+    public static TX_TYPE txType = TX_TYPE.RAW;
 
     @Override
     public void init() {
@@ -71,6 +77,8 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     }
 
+
+
     @Override
     public void start() {
 
@@ -88,11 +96,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     private double lastTx;
     private double tx;
-    private volatile double position;
-
-    private double positionalSwitchValue = 0;
-
-    private boolean positionalSwitch = false;
+    private double position;
 
     @Override
     public void loop() {
@@ -107,72 +111,68 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
         LLResult result = limelight.getLatestResult();
 
-        if (result.isValid()) lastTx = tx;
-        tx = result.getTx();
-        double ty = result.getTy();
+        Double ty;
+
+        Double flatDistance;
+
+        if (result != null && result.isValid()) {
+
+            ty = result.getTy();
+            flatDistance = ShooterInformation.Regressions.getDistanceFromRegression(ty);
+        }
+        else {
+
+            ty = null;
+            flatDistance = null;
+        }
+
+        if (result != null && result.isValid()) {
+
+            lastTx = tx;
+
+            if (txType == TX_TYPE.ADJUSTED) {
+                tx = getAdjustedTx(result.getTx(), flatDistance);
+            } else {
+                tx = result.getTx();
+            }
+        }
 
         double currentPosition = turret.getCurrentPosition();
 
-        double flatDistance = ShooterInformation.Regressions.getDistanceFromRegression(ty);
-
-        //double positionalIncrement = getPositionalIncrementToAlign(tx, flatDistance);
-        //double position = currentPosition + positionalIncrement;
-
-        if (result.isValid()) {
-            position = positionalSwitchValue + currentPosition + ALIGNMENT_MULTIPLIER * (tx * TICKS_PER_DEGREE);
+        if (result != null && result.isValid()) {
+            position = currentPosition + (tx * TICKS_PER_DEGREE);
+            turret.setMultiplier(1);
         }
         else {
-            position = positionalSwitchValue + currentPosition + OVERSHOOT_MULTIPLIER * (lastTx * TICKS_PER_DEGREE);
+            turret.setMultiplier(multiplier);
+            position = currentPosition + (lastTx * TICKS_PER_DEGREE);
         }
 
-        //turret.setPosition(MathUtil.clamp(position, MIN_TURRET_POSITION, MAX_TURRET_POSITION));
         turret.setPosition(MathUtil.clamp(position, MIN_TURRET_POSITION + startPosition, MAX_TURRET_POSITION + startPosition));
 
-        //telemetry.addData("positionalIncrement", positionalIncrement);
-        telemetry.addData("positional switch?", positionalSwitch);
-        telemetry.addData("positional switch value", positionalSwitchValue);
-        telemetry.addData("rezeroed position", getRezeroedPosition());
+        if (tuningStage == TUNING_STAGE.RUNNING) turret.update();
+
         telemetry.addData("position", position);
         telemetry.addData("start position", startPosition);
+        telemetry.addData("rezeroed position", getRezeroedPosition());
         telemetry.addData("min position", MIN_TURRET_POSITION);
         telemetry.addData("max position", MAX_TURRET_POSITION);
 
-//        if (gamepad1.aHasJustBeenPressed) turret.setPosition(position);
-//        else if (gamepad1.bHasJustBeenPressed) turret.setPosition(currentPosition + (tx * TICKS_PER_DEGREE));
-        if (tuningStage == TUNING_STAGE.AUTOAIM) turret.update();
-
-        telemetry.addData("tx (y)", tx);
+        telemetry.addData("tx", "raw: %.4f, adjusted: %.4f", result != null && result.isValid() ? result.getTx() : null, tx);
         telemetry.addData("regressed distance", "ty (z): %.4f, flat distance (x): %.4f", ty, flatDistance);
         telemetry.addData("current position", currentPosition);
+        telemetry.addData("position error", turret.$getPositionError());
         telemetry.update();
     }
 
-//    private double getPositionalIncrementToAlign(double tx, double flatDistanceFromCamera) {
-//
-//        //purposefully ignores 3d distancing and uses 2d
-//        double halfCameraViewHorizontalDistanceInInches = Math.tan(tx / 2) * flatDistanceFromCamera;
-//        double totalDistance2d = CAMERA_TO_POINT_OF_ROTATION_2D + flatDistanceFromCamera;
-//
-//        /* cameraViewHorizontalDistanceInInches
-//                      ___________
-//                      \    |    /
-//                       \   |   /
-//                        \  |--------totalDistance2d
-//                         \ | /
-//                          \|/
-//                      adjusted_tx
-//
-//        cameraViewHorizontalDistanceInInches = 2(flatDistance * tan (0.5tx))
-//
-//        adjusted_tx = 2 * tan^-1 (0.5cameraViewHorizontalDistanceInInches / totalDistance2d)
-//
-//        */
-//
-//        //isosceles triangle is split into a right-angle triangle
-//        double adjusted_tx = 2 * Math.atan(halfCameraViewHorizontalDistanceInInches / totalDistance2d);
-//
-//        telemetry.addData("adjusted_tx", adjusted_tx);
-//
-//        return ALIGNMENT_MULTIPLIER * adjusted_tx * TICKS_PER_DEGREE;
-//    }
+    private double getAdjustedTx(double tx, Double flatDistanceFromCamera) {
+
+        double halfTxLength = Math.tan(Math.toRadians(tx / 2)) * flatDistanceFromCamera;
+
+        double adjusted_tx = 2 * Math.atan(Math.toRadians(halfTxLength / (flatDistanceFromCamera + CAMERA_TO_POINT_OF_ROTATION_2D)));
+
+        telemetry.addData("adjusted_tx",adjusted_tx);
+
+        return adjusted_tx;
+    }
 }

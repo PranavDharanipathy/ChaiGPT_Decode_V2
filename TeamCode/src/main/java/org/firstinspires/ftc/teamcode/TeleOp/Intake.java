@@ -29,29 +29,26 @@ public final class Intake extends Subsystem {
     private boolean isBallInIntake = false;
     private boolean isBallInTransfer = false;
 
-    private final ElapsedTime isBallinIntakeDeadBandTimer = new ElapsedTime();
+    private ElapsedTime isBallinIntakeDeadBandTimer = new ElapsedTime();
 
-    //private boolean isBallInIntakeDeadBandTriggered;
+    private boolean isBallInIntakeDeadBandTriggered;
+
     private void beamBreakProcesses() {
-
-
 
         boolean RAW_isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
 
         if (RAW_isBallInIntake) {
             isBallInIntake = true;
-            //isBallInIntakeDeadBandTriggered = true;
+            isBallInIntakeDeadBandTriggered = true;
             isBallinIntakeDeadBandTimer.reset();
         }
 
-        else if (isBallinIntakeDeadBandTimer.milliseconds() < Constants.IS_BALL_IN_INTAKE_DEADBAND_TIMER) {
+        else if (isBallInIntakeDeadBandTriggered && isBallinIntakeDeadBandTimer.milliseconds() < Constants.IS_BALL_IN_INTAKE_DEADBAND_TIMER) {
             isBallInIntake = true;
         }
         else {
             isBallInIntake = false;
-            //isBallInIntakeDeadBandTriggered = false;
-
-
+            isBallInIntakeDeadBandTriggered = false;
         }
 
         isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
@@ -95,20 +92,15 @@ public final class Intake extends Subsystem {
 
         intakePIDFAndVelocityProcesses();
 
-        boolean reverseIntake = controller1.left_trigger(Constants.INTAKE_TRIGGER_THRESHOLD);
+        if (isBallInIntake) intake.setVelocity(intakeVelocity);
 
         //Intake and reverse-intake
-        if (controller1.right_trigger(Constants.INTAKE_TRIGGER_THRESHOLD)) {
+        if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(intakeVelocity);
-        } else if (reverseIntake) {
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
         } else if (!isBallInIntake) {
             intake.setVelocity(0);
-        }
-
-
-        if (isBallInIntake && !reverseIntake) {
-            intake.setVelocity(intakeVelocity);
         }
 
     }

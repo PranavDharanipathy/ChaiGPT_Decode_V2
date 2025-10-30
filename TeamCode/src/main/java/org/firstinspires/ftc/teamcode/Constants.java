@@ -132,6 +132,8 @@ public class Constants {
     /// Height of AprilTag on goal in inches
     public static double HEIGHT_OF_GOAL_APRIL_TAG = 27;
 
+    public static float TRIGGER_THRESHOLD = 0.07f;
+
     /// Index 0 is the left crservo.
     /// <p>
     /// Index 1 is the right crservo.
@@ -151,8 +153,6 @@ public class Constants {
     public static double HOOD_ANGLER_INITIAL_RESETTING_POSITION = 0;
 
     //intake and transfer
-    public static float INTAKE_TRIGGER_THRESHOLD = 0.07f;
-
     public static double BASE_INTAKE_VELOCITY = 2000;
 
     public static double INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER = 1200;
@@ -160,12 +160,12 @@ public class Constants {
     public static double REVERSE_INTAKE_VELOCITY = -1200;
 
     /// in milliseconds
-    public static long IS_BALL_IN_INTAKE_DEADBAND_TIMER = 400;
+    public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1200;
+    public static double TRANSFER_VELOCITY = 1600;
 
     /// in milliseconds
-    public static double FULLY_TRANSFER_TIME = 1500;
+    public static double FULLY_TRANSFER_TIME = 2000;
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 
@@ -182,11 +182,11 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.000185,0.00000082,0.00000175,0.015,0.0000015,0.000000075,0.0001, 0.9
+            0.000185,0.000018,0.0000075,0.015,0.00002,0.000000075,0.0001, 0.9
     };
 
-    public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.11;
-    public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 0.11;
+    public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.35;
+    public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 0.35;
 
     public static double BURST_DECELERATION_RATE = 250;
 
@@ -194,9 +194,9 @@ public class Constants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00017, 0, 0.00001, 0.0285}; // the best results were with 0 integral so that what it's going to be I guess
+    public static double[] TURRET_PIDF_COEFFICIENTS = {0.0003, 0, 0.00003, 0}; // the best results were with 0 integral so that what it's going to be I guess
 
-    public static double TURRET_MIN_INTEGRAL_LIMIT = -0.3;
-    public static double TURRET_MAX_INTEGRAL_LIMIT = 0.3;
+    public static double TURRET_MIN_INTEGRAL_LIMIT = -0.5;
+    public static double TURRET_MAX_INTEGRAL_LIMIT = 0.5;
 
 }
