@@ -21,8 +21,9 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     public static int PIPELINE = 2;
 
-    public static double multiplier = 1;
+    public static int POLL_HZ_RATE = ShooterInformation.CameraConstants.CAMERA_POLL_RATE;
 
+    public static double multiplier = 1;
 
     private double MIN_TURRET_POSITION, MAX_TURRET_POSITION;
 
@@ -62,7 +63,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
         limelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
 
-        limelight.setPollRateHz(ShooterInformation.CameraConstants.CAMERA_POLL_RATE);
+        limelight.setPollRateHz(POLL_HZ_RATE);
         limelight.pipelineSwitch(PIPELINE);
 
          turret = new TurretBase(hardwareMap, Constants.MapSetterConstants.turretBaseLeftServoDeviceName, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
@@ -130,10 +131,10 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
             lastTx = tx;
 
-            if (txType == TX_TYPE.ADJUSTED) {
-                tx = getAdjustedTx(result.getTx(), flatDistance);
-            } else {
+            if (txType == TX_TYPE.RAW) {
                 tx = result.getTx();
+            } else {
+                tx = getAdjustedTx(result.getTx(), flatDistance);
             }
         }
 
@@ -141,7 +142,6 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
         if (result != null && result.isValid()) {
             position = currentPosition + (tx * TICKS_PER_DEGREE);
-            turret.setMultiplier(1);
         }
         else {
             turret.setMultiplier(multiplier);
@@ -158,7 +158,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
         telemetry.addData("min position", MIN_TURRET_POSITION);
         telemetry.addData("max position", MAX_TURRET_POSITION);
 
-        telemetry.addData("tx", "raw: %.4f, adjusted: %.4f", result != null && result.isValid() ? result.getTx() : null, tx);
+        telemetry.addData("tx", "raw: %.4f, adjusted: %.4f", result != null && result.isValid() ? result.getTx() : null, result != null && result.isValid() ? getAdjustedTx(result.getTx(), flatDistance) : null);
         telemetry.addData("regressed distance", "ty (z): %.4f, flat distance (x): %.4f", ty, flatDistance);
         telemetry.addData("current position", currentPosition);
         telemetry.addData("position error", turret.$getPositionError());
@@ -167,11 +167,11 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     private double getAdjustedTx(double tx, Double flatDistanceFromCamera) {
 
-        double halfTxLength = Math.tan(Math.toRadians(tx / 2)) * flatDistanceFromCamera;
+        double x = Math.tan(Math.toRadians(tx)) * flatDistanceFromCamera;
 
-        double adjusted_tx = 2 * Math.atan(Math.toRadians(halfTxLength / (flatDistanceFromCamera + CAMERA_TO_POINT_OF_ROTATION_2D)));
+        double adjusted_tx = Math.atan(x / (flatDistanceFromCamera + CAMERA_TO_POINT_OF_ROTATION_2D));
 
-        telemetry.addData("adjusted_tx",adjusted_tx);
+        telemetry.addData("adjusted_tx", adjusted_tx);
 
         return adjusted_tx;
     }

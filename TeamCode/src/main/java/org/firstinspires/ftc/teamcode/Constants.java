@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Config
 public class Constants {
 
     public static class DriveConstants {
@@ -163,6 +161,8 @@ public class Constants {
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
     public static double TRANSFER_VELOCITY = 1600;
+    public static double REVERSE_TRANSFER_VELOCITY = -1600;
+    public static double ANTI_TRANSFER_VELOCITY = -200;
 
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
@@ -182,8 +182,10 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.000185,0.000018,0.0000075,0.015,0.00002,0.000000075,0.0001, 0.9
+            0.0002, 0.00064, 0.0000075, 0.015, 0.0000241, 0.000000075, 0.0001, 0.9, 0.175
     };
+
+    public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 40;
 
     public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.35;
     public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 0.35;
@@ -196,7 +198,9 @@ public class Constants {
     //turret
     public static double[] TURRET_PIDF_COEFFICIENTS = {0.0003, 0, 0.00003, 0}; // the best results were with 0 integral so that what it's going to be I guess
 
-    public static double TURRET_MIN_INTEGRAL_LIMIT = -0.5;
-    public static double TURRET_MAX_INTEGRAL_LIMIT = 0.5;
+    public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
+    public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
+
+    public static double TURRET_MANUAL_ADJUSTMENT = 1;
 
 }
