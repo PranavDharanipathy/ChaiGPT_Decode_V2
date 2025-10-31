@@ -73,10 +73,16 @@ public class TurretBase {
         return encoder.getCurrentPosition();
     }
 
+    private boolean firstLoop = true;
+
     public void update() {
 
-        controller.setPID(kp, ki, kd);
-        controller.setIntegrationBounds(MIN_I, MAX_I);
+        if (firstLoop) {
+
+            controller.setPID(kp, ki, kd);
+            controller.setIntegrationBounds(MIN_I, MAX_I);
+            firstLoop = false;
+        }
 
         double pid = controller.calculate(getCurrentPosition(), targetPosition);
         double f = usingFeedforward ? (targetPosition - getCurrentPosition() >= 0 ? kf : -kf) : 0;
@@ -95,6 +101,10 @@ public class TurretBase {
 
     public double $getPositionError() {
         return controller.getPositionError();
+    }
+
+    public double[] $getServoPowers() {
+        return new double[] {leftTurretBase.getPower(), rightTurretBase.getPower()};
     }
 
     /// used for tuning

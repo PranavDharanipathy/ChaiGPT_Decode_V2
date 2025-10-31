@@ -32,8 +32,6 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
     private ElapsedTime universalTimer = new ElapsedTime();
 
-    private final ExecutorService executor = Executors.newCachedThreadPool();
-
     @Override
     public void runOpMode() {
 
@@ -53,51 +51,35 @@ public class V2TeleOp extends TeleOpBaseOpMode {
         shooter.provideComponents(flywheel, turret, unstartedLimelight, controller1, controller2);
 
         //setup lynx module
-        setUpLynxModule();
+        //setUpLynxModule();
 
         if (isStopRequested()) return;
         waitForStart();
 
+        shooter.setPipeline(PIPELINE);
         shooter.start();
-
-        executor.submit(() -> {
-
-            try {
-                while (true) {
-                    shooter.update();
-                }
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-            }
-        });
 
         //run robot reset
         RobotResetter robotReset = new PostAutonomousRobotReset();
 
         while (opModeIsActive() && !isStopRequested()) {
 
-            TickrateChecker.startOfLoop();
-
             // clear data at start of loop
-            clearCacheOfLynxModule();
+            //clearCacheOfLynxModule();
 
             controller1.getInformation();
             controller2.getInformation();
 
             haprBuilder.runInstance(controller1);
 
-            shooter.setPipeline(PIPELINE);
-
             intake.update();
             literalTransfer.update();
 
-            //shooter.update();
+            shooter.update();
 
             normalDrive.update();
 
             //background action processes
-
-            TickrateChecker.endOfLoop();
 
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
@@ -111,6 +93,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
             telemetry.addData("i", shooter.flywheel.i);
             telemetry.addData("d", shooter.flywheel.d);
             telemetry.addData("v", shooter.flywheel.v);
+            telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
             telemetry.addData("adjusted tx", shooter.getAdjustedTx());
             telemetry.update();
@@ -119,10 +102,8 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         if(isStopRequested()) {
             //end
-            closeLynxModule();
+            //closeLynxModule();
         }
-
-        executor.shutdownNow();
 
     }
 }

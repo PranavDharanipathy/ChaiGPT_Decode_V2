@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import static android.os.SystemClock.sleep;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -11,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -18,6 +21,8 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 @Config
 @TeleOp (group = "testing")
 public class TurretHorizontalGoalAlignment extends OpMode {
+
+    public static long LOOP_TIME_DELAY = 0;
 
     public static int PIPELINE = 2;
 
@@ -107,7 +112,6 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
 
 
-
         gamepad1.getInformation();
 
         LLResult result = limelight.getLatestResult();
@@ -162,7 +166,13 @@ public class TurretHorizontalGoalAlignment extends OpMode {
         telemetry.addData("regressed distance", "ty (z): %.4f, flat distance (x): %.4f", ty, flatDistance);
         telemetry.addData("current position", currentPosition);
         telemetry.addData("position error", turret.$getPositionError());
+
+        telemetry.addData("power", turret.$getServoPowers()[0]);
+
+        telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
         telemetry.update();
+
+        sleep(LOOP_TIME_DELAY);
     }
 
     private double getAdjustedTx(double tx, Double flatDistanceFromCamera) {
