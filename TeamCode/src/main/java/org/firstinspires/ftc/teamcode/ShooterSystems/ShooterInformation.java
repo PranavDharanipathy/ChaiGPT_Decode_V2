@@ -51,7 +51,7 @@ public final class ShooterInformation {
 
         /// Min and max limits for hood angler
         public static double HOOD_ANGLER_MIN_POSITION = 0.9;
-        public static double HOOD_ANGLER_MAX_POSITION = 0.1;
+        public static double HOOD_ANGLER_MAX_POSITION = 0.11;
 
         public static double getAdjustedTx(double tx, Double flatDistanceFromCamera) {
 
@@ -79,15 +79,23 @@ public final class ShooterInformation {
         }
 
         public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 30_000;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_500;
+
+        public static double FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN = 800;
+        public static int FLYWHEEL_SHOOT_VELOCITY_WITHIN_MARGIN_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
 
-        public static double CLOSE_MULTIPLIER = 1;
-        public static double FAR_MULTIPLIER = 0.9;
+        public static double TURRET_CLOSE_MULTIPLIER = 1;
+        public static double TURRET_FAR_MULTIPLIER = 0.9;
+
+        public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
+
+        public static double HOOD_CLOSE_POSITION = 0.51;
+        public static double HOOD_FAR_POSITION = 0.19;
     }
 
     public static class Regressions {

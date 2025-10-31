@@ -52,7 +52,7 @@ public class CalibratedVision {
 
     public void setPipeline(PIPELINES pipeline) {
 
-        limelight.pipelineSwitch(pipeline.getIndex());
+        limelight.pipelineSwitch(pipeline.getPipelineIndex());
     }
 
     public int getCurrentPipeline() {

@@ -8,17 +8,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
+import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.NormalDrive;
-import org.firstinspires.ftc.teamcode.Tuners.HoodAnglerPositionRegressionBuilder;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
 @Config
-@TeleOp (name = "V2TeleOp")
-public class V2TeleOp extends TeleOpBaseOpMode {
+@TeleOp (name = "V2TeleOp TEST")
+public class V2TeleOp_TEST extends TeleOpBaseOpMode {
+
+    public static PIPELINES PIPELINE = PIPELINES.BLUE_PIPELINE;
 
     private final NormalDrive normalDrive = new NormalDrive();
 
@@ -28,17 +26,12 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
     private final Shooter shooter = new Shooter();
 
-    public static int PIPELINE = 2;
-
     private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
 
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        HoodAnglerPositionRegressionBuilder haprBuilder = new HoodAnglerPositionRegressionBuilder();
-        haprBuilder.init(hardwareMap);
 
         initializeDevices();
 
@@ -48,15 +41,16 @@ public class V2TeleOp extends TeleOpBaseOpMode {
         normalDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
         intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
-        shooter.provideComponents(flywheel, turret, unstartedLimelight, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, unstartedLimelight, controller1, controller2);
 
         //setup lynx module
-        //setUpLynxModule();
+        setUpLynxModule();
+
+        shooter.setPipeline(PIPELINE.getPipelineIndex());
 
         if (isStopRequested()) return;
         waitForStart();
 
-        shooter.setPipeline(PIPELINE);
         shooter.start();
 
         //run robot reset
@@ -65,12 +59,10 @@ public class V2TeleOp extends TeleOpBaseOpMode {
         while (opModeIsActive() && !isStopRequested()) {
 
             // clear data at start of loop
-            //clearCacheOfLynxModule();
+            clearCacheOfLynxModule();
 
             controller1.getInformation();
             controller2.getInformation();
-
-            haprBuilder.runInstance(controller1);
 
             intake.update();
             literalTransfer.update();
@@ -84,7 +76,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 
-            telemetry.addData("hood position", haprBuilder.$getPosition());
+            telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
             telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
@@ -102,7 +94,7 @@ public class V2TeleOp extends TeleOpBaseOpMode {
 
         if(isStopRequested()) {
             //end
-            //closeLynxModule();
+            closeLynxModule();
         }
 
     }
