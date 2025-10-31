@@ -8,15 +8,11 @@ public class TickrateChecker {
     private static double lastTime;
     private static double currentTime;
 
-    public static void startOfLoop() {
-        lastTime = System.nanoTime();
-    }
-
-    public static void endOfLoop() {
-        currentTime = System.nanoTime();
-    }
-
+    /// Also does the calculation
     public static double getTimePerTick() {
+
+        lastTime = currentTime;
+        currentTime = System.currentTimeMillis();
         return currentTime - lastTime;
     }
 

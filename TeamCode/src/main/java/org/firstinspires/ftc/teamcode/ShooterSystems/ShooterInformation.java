@@ -16,7 +16,7 @@ public final class ShooterInformation {
         public static double CAMERA_HEIGHT = 11;
 
         /// Camera poll Hz rate
-        public static int CAMERA_POLL_RATE = 85;
+        public static int CAMERA_POLL_RATE = 90;
 
         /// Distance in inches
         public static double CAMERA_TO_POINT_OF_ROTATION_2D = 6.28085;
@@ -82,7 +82,7 @@ public final class ShooterInformation {
         public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_000;
 
         //normalized
-        public static double MIN_TURRET_POSITION_IN_DEGREES = -170, MAX_TURRET_POSITION_IN_DEGREES = 170;
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
 
