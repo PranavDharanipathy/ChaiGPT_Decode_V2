@@ -10,14 +10,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import org.firstinspires.ftc.teamcode.Constants;
 
 import java.util.Objects;
 
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 0.0; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = -1836.7423327771799; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = -3216.8893548945803; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -26,7 +27,7 @@ public final class PinpointLocalizer implements Localizer {
 
     // TODO: reverse encoder directions if needed
     public static final GoBildaPinpointDriver.EncoderDirection INITIAL_PAR_DIRECTION = GoBildaPinpointDriver.EncoderDirection.FORWARD;
-    public static final GoBildaPinpointDriver.EncoderDirection INITIAL_PERP_DIRECTION = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+    public static final GoBildaPinpointDriver.EncoderDirection INITIAL_PERP_DIRECTION = GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
 
     private Pose2d txWorldPinpoint;
@@ -35,7 +36,7 @@ public final class PinpointLocalizer implements Localizer {
     public PinpointLocalizer(HardwareMap hardwareMap, double inPerTick, Pose2d initialPose) {
         // TODO: make sure your config has a Pinpoint device with this name
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        driver = hardwareMap.get(GoBildaPinpointDriver.class, Constants.MapSetterConstants.pinpointOdometryComputerDeviceName);
 
         double mmPerTick = inPerTick * 25.4;
         driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
