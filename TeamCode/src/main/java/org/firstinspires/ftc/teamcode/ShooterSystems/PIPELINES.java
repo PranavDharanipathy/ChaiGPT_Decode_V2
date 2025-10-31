@@ -13,7 +13,7 @@ public enum PIPELINES {
         this.index = index;
     }
 
-    public int getIndex() {
+    public int getPipelineIndex() {
         return index;
     }
 }

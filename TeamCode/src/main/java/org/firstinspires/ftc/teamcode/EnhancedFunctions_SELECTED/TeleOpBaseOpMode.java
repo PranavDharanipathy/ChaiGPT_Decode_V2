@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
+import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
@@ -30,6 +31,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public volatile Limelight3A unstartedLimelight;
 
     public volatile TurretBase turret;
+
+    public volatile HoodAngler hoodAngler;
 
     public volatile ExtremePrecisionFlywheel flywheel;
 
@@ -83,6 +86,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         );
 
         turret = new TurretBase(hardwareMap, Constants.MapSetterConstants.turretBaseLeftServoDeviceName, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
+
+        hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
         controller1 = new BetterGamepad(gamepad1);
         controller2 = new BetterGamepad(gamepad2);
@@ -144,6 +149,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[3]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
+
+        hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
     }
 
 }
