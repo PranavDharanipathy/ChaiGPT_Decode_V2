@@ -203,6 +203,6 @@ public class Constants {
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
 
-    public static double TURRET_MANUAL_ADJUSTMENT = 1;
+    public static double TURRET_MANUAL_ADJUSTMENT = 0.1;
 
 }

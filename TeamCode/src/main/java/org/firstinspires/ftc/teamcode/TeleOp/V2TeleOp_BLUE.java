@@ -89,15 +89,18 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("v", shooter.flywheel.v);
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
+
+            telemetry.addData("limelight result", shooter.llResult);
+            telemetry.addData("is limelight result valid?", shooter.llResult.isValid());
+
+            telemetry.addData("limelight tx", shooter.llResult.getTx());
             telemetry.addData("adjusted tx", shooter.getAdjustedTx());
             telemetry.update();
 
         }
 
-        if(isStopRequested()) {
-            //end
-            closeLynxModule();
-        }
+        //end
+        closeLynxModule();
 
     }
 }

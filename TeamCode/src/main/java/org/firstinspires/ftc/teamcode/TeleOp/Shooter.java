@@ -88,7 +88,7 @@ public class Shooter implements SubsystemInternal {
 
     private double hoodPosition;
 
-    private LLResult result;
+    public LLResult llResult;
 
     public void update() {
 
@@ -120,14 +120,14 @@ public class Shooter implements SubsystemInternal {
             launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
 
-            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
         else if (controller1.bHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
 
-            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
 
         if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
@@ -142,27 +142,27 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (flywheel.getFrontendCalculatedVelocity() > launchZoneVelocity.getVelocity() - ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN) {
-            controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+            controller1.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
         else {
             controller1.stopRumble();
         }
 
         //turret
-        result = limelight.getLatestResult();
+        llResult = limelight.getLatestResult();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
 
-            if (ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
+            if (ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
             else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
 
             lastTx = tx;
-            tx = result.getTx();
+            tx = llResult.getTx();
         }
 
         double currentPosition = turret.getCurrentPosition();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
             turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
         }
         else {
@@ -170,12 +170,22 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (controller2.right_stick_x() > Constants.JOYSTICK_MINIMUM) {
-            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT;
+            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
             lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
+
         }
         else if (controller2.right_stick_x() < -Constants.JOYSTICK_MINIMUM) {
-            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT;
+            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
             lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
+
+        }
+        else if (controller2.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+
+            turretPosition = turretStartPosition;
+            lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
         }
         else{
             turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
@@ -220,6 +230,6 @@ public class Shooter implements SubsystemInternal {
     }
 
     public double getAdjustedTx() {
-        return ShooterInformation.ShooterConstants.getAdjustedTx(result.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()));
+        return ShooterInformation.ShooterConstants.getAdjustedTx(llResult.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()));
     }
 }

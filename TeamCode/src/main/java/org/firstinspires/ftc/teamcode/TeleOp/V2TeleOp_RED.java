@@ -94,10 +94,8 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
 
         }
 
-        if(isStopRequested()) {
-            //end
-            closeLynxModule();
-        }
+        //end
+        closeLynxModule();
 
     }
 }
