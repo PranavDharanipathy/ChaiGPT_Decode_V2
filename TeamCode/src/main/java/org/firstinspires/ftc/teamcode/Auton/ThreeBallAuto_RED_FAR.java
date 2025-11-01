@@ -23,48 +23,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 @Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
-    public static class ActionFlagger {
-
-        public static boolean updateFlywheel = false;
-    }
-
     public class RobotElements {
-
-        public Action updatingFlywheel(boolean state) {
-            return new InstantAction(() -> ActionFlagger.updateFlywheel = state);
-        }
-
-        public class RunFlywheel implements Action {
-
-            private final ElapsedTime timer = new ElapsedTime();
-
-            public RunFlywheel() {
-                timer.reset();
-            }
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
-
-                    flywheel.update();
-                    timer.reset();
-                }
-
-                if (ActionFlagger.updateFlywheel || opModeIsActive()) {
-                    return true;
-                }
-                else {
-                    flywheel.setVelocity(0, true);
-                    return false;
-                }
-            }
-        }
-
-        //flywheel
-        public Action runFlywheel() {
-            return new RunFlywheel();
-        }
 
         public InstantAction setFlywheelToFarSideVelocity() {
             return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
@@ -106,6 +65,8 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
         fullInit();
 
+        ElapsedTime timer = new ElapsedTime();
+
         final RobotElements robot = new RobotElements();
 
         turretStartPosition = turret.getCurrentPosition();
@@ -137,17 +98,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
 
-
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        //update enabled
-                        robot.updatingFlywheel(true),
-
-                        //spinning flywheel at the far side shoot velocity
-                        robot.setFlywheelToFarSideVelocity()
-                )
-        );
+        Actions.runBlocking(robot.setFlywheelToFarSideVelocity());
 
         waitForStart();
 
@@ -155,28 +106,61 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
         hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION);
 
+        timer.reset();
+
         Actions.runBlocking(
 
                 new ParallelAction(
-                        robot.runFlywheel(),
+
+                        telemetryPacket -> {
+                            if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
+
+                                flywheel.update();
+                                timer.reset();
+                            }
+
+                            if (opModeIsActive()) {
+                                return true;
+                            }
+                            else {
+                                flywheel.setVelocity(0, true);
+                                return false;
+                            }
+                        },
+
                         robot.intake(),
                         robot.antiTransfer(),
 
                         new SequentialAction(
                                 drive.actionBuilder(startPose)
-                                        .splineToLinearHeading(new Pose2d(-20, 0, Math.toRadians(25)), Math.toRadians(0))
+                                        .splineToLinearHeading(new Pose2d(-16, 0, Math.toRadians(-25)), Math.toRadians(0))
                                         .build(),
 
                                 telemetryPacket -> {
 
                                     telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                                     telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000);
+                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
                                 },
 
                                 robot.transferArtifact(),
 
-                                new SleepAction(0.5),
+                                new SleepAction(0.45),
+
+                                robot.antiTransfer(),
+
+                                new SleepAction(1), //forcefully increase wait time
+
+                                telemetryPacket -> {
+
+                                    telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+                                    telemetry.update();
+                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
+                                },
+
+                                robot.transferArtifact(),
+
+                                new SleepAction(0.3),
 
                                 robot.antiTransfer(),
 
@@ -184,20 +168,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
                                     telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                                     telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000);
-                                },
-
-                                robot.transferArtifact(),
-
-                                new SleepAction(0.5),
-
-                                robot.antiTransfer(),
-
-                                telemetryPacket -> {
-
-                                    telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-                                    telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000);
+                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
                                 },
 
                                 robot.transferArtifact()
@@ -206,15 +177,6 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
                 )
         );
 
-        Actions.runBlocking(
-                new ParallelAction(
-                        robot.updatingFlywheel(false),
-                        robot.stopFlywheel(),
-
-                        new InstantAction(() -> transfer.setVelocity(0)),
-                        new InstantAction(() -> intake.setVelocity(0))
-                )
-        );
 
 
     }
