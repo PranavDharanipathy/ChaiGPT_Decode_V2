@@ -82,7 +82,7 @@ public final class ShooterInformation {
         public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_500;
 
         public static double FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN = 800;
-        public static int FLYWHEEL_SHOOT_VELOCITY_WITHIN_MARGIN_CONTROLLER_RUMBLE_TIME = 300;
+        public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
