@@ -107,6 +107,11 @@ public class TurretBase {
         return new double[] {leftTurretBase.getPower(), rightTurretBase.getPower()};
     }
 
+    public void $stopTurret() {
+        leftTurretBase.setPower(0);
+        rightTurretBase.setPower(0);
+    }
+
     /// used for tuning
     public void updateCoefficients(double kp, double ki, double kd, double kf) {
 
