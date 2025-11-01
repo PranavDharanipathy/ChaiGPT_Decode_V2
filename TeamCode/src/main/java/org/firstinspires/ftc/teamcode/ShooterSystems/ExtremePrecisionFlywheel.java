@@ -299,6 +299,10 @@ public final strictfp class ExtremePrecisionFlywheel {
         return currentVelocity;
     }
 
+    public double getLastFrontendCalculatedVelocity() {
+        return lastCurrentVelocity;
+    }
+
     public double getBurstVelocity() {
         return burstVelocity;
     }

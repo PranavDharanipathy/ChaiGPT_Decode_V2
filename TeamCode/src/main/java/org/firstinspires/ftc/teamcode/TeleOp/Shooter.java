@@ -111,6 +111,7 @@ public class Shooter implements SubsystemInternal {
         }
 
         // setting hood and flywheel modes (close or far)
+        // TODO: update hood position in controller 2 adjustment
         if (controller1.y()) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
