@@ -35,6 +35,7 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(-90))
                 .lineToY(14)
                 .strafeTo(new Vector2d(44.5, 30))
+                .strafeTo(new Vector2d(0, 0))
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
