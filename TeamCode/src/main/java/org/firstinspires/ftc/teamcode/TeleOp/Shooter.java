@@ -98,29 +98,36 @@ public class Shooter implements SubsystemInternal {
         //incrementing the hood positions
         if (controller2.yHasJustBeenPressed) { //close
             ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
         else if (controller2.xHasJustBeenPressed) {
             ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
 
         if (controller2.bHasJustBeenPressed) { //far
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
         else if (controller2.aHasJustBeenPressed) {
             ShooterInformation.ShooterConstants.HOOD_FAR_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
 
         // setting hood and flywheel modes (close or far)
-        // TODO: update hood position in controller 2 adjustment
-        if (controller1.y()) {
+        if (controller1.yHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
+
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
-        else if (controller1.b()) {
+        else if (controller1.bHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
+
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
 
         if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
@@ -135,7 +142,7 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (flywheel.getFrontendCalculatedVelocity() > launchZoneVelocity.getVelocity() - ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN) {
-            controller1.rumble(ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_WITHIN_MARGIN_CONTROLLER_RUMBLE_TIME);
+            controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
         else {
             controller1.stopRumble();
@@ -182,6 +189,16 @@ public class Shooter implements SubsystemInternal {
         }
 
         turret.update();
+    }
+
+    private void manualUpdateHoodPositions() {
+
+        if (launchZoneVelocity == FLYWHEEL_VELOCITY.CLOSE_SIDE) {
+            hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
+        }
+        else if (launchZoneVelocity == FLYWHEEL_VELOCITY.FAR_SIDE) {
+            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
+        }
     }
 
     private int pipeline;
