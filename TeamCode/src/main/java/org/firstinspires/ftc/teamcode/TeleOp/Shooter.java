@@ -5,7 +5,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
@@ -89,9 +88,9 @@ public class Shooter implements SubsystemInternal {
 
     private double hoodPosition;
 
-    public LLResult llResult;
+    private LLResult result;
 
-    public void update(Telemetry telemetry) {
+    public void update() {
 
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
@@ -121,14 +120,14 @@ public class Shooter implements SubsystemInternal {
             launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
 
-            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
         else if (controller1.bHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
 
-            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
 
         if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
@@ -143,56 +142,42 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (flywheel.getFrontendCalculatedVelocity() > launchZoneVelocity.getVelocity() - ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN) {
-            controller1.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
+            controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
         else {
             controller1.stopRumble();
         }
 
         //turret
-        llResult = limelight.getLatestResult();
+        result = limelight.getLatestResult();
 
-        if (llResult != null && llResult.isValid()) {
+        if (result != null && result.isValid()) {
+
+            if (ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
+            else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
 
             lastTx = tx;
-            tx = llResult.getTx();
+            tx = result.getTx();
         }
 
         double currentPosition = turret.getCurrentPosition();
 
-        if (llResult != null && llResult.isValid()) {
+        if (result != null && result.isValid()) {
             turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-            telemetry.addData("turret target position rezeroed", tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-            telemetry.addData("turret target position", turretPosition);
         }
         else {
             turretPosition = currentPosition + (lastTx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-            telemetry.addData("turret target position rezeroed", lastTx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-            telemetry.addData("turret target position", turretPosition);
         }
-
-        telemetry.addData("turret current position", turret.getCurrentPosition());
-        telemetry.addData("turret start position", turretStartPosition);
 
         if (controller2.right_stick_x() > Constants.JOYSTICK_MINIMUM) {
-            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
+            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT;
             lastTx = 0;
-            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
-
         }
         else if (controller2.right_stick_x() < -Constants.JOYSTICK_MINIMUM) {
-            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
+            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT;
             lastTx = 0;
-            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
-
         }
-        else if (controller2.right_trigger(Constants.TRIGGER_THRESHOLD)) {
-
-            turretPosition = turretStartPosition;
-            lastTx = 0;
-            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
-        }
-        else {
+        else{
             turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
         }
 
@@ -235,6 +220,6 @@ public class Shooter implements SubsystemInternal {
     }
 
     public double getAdjustedTx() {
-        return ShooterInformation.ShooterConstants.getAdjustedTx(llResult.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()));
+        return ShooterInformation.ShooterConstants.getAdjustedTx(result.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()));
     }
 }
