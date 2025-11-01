@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseO
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-@Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
+@Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp RED")
 public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
     public class RobotElements {

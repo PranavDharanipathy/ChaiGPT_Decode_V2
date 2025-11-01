@@ -88,7 +88,7 @@ public class Shooter implements SubsystemInternal {
 
     private double hoodPosition;
 
-    private LLResult result;
+    public LLResult llResult;
 
     public void update() {
 
@@ -98,29 +98,36 @@ public class Shooter implements SubsystemInternal {
         //incrementing the hood positions
         if (controller2.yHasJustBeenPressed) { //close
             ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
         else if (controller2.xHasJustBeenPressed) {
             ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
 
         if (controller2.bHasJustBeenPressed) { //far
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
         else if (controller2.aHasJustBeenPressed) {
             ShooterInformation.ShooterConstants.HOOD_FAR_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+            manualUpdateHoodPositions();
         }
 
         // setting hood and flywheel modes (close or far)
-        // TODO: update hood position in controller 2 adjustment
-        if (controller1.y()) {
+        if (controller1.yHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
+
+            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
-        else if (controller1.b()) {
+        else if (controller1.bHasJustBeenPressed) {
 
             launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
+
+            controller2.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
 
         if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
@@ -135,27 +142,27 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (flywheel.getFrontendCalculatedVelocity() > launchZoneVelocity.getVelocity() - ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN) {
-            controller1.rumble(ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_WITHIN_MARGIN_CONTROLLER_RUMBLE_TIME);
+            controller1.rumble(ShooterInformation.ShooterConstants.CONTROLLER_NORMAL_RUMBLE_TIME);
         }
         else {
             controller1.stopRumble();
         }
 
         //turret
-        result = limelight.getLatestResult();
+        llResult = limelight.getLatestResult();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
 
-            if (ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
+            if (ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
             else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
 
             lastTx = tx;
-            tx = result.getTx();
+            tx = llResult.getTx();
         }
 
         double currentPosition = turret.getCurrentPosition();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
             turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
         }
         else {
@@ -163,12 +170,22 @@ public class Shooter implements SubsystemInternal {
         }
 
         if (controller2.right_stick_x() > Constants.JOYSTICK_MINIMUM) {
-            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT;
+            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
             lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
+
         }
         else if (controller2.right_stick_x() < -Constants.JOYSTICK_MINIMUM) {
-            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT;
+            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
             lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
+
+        }
+        else if (controller2.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+
+            turretPosition = turretStartPosition;
+            lastTx = 0;
+            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
         }
         else{
             turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
@@ -182,6 +199,16 @@ public class Shooter implements SubsystemInternal {
         }
 
         turret.update();
+    }
+
+    private void manualUpdateHoodPositions() {
+
+        if (launchZoneVelocity == FLYWHEEL_VELOCITY.CLOSE_SIDE) {
+            hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
+        }
+        else if (launchZoneVelocity == FLYWHEEL_VELOCITY.FAR_SIDE) {
+            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
+        }
     }
 
     private int pipeline;
@@ -203,6 +230,6 @@ public class Shooter implements SubsystemInternal {
     }
 
     public double getAdjustedTx() {
-        return ShooterInformation.ShooterConstants.getAdjustedTx(result.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()));
+        return ShooterInformation.ShooterConstants.getAdjustedTx(llResult.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()));
     }
 }
