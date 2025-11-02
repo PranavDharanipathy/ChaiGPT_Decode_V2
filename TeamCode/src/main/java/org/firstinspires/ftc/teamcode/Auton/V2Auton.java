@@ -1,19 +1,24 @@
 package org.firstinspires.ftc.teamcode.Auton;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.Constants;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
+import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
+import org.firstinspires.ftc.teamcode.Constants;
+
 @Autonomous(name = "V2Auton")
-public class V2Auton {
+public abstract class V2Auton extends OpMode {
+
+    public InstantAction intake() {
+        return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
+    }
 
     MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
@@ -22,20 +27,28 @@ public class V2Auton {
 
     public void runOpMode() {
 
-        //example: drive forward, wait one second(not obstructing drive forward), and then drive back.
+        int startPosition = 0;
+        telemetry.addData("Starting Position", startPosition);
+        telemetry.update();
 
-        //first motor --> drive forward
-
-        //TODO: make the robot move forward by finding the pose and putting it in the code below.
-
-        //Tangent = direction of robot.
-
-        drive.setDrivePowers();
+        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-        //wait 1 sec
-        scheduler.add(new WaitCommand(1000));
-        //second motor
+        Action firstintake=
+                new SequentialAction(
+                        drive.actionBuilder(initialPose)
+                                .splineToLinearHeading(new Pose2d(42, 54, Math.toRadians(-90)), Math.toRadians(0))
+                                .build()
+                );
+
+        Action firstshoot =
+                new SequentialAction(
+                        drive.actionBuilder(initialPose)
+                                .strafeTo(new Pose2d(37,50, Math.toRadians(45)),
+                                        .build()
+                );
+
+
 
     }
 
