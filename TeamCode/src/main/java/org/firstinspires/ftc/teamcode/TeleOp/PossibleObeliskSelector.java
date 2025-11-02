@@ -18,7 +18,7 @@ public class PossibleObeliskSelector extends Subsystem {
 
     private int aprilTagNumberFromData;
 
-    private ElapsedTime keybindTimer;
+    private ElapsedTime keybindTimer = new ElapsedTime();
 
     public void provideComponents(HardwareMap hardwareMap, BetterGamepad controller2) {
 
@@ -86,23 +86,36 @@ public class PossibleObeliskSelector extends Subsystem {
 
             if (obeliskModeKeybind.length() == 3) { //each obelisk code is 3
 
-                switch (obeliskModeKeybind) {
-
-                    case "gpp": //tag: 21
-                        currentObelisk.setObelisk(Obelisk.OBELISK.GPP);
-                        break;
-
-                    case "pgp": //tag: 22
-                        currentObelisk.setObelisk(Obelisk.OBELISK.PGP);
-                        break;
-
-                    case "ppg": //tag: 23
-                        currentObelisk.setObelisk(Obelisk.OBELISK.PPG);
-                        break;
-                }
+                currentObelisk.setObelisk(convertToOBELISK(obeliskModeKeybind));
 
                 obeliskModeKeybind = null;
             }
         }
+    }
+
+    /// will only convert if valid keybind was provided, otherwise it will keep whatever code was already there
+    private Obelisk.OBELISK convertToOBELISK(String stringKeybind) {
+
+        Obelisk.OBELISK codeInOBELISKForm;
+
+        switch (stringKeybind) {
+
+            case "gpp": //tag: 21
+                codeInOBELISKForm = Obelisk.OBELISK.GPP;
+                break;
+
+            case "pgp": //tag: 22
+                codeInOBELISKForm = Obelisk.OBELISK.PGP;
+                break;
+
+            case "ppg": //tag: 23
+                codeInOBELISKForm = Obelisk.OBELISK.PPG;
+                break;
+
+            default: //if an invalid obelisk code is entered, it just keeps the current code
+                codeInOBELISKForm = currentObelisk.getObelisk();
+        }
+
+        return codeInOBELISKForm;
     }
 }

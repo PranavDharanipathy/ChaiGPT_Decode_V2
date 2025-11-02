@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.ModifiedPIDFMotor;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
@@ -33,9 +32,8 @@ public final class Intake extends Subsystem {
     private ElapsedTime isBallinIntakeDeadBandTimer = new ElapsedTime();
 
     private boolean isBallInIntakeDeadBandTriggered;
+
     private void beamBreakProcesses() {
-
-
 
         boolean RAW_isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
 
@@ -45,14 +43,12 @@ public final class Intake extends Subsystem {
             isBallinIntakeDeadBandTimer.reset();
         }
 
-        else if (isBallinIntakeDeadBandTimer.milliseconds() < Constants.IS_BALL_IN_INTAKE_DEADBAND_TIMER) {
+        else if (isBallInIntakeDeadBandTriggered && isBallinIntakeDeadBandTimer.milliseconds() < Constants.IS_BALL_IN_INTAKE_DEADBAND_TIMER) {
             isBallInIntake = true;
         }
         else {
             isBallInIntake = false;
             isBallInIntakeDeadBandTriggered = false;
-
-
         }
 
         isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
@@ -96,45 +92,17 @@ public final class Intake extends Subsystem {
 
         intakePIDFAndVelocityProcesses();
 
-        boolean reverseIntake = controller1.left_trigger(Constants.TRIGGER_THRESHOLD);
-
-        //Start intake motor while going forward
+        if (isBallInIntake) intake.setVelocity(intakeVelocity);
 
         //Intake and reverse-intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(intakeVelocity);
-        } else if (reverseIntake) {
+        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
             intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
         } else if (!isBallInIntake) {
             intake.setVelocity(0);
         }
 
-
-        if (isBallInIntake && !reverseIntake) {
-            intake.setVelocity(intakeVelocity);
-        }
-
-        // If
-
-
-
-
-
-
-
-        //GENERAL TODOS FROM 10/17/2025 BELOW: <-- FINISHED TODOS
-
-
-        //Nikhil TODO: fix positional PID Tuning
-
-        //Nikhil TODO: I am not doing transfer, but I am still doing transfer beambreak.
-
-        //Pranav TODO: When you click the shoot button, and it breaks the beambreak, it should move the ball to the shooter.
-        //Pranav TODO: Only run transfer when people click the shoot button
-
-        //Pranav: TODO: Get the shooter to align towards the apriltag when shooting.
-
-
-        }
-
     }
+
+}

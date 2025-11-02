@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.teamcode.TurretSystems;
-
+package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 public enum PIPELINES {
 
@@ -14,7 +13,7 @@ public enum PIPELINES {
         this.index = index;
     }
 
-    public int getIndex() {
+    public int getPipelineIndex() {
         return index;
     }
 }

@@ -1,34 +1,36 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Auton.ForAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
+import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 import java.util.List;
 
-public abstract class TeleOpBaseOpMode extends LinearOpMode {
+public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
-    public TeleOpBaseOpMode() {}
+    public AutonomousBaseOpMode() {}
+
+    public volatile Telemetry telemetry;
 
     public volatile BetterGamepad controller1;
     public volatile BetterGamepad controller2;
 
-    public volatile DcMotor left_front, right_front, left_back, right_back;
-
     public volatile BasicVeloMotor intake;
     public volatile BasicVeloMotor transfer;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
-
-    public volatile Limelight3A unstartedLimelight;
 
     public volatile TurretBase turret;
 
@@ -36,46 +38,21 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public volatile ExtremePrecisionFlywheel flywheel;
 
-    private volatile List<LynxModule> robotHubs;
+    public void fullInit() {
 
-    /// initializes/creates LynxModule
-    public void setUpLynxModule() {
+        initialize();
+        applyComponentTraits();
 
-        robotHubs = hardwareMap.getAll(LynxModule.class);
-
-        for (LynxModule hub : robotHubs) {
-            hub.setBulkCachingMode(Constants.MapSetterConstants.bulkCachingMode);
-        }
-    }
-
-    /// Clears cache of LynxModule
-    public void clearCacheOfLynxModule() {
-
-        for (LynxModule hub : robotHubs) {
-            hub.clearBulkCache();
-        }
-    }
-
-    /// Closes LynxModule
-    public void closeLynxModule() {
-
-        for (LynxModule hub : robotHubs) {
-            hub.close();
-        }
+        RobotResetter forAutonomousRobotReset = new ForAutonomousRobotReset(hoodAngler);
     }
 
     /// Initializing devices
-    public void initializeDevices() {
+    private void initialize() {
 
-        left_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftFrontMotorDeviceName);
-        right_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightFrontMotorDeviceName);
-        left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
-        right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
+        telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
-
-        unstartedLimelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
         transferBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.transferBeambreakSensorNames[0], Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
@@ -94,14 +71,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     }
 
     /// Provide traits
-    public void applyComponentTraits() {
-
-        left_back.setDirection(DcMotor.Direction.REVERSE);
-
-        left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    private void applyComponentTraits() {
 
         intake.setDirection(DcMotor.Direction.REVERSE);
         transfer.setDirection(DcMotor.Direction.REVERSE);
@@ -120,15 +90,13 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[3]
         );
 
-        unstartedLimelight.setPollRateHz(ShooterInformation.CameraConstants.CAMERA_POLL_RATE);
-
         flywheel.setInternalParameters(
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
                 ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE,
                 ShooterInformation.ShooterConstants.MOTOR_RPM,
                 ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
-                );
+        );
         flywheel.setVelocityPIDFVASCoefficients(
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1],

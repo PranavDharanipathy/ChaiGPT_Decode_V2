@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.TurretSystems.HoodAngler;
+import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 
 @Config
 @TeleOp(group = "testing")
@@ -16,7 +16,7 @@ public class HoodAnglerTesting extends LinearOpMode {
 
     private HoodAngler hoodAngler;
 
-    public static double ANGLE;
+    public static double POSITION;
 
     @Override
     public void runOpMode() {
@@ -24,15 +24,15 @@ public class HoodAnglerTesting extends LinearOpMode {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
+        hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
 
         if (isStopRequested()) return;
         waitForStart();
 
         while (opModeIsActive()) {
-            hoodAngler.setAngle(ANGLE);
+            hoodAngler.setPosition(POSITION);
 
-            telemetry.addData("Left servo position", hoodAngler.$getLeftServoPosition());
-            telemetry.addData("Right servo position", hoodAngler.$getRightServoPosition());
+            telemetry.addData("position", hoodAngler.getPosition());
             telemetry.update();
         }
 
