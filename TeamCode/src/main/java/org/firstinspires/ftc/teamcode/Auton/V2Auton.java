@@ -83,26 +83,20 @@
             telemetry.addData("Starting Position", startPosition);
             telemetry.update();
 
-            Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
+            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
             MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
             Action first_intake =
                     new SequentialAction(
                             //MOVE TO FIRST INTAKE POINT
-                            drive.actionBuilder(initialPose)
-                                    .splineToLinearHeading(new Pose2d(42, 54, Math.toRadians(-90)), Math.toRadians(0))
 
-                                            .build(),
-
-                            //Actual intake
                             new ParallelAction(
+                                    robot.intake(),
                                     drive.actionBuilder(initialPose)
-                                            .lineToY(49,  null)
-                                            .build(),
-                                            new SequentialAction(
-                                                    robot.intake()
 
-                                            )
+                                            //TANGENT = 180
+                                            .splineTo(new Vector2d(23, 48), Math.PI / 2)
+                                            .build()
 
 
                             )
@@ -113,8 +107,7 @@
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
                                     .setReversed(true)
-                                    .splineToLinearHeading(new Pose2d(21, 43, Math.toRadians(-90)), Math.toRadians(0))
-                                    .strafeTo(new Vector2d(-21,50))
+                                    .splineTo(new Vector2d(0, -6), -90)
                                     .build(),
                             new ParallelAction(
                                     new InstantAction(() -> hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION)),
@@ -134,7 +127,7 @@
                             //Actual intake while moving forward
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
-                                            .lineToY(26,  null)
+                                            .lineToX(26,  null)
                                             .build(),
                                     new SequentialAction(
                                             robot.intake()
@@ -181,7 +174,7 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
+            Actions.runBlocking(new SequentialAction(first_intake, goal));
 
             //SHOOT!
 
