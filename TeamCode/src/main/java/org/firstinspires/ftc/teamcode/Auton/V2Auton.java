@@ -21,6 +21,7 @@
 
     import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 
+    import java.util.Vector;
 
 
     @Autonomous (name = "V2Auton", preselectTeleOp = "V2TeleOp_BLUE")
@@ -129,11 +130,18 @@
                                     new SequentialAction(
                                             robot.intake()
 
+
                                     )
+
+
 
                             )
 
+
+
                     );
+
+
 
 
 
@@ -143,6 +151,31 @@
 
             if (isStopRequested()) return;
 
+
+
+            Actions.runBlocking(
+                    new SequentialAction(
+
+                            first_intake,
+                            go_to_goal,
+                            second_intake
+                    )
+
+            );
+
+            Action third_intake =
+                    drive.actionBuilder(initialPose)
+                            .strafeTo(new Vector2d(45, 64))
+                            .build();
+
+
+
+                    new ParallelAction(
+                            robot.intake()
+                    );
+
+
+
             Actions.runBlocking(first_intake);
             Actions.runBlocking(go_to_goal);
 
@@ -151,7 +184,15 @@
             hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION);
             robot.transferArtifact();
 
-            robot.setFlywheelToFarSideVelocity();
+            Actions.runBlocking(robot.setFlywheelToFarSideVelocity());
+
+
+
+                telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+                telemetry.update();
+
+
+                }
 
 
 
@@ -160,4 +201,4 @@
         }
 
 
-    }
+
