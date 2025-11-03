@@ -111,7 +111,12 @@
                                     .setReversed(true)
                                     .splineToLinearHeading(new Pose2d(21, 43, Math.toRadians(-90)), Math.toRadians(0))
                                     .strafeTo(new Vector2d(-21,50))
-                                        .build()
+                                    .build(),
+                            new ParallelAction(
+                                    new InstantAction(() -> hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION)),
+                                    robot.transferArtifact(),
+                                    robot.setFlywheelToFarSideVelocity()
+                            )
                     );
 
             Action second_intake =
@@ -142,6 +147,21 @@
                     );
 
 
+            Action third_intake =
+                    drive.actionBuilder(initialPose)
+                            .strafeTo(new Vector2d(45, 64))
+                            .build();
+
+
+
+                    new ParallelAction(
+                            robot.intake()
+                    );
+
+
+
+
+
 
 
 
@@ -163,28 +183,9 @@
 
             );
 
-            Action third_intake =
-                    drive.actionBuilder(initialPose)
-                            .strafeTo(new Vector2d(45, 64))
-                            .build();
-
-
-
-                    new ParallelAction(
-                            robot.intake()
-                    );
-
-
-
-            Actions.runBlocking(first_intake);
-            Actions.runBlocking(go_to_goal);
-
             //SHOOT!
 
-            hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION);
-            robot.transferArtifact();
 
-            Actions.runBlocking(robot.setFlywheelToFarSideVelocity());
 
 
 
