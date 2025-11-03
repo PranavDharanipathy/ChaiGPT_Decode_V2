@@ -125,13 +125,13 @@
 
             Action second_intake =
                     new SequentialAction(
-                            //MOVE TO FIRST INTAKE POINT
+                            //MOVE TO SECOND INTAKE POINT
                             drive.actionBuilder(initialPose)
-                                    .splineToLinearHeading(new Pose2d(42, 54, Math.toRadians(-90)), Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(46, 54, Math.toRadians(-90)), Math.toRadians(0))
 
                                     .build(),
 
-                            //Actual intake
+                            //Actual intake while moving forward
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
                                             .lineToY(26,  null)
@@ -141,6 +141,8 @@
 
 
                                     )
+
+
 
 
 
