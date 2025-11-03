@@ -105,7 +105,7 @@
 
                     );
 
-            Action go_to_goal =
+            Action goal =
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
                                     .setReversed(true)
@@ -177,7 +177,7 @@
                     new SequentialAction(
 
                             first_intake,
-                            go_to_goal,
+                            goal,
                             second_intake
                     )
 
