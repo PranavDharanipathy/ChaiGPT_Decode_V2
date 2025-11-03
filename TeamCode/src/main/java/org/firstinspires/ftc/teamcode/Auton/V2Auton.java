@@ -10,6 +10,7 @@
     import com.acmerobotics.roadrunner.Vector2d;
     import com.acmerobotics.roadrunner.ftc.Actions;
     import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+    import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
@@ -24,8 +25,9 @@
     import java.util.Vector;
 
 
-    @Autonomous (name = "V2Auton", preselectTeleOp = "V2TeleOp_BLUE")
-    public abstract class V2Auton extends AutonomousBaseOpMode {
+    @Autonomous (name = "V2Auton", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_BLUE")
+    public class V2Auton extends AutonomousBaseOpMode {
+
 
         public class RobotElements {
 
@@ -67,6 +69,7 @@
         public void runOpMode() {
             fullInit();
 
+
             final RobotElements robot = new RobotElements();
 
             turretStartPosition = turret.getCurrentPosition();
@@ -94,12 +97,13 @@
                             //Actual intake
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
-                                            .lineToX(26,  null)
+                                            .lineToY(49,  null)
                                             .build(),
                                             new SequentialAction(
                                                     robot.intake()
 
                                             )
+
 
                             )
 
@@ -130,7 +134,7 @@
                             //Actual intake
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
-                                            .lineToX(26,  null)
+                                            .lineToY(26,  null)
                                             .build(),
                                     new SequentialAction(
                                             robot.intake()
@@ -156,6 +160,8 @@
 
                     new ParallelAction(
                             robot.intake()
+
+
                     );
 
 
@@ -173,15 +179,7 @@
 
 
 
-            Actions.runBlocking(
-                    new SequentialAction(
-
-                            first_intake,
-                            goal,
-                            second_intake
-                    )
-
-            );
+            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
 
             //SHOOT!
 
