@@ -4,10 +4,14 @@
     import com.acmerobotics.roadrunner.InstantAction;
     import com.acmerobotics.roadrunner.ParallelAction;
     import com.acmerobotics.roadrunner.Pose2d;
+    import com.acmerobotics.roadrunner.ProfileAccelConstraint;
     import com.acmerobotics.roadrunner.SequentialAction;
+    import com.acmerobotics.roadrunner.SleepAction;
     import com.acmerobotics.roadrunner.Trajectory;
     import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+    import com.acmerobotics.roadrunner.TranslationalVelConstraint;
     import com.acmerobotics.roadrunner.Vector2d;
+    import com.acmerobotics.roadrunner.VelConstraint;
     import com.acmerobotics.roadrunner.ftc.Actions;
     import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
     import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -86,6 +90,27 @@
             Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
             MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
+            Action shootPreloadedArtifacts =
+
+                    new SequentialAction(
+                            new ParallelAction(
+                                    robot.intake(),
+                                    robot.transferArtifact()
+                            ),
+                            new SleepAction(1),
+
+                            new ParallelAction(
+                                    robot.intake(),
+                                    robot.transferArtifact()
+                            ),
+                            new SleepAction(1),
+
+                            new ParallelAction(
+                                    robot.intake(),
+                                    robot.transferArtifact()
+                            )
+                    );
+
             Action first_intake =
                     new SequentialAction(
                             //MOVE TO FIRST INTAKE POINT
@@ -95,7 +120,8 @@
                                     drive.actionBuilder(initialPose)
 
                                             //TANGENT = 180
-                                            .splineTo(new Vector2d(23, 48), Math.PI / 2)
+                                            .splineTo(new Vector2d(23, 42), Math.PI / 2,
+                                                    new TranslationalVelConstraint(60), new ProfileAccelConstraint(-50, 50))
                                             .build()
 
 
@@ -107,7 +133,9 @@
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
                                     .setReversed(true)
-                                    .splineTo(new Vector2d(0, -6), -90)
+
+                                    //TODO: MAke the spline angle(reverse) more accurate
+                                    .splineTo(new Vector2d(5, -2), Math.toRadians(-180))
                                     .build(),
                             new ParallelAction(
                                     new InstantAction(() -> hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION)),
@@ -120,29 +148,29 @@
                     new SequentialAction(
                             //MOVE TO SECOND INTAKE POINT
                             drive.actionBuilder(initialPose)
-                                    .splineToLinearHeading(new Pose2d(46, 54, Math.toRadians(-90)), Math.toRadians(0))
+
+                                    .splineTo(new Vector2d(45, 49), Math.PI / 2)
 
                                     .build(),
 
                             //Actual intake while moving forward
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
+                                            .setReversed(false)
                                             .lineToX(26,  null)
                                             .build(),
-                                    new SequentialAction(
                                             robot.intake()
 
-
-                                    )
-
-
-
-
-
                             )
+                    );
 
-
-
+            new Pose2d =
+            Action big_triangle =
+                    new SequentialAction(
+                            //MOVE TO BIG TRIANGLE/GOAL
+                            drive.actionBuilder(initialPose)
+                                    .splineToConstantHeading(new Vector2d(70, 0), Math.toRadians(0))
+                                    .build()
                     );
 
 
@@ -174,7 +202,7 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, goal));
+            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, big_triangle));
 
             //SHOOT!
 
