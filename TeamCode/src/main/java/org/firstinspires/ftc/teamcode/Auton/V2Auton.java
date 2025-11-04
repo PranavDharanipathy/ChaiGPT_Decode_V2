@@ -120,7 +120,7 @@
                                     drive.actionBuilder(initialPose)
 
                                             //TANGENT = 180
-                                            .splineTo(new Vector2d(23, 42), Math.PI / 2,
+                                            .splineTo(new Vector2d(23, 41), Math.PI / 2,
                                                     new TranslationalVelConstraint(60), new ProfileAccelConstraint(-50, 50))
                                             .build()
 
@@ -135,7 +135,7 @@
                                     .setReversed(true)
 
                                     //TODO: MAke the spline angle(reverse) more accurate
-                                    .splineTo(new Vector2d(5, -2), Math.toRadians(-180))
+                                    .splineTo(new Vector2d(-3, 3), Math.toRadians(0))
                                     .build(),
                             new ParallelAction(
                                     new InstantAction(() -> hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION)),
@@ -164,7 +164,6 @@
                             )
                     );
 
-            new Pose2d =
             Action big_triangle =
                     new SequentialAction(
                             //MOVE TO BIG TRIANGLE/GOAL
@@ -175,9 +174,13 @@
 
 
             Action third_intake =
-                    drive.actionBuilder(initialPose)
-                            .strafeTo(new Vector2d(45, 64))
-                            .build();
+                    new SequentialAction(
+                            drive.actionBuilder(initialPose)
+                                    .splineTo(new Vector2d(68, 52), Math.PI / 2)
+                                    .build()
+
+                    );
+
 
 
 
@@ -202,7 +205,7 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, big_triangle));
+            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal, third_intake));
 
             //SHOOT!
 
