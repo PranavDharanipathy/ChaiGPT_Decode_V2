@@ -172,5 +172,4 @@
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
                 }
-
         }
