@@ -7,14 +7,10 @@
     import com.acmerobotics.roadrunner.ProfileAccelConstraint;
     import com.acmerobotics.roadrunner.SequentialAction;
     import com.acmerobotics.roadrunner.SleepAction;
-    import com.acmerobotics.roadrunner.Trajectory;
-    import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
     import com.acmerobotics.roadrunner.TranslationalVelConstraint;
     import com.acmerobotics.roadrunner.Vector2d;
-    import com.acmerobotics.roadrunner.VelConstraint;
     import com.acmerobotics.roadrunner.ftc.Actions;
     import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-    import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
@@ -24,13 +20,9 @@
 
     import org.firstinspires.ftc.teamcode.Constants;
 
-    import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
-
-    import java.util.Vector;
-
 
     @Autonomous (name = "V2Auton", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_BLUE")
-    public class V2Auton extends AutonomousBaseOpMode {
+    public class V2AutonBlue extends AutonomousBaseOpMode {
 
 
         public class RobotElements {
@@ -176,7 +168,7 @@
             Action third_intake =
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
-                                    .splineTo(new Vector2d(68, 52), Math.PI / 2)
+                                    .splineTo(new Vector2d(70, 41), Math.PI / 2)
                                     .build()
 
                     );
@@ -205,7 +197,7 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal, third_intake));
+            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
 
             //SHOOT!
 
