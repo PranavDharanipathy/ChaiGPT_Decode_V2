@@ -20,21 +20,15 @@
 
     import org.firstinspires.ftc.teamcode.Constants;
 
-
     @Autonomous (name = "V2Auton", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_BLUE")
     public class V2AutonBlue extends AutonomousBaseOpMode {
 
 
         public class RobotElements {
-
-
             public InstantAction setFlywheelToFarSideVelocity() {
                 Intake intake = new Intake();
-
                 return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
             }
-
-
             public InstantAction stopFlywheel() {
                 return new InstantAction(() -> flywheel.setVelocity(0, true));
             }
@@ -43,11 +37,9 @@
             public InstantAction antiTransfer() {
                 return new InstantAction(() -> transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY));
             }
-
             public InstantAction transferArtifact() {
                 return new InstantAction(() -> transfer.setVelocity(Constants.TRANSFER_VELOCITY));
             }
-
             //intake
             public InstantAction reverseIntake() {
                 return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
@@ -58,16 +50,12 @@
             }
 
         }
-
         public double turretStartPosition;
 
         @Override
         public void runOpMode() {
             fullInit();
-
-
             final RobotElements robot = new RobotElements();
-
             turretStartPosition = turret.getCurrentPosition();
 
             telemetry.addData("turret current position", turretStartPosition);
@@ -115,10 +103,7 @@
                                             .splineTo(new Vector2d(23, 41), Math.PI / 2,
                                                     new TranslationalVelConstraint(60), new ProfileAccelConstraint(-50, 50))
                                             .build()
-
-
                             )
-
                     );
 
             Action goal =
@@ -144,7 +129,6 @@
                                     .splineTo(new Vector2d(45, 49), Math.PI / 2)
 
                                     .build(),
-
                             //Actual intake while moving forward
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
@@ -152,7 +136,6 @@
                                             .lineToX(26,  null)
                                             .build(),
                                             robot.intake()
-
                             )
                     );
 
@@ -164,7 +147,6 @@
                                     .build()
                     );
 
-
             Action third_intake =
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
@@ -173,23 +155,11 @@
 
                     );
 
-
-
-
                     new ParallelAction(
                             robot.intake()
 
 
                     );
-
-
-
-
-
-
-
-
-
 
             waitForStart();
 
@@ -198,24 +168,9 @@
 
 
             Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
-
             //SHOOT!
-
-
-
-
-
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-
-
                 }
 
-
-
-
-
         }
-
-
-
