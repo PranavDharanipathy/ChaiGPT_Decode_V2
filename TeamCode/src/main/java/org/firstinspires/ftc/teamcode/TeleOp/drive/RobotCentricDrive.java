@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
-public class NormalDrive extends Subsystem {
+public class RobotCentricDrive extends Subsystem {
 
     private DcMotor left_front, right_front, left_back, right_back;
 

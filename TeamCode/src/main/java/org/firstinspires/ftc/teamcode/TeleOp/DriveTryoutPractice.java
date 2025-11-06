@@ -9,16 +9,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.drive.FieldCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @Config
-@TeleOp (name = "V2TeleOp TEST")
-public class V2TeleOp_TEST extends TeleOpBaseOpMode {
+@TeleOp(group = "testing")
+public class DriveTryoutPractice extends TeleOpBaseOpMode {
 
     public static PIPELINES PIPELINE = PIPELINES.BLUE_PIPELINE;
 
-    private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
+    private final FieldCentricDrive robotCentricDrive = new FieldCentricDrive();
 
     private final Intake intake = new Intake();
 
@@ -38,7 +38,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
         applyComponentTraits();
 
         //initialize subsystems here
-        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
+        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, rev9AxisImu, controller1);
         intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, unstartedLimelight, controller1, controller2);
@@ -48,8 +48,18 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
         shooter.setPipeline(PIPELINE.getPipelineIndex());
 
-        if (isStopRequested()) return;
+        //telemetry.speak("SIX SEVEN");
+        telemetry.addLine("USES LIMELIGHT - MAKE SURE TO PLUG IT IN \n");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.addLine("YOU ARE BLUE");
+        telemetry.update();
+
         waitForStart();
+        telemetry.clearAll();
 
         shooter.start();
 
@@ -87,15 +97,19 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("v", shooter.flywheel.v);
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
+
+            telemetry.addData("limelight result", shooter.llResult);
+            telemetry.addData("is limelight result valid?", shooter.llResult.isValid());
+
+            telemetry.addData("limelight tx", shooter.llResult.getTx());
             telemetry.addData("adjusted tx", shooter.getAdjustedTx());
             telemetry.update();
 
         }
 
-        if(isStopRequested()) {
-            //end
-            closeLynxModule();
-        }
+        //end
+        closeLynxModule();
 
     }
 }
+

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -23,6 +24,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public volatile BetterGamepad controller2;
 
     public volatile DcMotor left_front, right_front, left_back, right_back;
+
+    public volatile Rev9AxisImu rev9AxisImu;
 
     public volatile BasicVeloMotor intake;
     public volatile BasicVeloMotor transfer;
@@ -72,6 +75,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
 
+        rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
+
         intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
@@ -96,7 +101,9 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Provide traits
     public void applyComponentTraits() {
 
-        left_back.setDirection(DcMotor.Direction.REVERSE);
+        left_front.setDirection(DcMotor.Direction.REVERSE);
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+        right_back.setDirection(DcMotor.Direction.REVERSE);
 
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -146,11 +153,14 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[0],
                 Constants.TURRET_PIDF_COEFFICIENTS[1],
                 Constants.TURRET_PIDF_COEFFICIENTS[2],
-                Constants.TURRET_PIDF_COEFFICIENTS[3]
+                Constants.TURRET_PIDF_COEFFICIENTS[3],
+                Constants.TURRET_PIDF_COEFFICIENTS[4]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
+
+        rev9AxisImu.initialize(Constants.IMUConstants.getRev9AxisIMUParams());
     }
 
 }

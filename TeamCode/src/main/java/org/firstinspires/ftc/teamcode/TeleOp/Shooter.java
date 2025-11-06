@@ -5,6 +5,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
@@ -90,7 +91,7 @@ public class Shooter implements SubsystemInternal {
 
     public LLResult llResult;
 
-    public void update() {
+    public void update(Telemetry telemetry) {
 
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
@@ -153,9 +154,6 @@ public class Shooter implements SubsystemInternal {
 
         if (llResult != null && llResult.isValid()) {
 
-            if (ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
-            else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
-
             lastTx = tx;
             tx = llResult.getTx();
         }
@@ -164,10 +162,17 @@ public class Shooter implements SubsystemInternal {
 
         if (llResult != null && llResult.isValid()) {
             turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+            telemetry.addData("turret target position rezeroed", tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+            telemetry.addData("turret target position", turretPosition);
         }
         else {
             turretPosition = currentPosition + (lastTx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+            telemetry.addData("turret target position rezeroed", lastTx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+            telemetry.addData("turret target position", turretPosition);
         }
+
+        telemetry.addData("turret current position", turret.getCurrentPosition());
+        telemetry.addData("turret start position", turretStartPosition);
 
         if (controller2.right_stick_x() > Constants.JOYSTICK_MINIMUM) {
             turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
@@ -187,7 +192,7 @@ public class Shooter implements SubsystemInternal {
             lastTx = 0;
             turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
         }
-        else{
+        else {
             turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
         }
 

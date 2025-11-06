@@ -22,13 +22,28 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 @TeleOp (group = "testing")
 public class TurretHorizontalGoalAlignment extends OpMode {
 
+    public enum ENCODER_TICK_DIRECTION {
+
+        NORMAL(1), REVERSE(-1);
+
+        private int direction;
+
+        ENCODER_TICK_DIRECTION(int direction) {
+            this.direction = direction;
+        }
+
+        public int getDirection() {
+            return direction;
+        }
+    }
+
+    public static ENCODER_TICK_DIRECTION encoderTickDirection = ENCODER_TICK_DIRECTION.REVERSE;
+
     public static long LOOP_TIME_DELAY = 0;
 
     public static int PIPELINE = 2;
 
     public static int POLL_HZ_RATE = ShooterInformation.CameraConstants.CAMERA_POLL_RATE;
-
-    public static double multiplier = 1;
 
     private double MIN_TURRET_POSITION, MAX_TURRET_POSITION;
 
@@ -78,7 +93,8 @@ public class TurretHorizontalGoalAlignment extends OpMode {
                  Constants.TURRET_PIDF_COEFFICIENTS[0],
                  Constants.TURRET_PIDF_COEFFICIENTS[1],
                  Constants.TURRET_PIDF_COEFFICIENTS[2],
-                 Constants.TURRET_PIDF_COEFFICIENTS[3]
+                 Constants.TURRET_PIDF_COEFFICIENTS[3],
+                 Constants.TURRET_PIDF_COEFFICIENTS[4]
          );
 
     }
@@ -106,6 +122,8 @@ public class TurretHorizontalGoalAlignment extends OpMode {
 
     @Override
     public void loop() {
+
+        int directionalMultiplier = encoderTickDirection.getDirection();
 
         MIN_TURRET_POSITION = MIN_TURRET_POSITION_IN_DEGREES * TICKS_PER_DEGREE;
         MAX_TURRET_POSITION = MAX_TURRET_POSITION_IN_DEGREES * TICKS_PER_DEGREE;
@@ -136,9 +154,9 @@ public class TurretHorizontalGoalAlignment extends OpMode {
             lastTx = tx;
 
             if (txType == TX_TYPE.RAW) {
-                tx = result.getTx();
+                tx = directionalMultiplier * result.getTx();
             } else {
-                tx = getAdjustedTx(result.getTx(), flatDistance);
+                tx = directionalMultiplier * getAdjustedTx(result.getTx(), flatDistance);
             }
         }
 
@@ -148,7 +166,6 @@ public class TurretHorizontalGoalAlignment extends OpMode {
             position = currentPosition + (tx * TICKS_PER_DEGREE);
         }
         else {
-            turret.setMultiplier(multiplier);
             position = currentPosition + (lastTx * TICKS_PER_DEGREE);
         }
 
