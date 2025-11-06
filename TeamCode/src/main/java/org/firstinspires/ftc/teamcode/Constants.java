@@ -19,8 +19,7 @@ public class Constants {
 
     public static class DriveConstants {
 
-        public static double[] LEFT_SIDE_PIDF = {0,0,0,0};
-        public static double[] RIGHT_SIDE_PIDF = {0,0,0,0};
+
     }
 
     public static class IMUConstants {
