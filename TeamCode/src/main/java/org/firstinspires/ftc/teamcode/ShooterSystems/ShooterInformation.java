@@ -89,9 +89,6 @@ public final class ShooterInformation {
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
 
-        public static double TURRET_CLOSE_MULTIPLIER = 1;
-        public static double TURRET_FAR_MULTIPLIER = 0.9;
-
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
         public static double HOOD_CLOSE_POSITION = 0.51;

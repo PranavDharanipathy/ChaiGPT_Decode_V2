@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.NormalDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @Config
@@ -18,7 +18,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
     public static PIPELINES PIPELINE = PIPELINES.BLUE_PIPELINE;
 
-    private final NormalDrive normalDrive = new NormalDrive();
+    private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
 
     private final Intake intake = new Intake();
 
@@ -38,7 +38,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
         applyComponentTraits();
 
         //initialize subsystems here
-        normalDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
+        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
         intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, unstartedLimelight, controller1, controller2);
@@ -69,9 +69,9 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             intake.update();
             literalTransfer.update();
 
-            shooter.update();
+            shooter.update(telemetry);
 
-            normalDrive.update();
+            robotCentricDrive.update();
 
             //background action processes
 

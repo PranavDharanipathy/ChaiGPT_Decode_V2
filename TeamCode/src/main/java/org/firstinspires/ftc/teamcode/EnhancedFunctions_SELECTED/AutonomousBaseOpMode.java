@@ -114,7 +114,8 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[0],
                 Constants.TURRET_PIDF_COEFFICIENTS[1],
                 Constants.TURRET_PIDF_COEFFICIENTS[2],
-                Constants.TURRET_PIDF_COEFFICIENTS[3]
+                Constants.TURRET_PIDF_COEFFICIENTS[3],
+                Constants.TURRET_PIDF_COEFFICIENTS[4]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 import javax.annotation.Nullable;
 
 @Peak
-/// USES EXTERNAL ENCODER - REV Through Bore Encoder is highly recommended.
+/// USES EXTERNAL ENCODER
 /// <p>|<p>
 /// PIDFVAS measured by external encoder.
 /// <p>P: Proportional
