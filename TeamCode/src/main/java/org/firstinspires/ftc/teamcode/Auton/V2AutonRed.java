@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -16,15 +17,12 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseO
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.TeleOp.Intake;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-
 @Autonomous (name = "V2Auton(RED)", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_RED")
 public class V2AutonRed extends AutonomousBaseOpMode {
 
     public class RobotElements {
 
-
         public InstantAction setFlywheelToFarSideVelocity() {
-            Intake intake = new Intake();
 
             return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
         }
@@ -99,6 +97,24 @@ public class V2AutonRed extends AutonomousBaseOpMode {
                                 .splineTo(new Vector2d(52, 45), -90)
                                 .build()
                 );
+
+        Action third_intake =
+                new ParallelAction(
+                        drive.actionBuilder(initialPose)
+                                .splineTo(new Vector2d(73, 43), -90)
+                                .build()
+                );
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+
+
+        Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
+        //SHOOT!
+        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.update();
     }
 
 }

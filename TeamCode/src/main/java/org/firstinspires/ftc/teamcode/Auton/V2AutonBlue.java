@@ -99,43 +99,53 @@
                                     robot.intake(),
                                     drive.actionBuilder(initialPose)
 
-                                            //TANGENT = 180
-                                            .splineTo(new Vector2d(23, 41), Math.PI / 2,
-                                                    new TranslationalVelConstraint(60), new ProfileAccelConstraint(-50, 50))
+                                            //TANGENT = 90
+                                            .splineTo(new Vector2d(23, 43), Math.PI / 2,
+                                                    new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
+                                            .setReversed(true)
+                                            .splineToSplineHeading(new Pose2d(0, 0, 0), Math.PI / 2,
+                                                    new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
+
+
                                             .build()
                             )
+
+
                     );
 
-            Action goal =
+            /* Action goal =
                     new SequentialAction(
                             drive.actionBuilder(initialPose)
+                                    //TODO: Do we really need setReversed?
                                     .setReversed(true)
-
-                                    //TODO: MAke the spline angle(reverse) more accurate
-                                    .splineTo(new Vector2d(-3, 3), Math.toRadians(0))
+                                    .splineToSplineHeading(new Pose2d(0, 0, 0), Math.PI / 2,
+                                            new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
                                     .build(),
                             new ParallelAction(
                                     new InstantAction(() -> hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION)),
                                     robot.transferArtifact(),
                                     robot.setFlywheelToFarSideVelocity()
                             )
-                    );
+                    ); */
 
             Action second_intake =
                     new SequentialAction(
                             //MOVE TO SECOND INTAKE POINT
                             drive.actionBuilder(initialPose)
 
-                                    .splineTo(new Vector2d(45, 49), Math.PI / 2)
+                                    .splineTo(new Vector2d(45, 43), Math.PI / 2)
 
                                     .build(),
                             //Actual intake while moving forward
                             new ParallelAction(
                                     drive.actionBuilder(initialPose)
-                                            .setReversed(false)
-                                            .lineToX(26,  null)
+                                            .setReversed(true)
+                                            .splineToSplineHeading(new Pose2d(0, 0, 0), Math.PI / 2,
+                                                    new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
                                             .build(),
                                             robot.intake()
+
+
                             )
                     );
 
@@ -167,7 +177,7 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, goal, second_intake, goal));
+            Actions.runBlocking(new SequentialAction(first_intake, second_intake));
             //SHOOT!
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
