@@ -28,26 +28,20 @@ public class V2AutonRed extends AutonomousBaseOpMode {
 
             return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
         }
-
-
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
         }
-
         //transfer
         public InstantAction antiTransfer() {
             return new InstantAction(() -> transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY));
         }
-
         public InstantAction transferArtifact() {
             return new InstantAction(() -> transfer.setVelocity(Constants.TRANSFER_VELOCITY));
         }
-
         //intake
         public InstantAction reverseIntake() {
             return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
         }
-
         public InstantAction intake() {
             return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
         }
@@ -55,7 +49,6 @@ public class V2AutonRed extends AutonomousBaseOpMode {
     }
 
     public double turretStartPosition;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -65,12 +58,10 @@ public class V2AutonRed extends AutonomousBaseOpMode {
         final RobotElements robot = new RobotElements();
 
         turretStartPosition = turret.getCurrentPosition();
-
         telemetry.addData("turret current position", turretStartPosition);
         telemetry.update();
 
         ElapsedTime timer = new ElapsedTime();
-
         int startPosition = 0;
         telemetry.addData("Starting Position", startPosition);
         telemetry.update();
@@ -108,6 +99,6 @@ public class V2AutonRed extends AutonomousBaseOpMode {
                                 .splineTo(new Vector2d(52, 45), -90)
                                 .build()
                 );
-
     }
+
 }
