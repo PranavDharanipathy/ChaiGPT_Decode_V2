@@ -20,7 +20,7 @@
 
     import org.firstinspires.ftc.teamcode.Constants;
 
-    @Autonomous (name = "V2Auton", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_BLUE")
+    @Autonomous (name = "V2Auton", group = "AAAA_MatchPurpose")
     public class V2AutonBlue extends AutonomousBaseOpMode {
 
 
@@ -103,10 +103,8 @@
                                             .splineTo(new Vector2d(23, 43), Math.PI / 2,
                                                     new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
                                             .setReversed(true)
-                                            .splineToSplineHeading(new Pose2d(0, 0, 0), Math.PI / 2,
+                                            .splineToSplineHeading(new Pose2d(1, 1, Math.toRadians(-90)), Math.PI / 2,
                                                     new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-
-
                                             .build()
                             )
 
@@ -177,9 +175,11 @@
 
 
 
-            Actions.runBlocking(new SequentialAction(first_intake, second_intake));
+            Actions.runBlocking(new SequentialAction(first_intake, second_intake, third_intake));
             //SHOOT!
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
                 }
         }
+
+
