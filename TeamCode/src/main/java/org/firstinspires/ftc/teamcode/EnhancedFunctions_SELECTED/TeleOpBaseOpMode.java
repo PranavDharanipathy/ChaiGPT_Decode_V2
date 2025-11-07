@@ -101,9 +101,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     /// Provide traits
     public void applyComponentTraits() {
 
-        left_front.setDirection(DcMotor.Direction.REVERSE);
-        right_front.setDirection(DcMotor.Direction.REVERSE);
-        right_back.setDirection(DcMotor.Direction.REVERSE);
+        left_back.setDirection(DcMotor.Direction.REVERSE);
 
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
