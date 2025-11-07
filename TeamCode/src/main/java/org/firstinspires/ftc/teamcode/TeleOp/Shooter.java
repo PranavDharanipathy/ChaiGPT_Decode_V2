@@ -88,7 +88,7 @@ public class Shooter implements SubsystemInternal {
 
     private double hoodPosition;
 
-    private LLResult result;
+    public LLResult llResult;
 
     public void update() {
 
@@ -149,20 +149,20 @@ public class Shooter implements SubsystemInternal {
         }
 
         //turret
-        result = limelight.getLatestResult();
+        llResult = limelight.getLatestResult();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
 
-            if (ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
+            if (ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
             else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
 
             lastTx = tx;
-            tx = result.getTx();
+            tx = llResult.getTx();
         }
 
         double currentPosition = turret.getCurrentPosition();
 
-        if (result != null && result.isValid()) {
+        if (llResult != null && llResult.isValid()) {
             turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
         }
         else {
@@ -220,6 +220,6 @@ public class Shooter implements SubsystemInternal {
     }
 
     public double getAdjustedTx() {
-        return ShooterInformation.ShooterConstants.getAdjustedTx(result.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(result.getTy()));
+        return ShooterInformation.ShooterConstants.getAdjustedTx(llResult.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()));
     }
 }

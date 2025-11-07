@@ -69,7 +69,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             intake.update();
             literalTransfer.update();
 
-            shooter.update(telemetry);
+            shooter.update();
 
             robotCentricDrive.update();
 

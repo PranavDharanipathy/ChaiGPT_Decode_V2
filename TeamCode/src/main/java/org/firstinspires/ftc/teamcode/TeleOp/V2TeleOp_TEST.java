@@ -67,7 +67,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             intake.update();
             literalTransfer.update();
 
-            shooter.update(telemetry);
+            shooter.update();
 
             robotCentricDrive.update();
 
