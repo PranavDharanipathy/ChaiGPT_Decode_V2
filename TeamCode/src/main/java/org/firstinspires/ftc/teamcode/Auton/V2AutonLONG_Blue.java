@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import org.firstinspires.ftc.teamcode.Constants;
 
-@Autonomous (name = "V2Auton(BLUE)", group = "AAAA_MatchPurpose")
+@Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUEt")
 public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
 
 
@@ -54,7 +54,9 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
 
     @Override
     public void runOpMode() {
-        fullInit();
+
+
+
         final RobotElements robot = new RobotElements();
         turretStartPosition = turret.getCurrentPosition();
 
@@ -70,30 +72,11 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
         Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-        Action shootPreloadedArtifacts =
 
-                new SequentialAction(
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
+        fullInit();
+        waitForStart();
 
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
-
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        )
-                );
-
-        Action mainPath =
-                //MOVE TO FIRST INTAKE POINT
-
+        Actions.runBlocking(
                 new ParallelAction(
                         robot.intake(),
                         drive.actionBuilder(initialPose)
@@ -106,7 +89,6 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
                                 .setReversed(true)
                                 .splineToSplineHeading(new Pose2d(20, 8, Math.PI), Math.PI / 2,
                                         new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-                                .waitSeconds(2)
 
                                 //MOVE TO 2nd INTAKE POINT
 
@@ -125,18 +107,8 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
                                         new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
 
                                 .build()
-                );
 
-
-
-
-        waitForStart();
-
-
-
-        Actions.runBlocking(new SequentialAction(mainPath));
-        //SHOOT!
-        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-        telemetry.update();
+                )
+        );
     }
 }
