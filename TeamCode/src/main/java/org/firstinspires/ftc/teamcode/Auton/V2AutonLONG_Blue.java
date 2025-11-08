@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.internal.files.MediaTransferProtocolMonitorService;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.TeleOp.Intake;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import org.firstinspires.ftc.teamcode.Constants;
 
-@Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUEt")
+@Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
 public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
 
 
@@ -53,18 +54,17 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
     public double turretStartPosition;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
-
+        fullInit();
 
         final RobotElements robot = new RobotElements();
-        turretStartPosition = turret.getCurrentPosition();
 
+        turretStartPosition = turret.getCurrentPosition();
         telemetry.addData("turret current position", turretStartPosition);
         telemetry.update();
 
         ElapsedTime timer = new ElapsedTime();
-
         int startPosition = 0;
         telemetry.addData("Starting Position", startPosition);
         telemetry.update();
@@ -72,43 +72,61 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
         Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
+        Action mainPath =
+                //MOVE TO FIRST INTAKE POINT
 
-        fullInit();
+                new ParallelAction(
+
+                                robot.intake(),
+                                drive.actionBuilder(initialPose)
+
+                                        //TANGENT = 90
+                                        //FIRST INTAKE
+                                        .splineTo(new Vector2d(21, 42), Math.PI / 2,
+                                                new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
+
+
+                                        //GO TO SMALL TRIANGLE
+                                        .setReversed(true)
+                                        .splineToSplineHeading(new Pose2d(20, 6.7, Math.toRadians(135)), Math.PI / 2,
+                                                new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
+                                        .splineToSplineHeading(new Pose2d(20, -11, Math.PI), Math.PI / 2,
+                                                new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
+//1.5 secs
+                                        .waitSeconds(3)
+                                    //MOVE TO 2nd INTAKE POINT
+
+                                    .setReversed(false)
+
+                                    .splineToSplineHeading(new Pose2d(47, 0, Math.PI / 2), Math.PI,
+                                            new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
+
+                                    .splineToConstantHeading(new Vector2d(46, 46.3), Math.PI / 2,
+                                            new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
+                                    //.splineTo(new Vector2d(44, 47), Math.PI / 2
+
+                                    //GO TO SMALL TRIANGLE
+                                    .setReversed(true)
+                                    .splineToConstantHeading(new Vector2d(38, 30), Math.PI / 2,
+                                                new TranslationalVelConstraint(110), new ProfileAccelConstraint(-75, 75))
+                                    .splineToSplineHeading(new Pose2d(20, -12, Math.PI), Math.PI / 2,
+                                            new TranslationalVelConstraint(90), new ProfileAccelConstraint(-60, 60))
+//1.5 secs
+                                        .waitSeconds(3)
+
+                                    .build());
+
+
+
         waitForStart();
 
-        Actions.runBlocking(
-                new ParallelAction(
-                        robot.intake(),
-                        drive.actionBuilder(initialPose)
+        if (isStopRequested()) return;
 
-                                //TANGENT = 90
-                                //FIRST INTAKE
-                                .splineTo(new Vector2d(21, 42), Math.PI / 2,
-                                        new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-                                //GO TO SMALL TRIANGLE
-                                .setReversed(true)
-                                .splineToSplineHeading(new Pose2d(20, 8, Math.PI), Math.PI / 2,
-                                        new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
 
-                                //MOVE TO 2nd INTAKE POINT
 
-                                .setReversed(false)
-
-                                .splineToSplineHeading(new Pose2d(20, 8, Math.PI / 2), Math.PI,
-                                        new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-
-                                .splineToConstantHeading(new Vector2d(48, 49), Math.PI / 2,
-                                        new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-                                //.splineTo(new Vector2d(44, 47), Math.PI / 2)
-
-                                //GO TO SMALL TRIANGLE
-                                .setReversed(true)
-                                .splineToSplineHeading(new Pose2d(18, 2, Math.PI), Math.PI / 2,
-                                        new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-
-                                .build()
-
-                )
-        );
+        Actions.runBlocking(new ParallelAction(robot.antiTransfer(), mainPath));
+        //SHOOT!
+        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.update();
     }
 }
