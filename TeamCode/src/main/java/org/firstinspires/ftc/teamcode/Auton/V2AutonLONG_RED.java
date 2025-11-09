@@ -81,12 +81,14 @@ public class V2AutonLONG_RED extends AutonomousBaseOpMode {
                         //GO TO SMALL TRIANGLE
                                 //.splineToSplineHeading(new Pose2d(22, 4, -180), Math.toRadians(-90))
 
-                                .setReversed(true)
-
+                                .splineToSplineHeading(new Pose2d(13, -13, -186), -90,
+                                        new TranslationalVelConstraint(90), new ProfileAccelConstraint(-33, 33))
+                                //OLD CODE
+                                /*.setReversed(true)
                                 .splineToSplineHeading(new Pose2d(25, -21, Math.toRadians(-145)), -Math.PI / 2,
                                         new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
                                 .splineToSplineHeading(new Pose2d(22, 4, -Math.PI), -Math.PI / 2,
-                                        new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
+                                        new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))*/
 
                                 .waitSeconds(5)
 
