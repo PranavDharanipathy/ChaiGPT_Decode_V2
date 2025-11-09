@@ -98,10 +98,10 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
 
                                     .setReversed(false)
 
-                                    .splineToSplineHeading(new Pose2d(47, 0, Math.PI / 2), Math.PI,
+                                    .splineToSplineHeading(new Pose2d(44, 0, Math.PI / 2), Math.PI,
                                             new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
 
-                                    .splineToConstantHeading(new Vector2d(46, 46.3), Math.PI / 2,
+                                    .splineToConstantHeading(new Vector2d(43, 46.3), Math.PI / 2,
                                             new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
                                     //.splineTo(new Vector2d(44, 47), Math.PI / 2
 
