@@ -80,6 +80,10 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
                                 robot.intake(),
                                 drive.actionBuilder(initialPose)
 
+                                        //PRELOAD SPLINE
+
+                                        .splineToSplineHeading(new Pose2d(3, 3, 230), 0, new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
+
                                         //TANGENT = 90
                                         //FIRST INTAKE
                                         .splineTo(new Vector2d(21, 42), Math.PI / 2,
