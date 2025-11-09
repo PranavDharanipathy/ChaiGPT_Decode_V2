@@ -45,7 +45,7 @@ public class LimelightMovementCalibration extends OpMode {
 
         limelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
 
-        turret = new TurretBase(hardwareMap, Constants.MapSetterConstants.turretBaseLeftServoDeviceName, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
+        turret = new TurretBase(hardwareMap);
         turret.setPIDFCoefficients(
                 Constants.TURRET_PIDF_COEFFICIENTS[0],
                 Constants.TURRET_PIDF_COEFFICIENTS[1],
@@ -123,7 +123,7 @@ public class LimelightMovementCalibration extends OpMode {
         telemetry.addData("result", limelight.getLatestResult().isValid());
 
         telemetry.addData("position", turret.getCurrentPosition());
-        telemetry.addData("position error", turret.$getPositionError());
+        telemetry.addData("position error", turret.getPositionError());
         telemetry.update();
     }
 

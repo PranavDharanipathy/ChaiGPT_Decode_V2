@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-@Config
+@DeprecatedSystem(notes = "Turret used limelight to localize, however, we have switched to using odometry+imu with goBILDA Pinpoint. " +
+        "We also switched from using ARC Robotics's PIDController our own custom PIDF for the turret.")
 @TeleOp(group = "testing")
 public class DriveTryoutPractice extends TeleOpBaseOpMode {
 
@@ -102,7 +103,6 @@ public class DriveTryoutPractice extends TeleOpBaseOpMode {
             telemetry.addData("is limelight result valid?", shooter.llResult.isValid());
 
             telemetry.addData("limelight tx", shooter.llResult.getTx());
-            telemetry.addData("adjusted tx", shooter.getAdjustedTx());
             telemetry.update();
 
         }

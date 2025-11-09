@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
+@Peak
 @Config
 public class Shooter implements SubsystemInternal {
 
@@ -153,9 +155,6 @@ public class Shooter implements SubsystemInternal {
 
         if (llResult != null && llResult.isValid()) {
 
-            if (ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()) > 0) turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_CLOSE_MULTIPLIER);
-            else turret.setMultiplier(ShooterInformation.ShooterConstants.TURRET_FAR_MULTIPLIER);
-
             lastTx = tx;
             tx = llResult.getTx();
         }
@@ -219,7 +218,4 @@ public class Shooter implements SubsystemInternal {
         return limelight.getLatestResult().getPipelineIndex();
     }
 
-    public double getAdjustedTx() {
-        return ShooterInformation.ShooterConstants.getAdjustedTx(llResult.getTx(), ShooterInformation.Regressions.getDistanceFromRegression(llResult.getTy()));
-    }
 }

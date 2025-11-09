@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 
 @Config
@@ -38,7 +37,7 @@ public class TurretBaseTuner extends OpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        turret = new TurretBase(hardwareMap, Constants.MapSetterConstants.turretBaseLeftServoDeviceName, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
+        turret = new TurretBase(hardwareMap);
         turret.setPIDFCoefficients(KP, KI, KD, KF, KI_SMASH);
     }
 
@@ -52,11 +51,11 @@ public class TurretBaseTuner extends OpMode {
 
         sleep(LOOP_TIME);
 
-//        telemetry.addData("p", turret.p);
-//        telemetry.addData("i", turret.i);
-//        telemetry.addData("d", turret.d);
-//        telemetry.addData("f", turret.ff);
-        telemetry.addData("position error", turret.$getPositionError());
+        telemetry.addData("p", turret.p);
+        telemetry.addData("i", turret.i);
+        telemetry.addData("d", turret.d);
+        telemetry.addData("f", turret.ff);
+        telemetry.addData("position error", turret.getPositionError());
         telemetry.addData("current position", turret.getCurrentPosition());
         telemetry.addData("target position", turret.getTargetPosition());
         telemetry.update();
