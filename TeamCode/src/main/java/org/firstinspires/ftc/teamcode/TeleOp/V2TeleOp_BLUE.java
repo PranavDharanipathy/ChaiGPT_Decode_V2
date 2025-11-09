@@ -94,7 +94,6 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("is limelight result valid?", shooter.llResult.isValid());
 
             telemetry.addData("limelight tx", shooter.llResult.getTx());
-            telemetry.addData("adjusted tx", shooter.getAdjustedTx());
             telemetry.update();
 
         }

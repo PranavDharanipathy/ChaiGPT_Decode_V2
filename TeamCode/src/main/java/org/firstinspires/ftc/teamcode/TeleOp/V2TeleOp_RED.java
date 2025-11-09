@@ -89,7 +89,7 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
             telemetry.addData("v", shooter.flywheel.v);
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
-            telemetry.addData("adjusted tx", shooter.getAdjustedTx());
+            telemetry.addData("limelight tx", shooter.llResult.getTx());
             telemetry.update();
 
         }

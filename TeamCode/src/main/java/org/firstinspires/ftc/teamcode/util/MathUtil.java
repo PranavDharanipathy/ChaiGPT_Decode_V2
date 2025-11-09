@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import org.apache.commons.math3.util.FastMath;
+
 public strictfp class MathUtil {
 
     private MathUtil() {}
@@ -61,11 +63,11 @@ public strictfp class MathUtil {
     }
 
     public static double getDistance2d(double x1, double x2, double y1, double y2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2));
     }
 
     public static double getDistance3d(double x1, double x2, double y1, double y2, double z1, double z2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
+        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2) + FastMath.pow(z2 - z1, 2));
     }
 
     public static double metersToInches(double meters) {

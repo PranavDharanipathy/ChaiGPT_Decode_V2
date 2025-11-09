@@ -5,8 +5,10 @@ import static android.os.SystemClock.sleep;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -18,9 +20,11 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
-@Config
+@Disabled
+//@Config
+@DeprecatedSystem(notes = "Turret used limelight to localize, however, we have switched to using odometry+imu with goBILDA Pinpoint")
 @TeleOp (group = "testing")
-public class TurretHorizontalGoalAlignment extends OpMode {
+public class TurretHorizontalGoalAlignmentLimelight extends OpMode {
 
     public enum ENCODER_TICK_DIRECTION {
 
@@ -86,7 +90,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
         limelight.setPollRateHz(POLL_HZ_RATE);
         limelight.pipelineSwitch(PIPELINE);
 
-         turret = new TurretBase(hardwareMap, Constants.MapSetterConstants.turretBaseLeftServoDeviceName, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
+         turret = new TurretBase(hardwareMap);
 
          turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
          turret.setPIDFCoefficients(
@@ -182,7 +186,7 @@ public class TurretHorizontalGoalAlignment extends OpMode {
         telemetry.addData("tx", "raw: %.4f, adjusted: %.4f", result != null && result.isValid() ? result.getTx() : null, result != null && result.isValid() ? getAdjustedTx(result.getTx(), flatDistance) : null);
         telemetry.addData("regressed distance", "ty (z): %.4f, flat distance (x): %.4f", ty, flatDistance);
         telemetry.addData("current position", currentPosition);
-        telemetry.addData("position error", turret.$getPositionError());
+        telemetry.addData("position error", turret.getPositionError());
 
         telemetry.addData("power", turret.$getServoPowers()[0]);
 
