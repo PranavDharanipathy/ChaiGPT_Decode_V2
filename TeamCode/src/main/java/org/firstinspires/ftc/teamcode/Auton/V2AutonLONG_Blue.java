@@ -80,9 +80,9 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
                                 robot.intake(),
                                 drive.actionBuilder(initialPose)
 
-                                        //PRELOAD SPLINE
+                                        //PRELOAD SPLINE TODO: Test and make angle more accurate
 
-                                        .splineToSplineHeading(new Pose2d(3, 3, 230), 0, new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
+                                        .splineToSplineHeading(new Pose2d(5, 4, Math.toRadians(-150)), 0, new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
 
                                         //TANGENT = 90
                                         //FIRST INTAKE
