@@ -14,7 +14,7 @@ public class Goal {
     public enum GoalCoordinates {
 
         RED(59,-62),
-        BLUE(59, 62);
+        BLUE(58, 65);
 
         private double x;
         private double y;
