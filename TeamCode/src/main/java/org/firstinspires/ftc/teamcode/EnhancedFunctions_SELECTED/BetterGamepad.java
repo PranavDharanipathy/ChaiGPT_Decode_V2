@@ -117,6 +117,10 @@ public class BetterGamepad {
     public boolean prev_back = false;
     public boolean backHasJustBeenPressed = false;
 
+    public boolean curr_main_button = false;
+    public boolean prev_main_button = false;
+    public boolean main_buttonHasJustBeenPressed = false;
+
     public void getInformation() {
 
         prev_a = curr_a;
@@ -178,6 +182,10 @@ public class BetterGamepad {
         prev_back = curr_back;
         curr_back = gamepad.back;
         backHasJustBeenPressed = !prev_back && curr_back;
+
+        prev_main_button = curr_main_button;
+        curr_main_button = main_button();
+        main_buttonHasJustBeenPressed = !prev_main_button && curr_main_button;
     }
 
 }

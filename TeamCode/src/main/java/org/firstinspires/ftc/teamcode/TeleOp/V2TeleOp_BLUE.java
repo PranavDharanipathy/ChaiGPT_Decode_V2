@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
+import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
@@ -41,19 +42,17 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
         intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, unstartedLimelight, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, customDrive, rev9AxisImu, controller1, controller2);
 
         //setup lynx module
         setUpLynxModule();
-
-        shooter.setPipeline(PIPELINE.getPipelineIndex());
 
         //telemetry.speak("SIX SEVEN");
 
         if (isStopRequested()) return;
         waitForStart();
 
-        shooter.start();
+        shooter.start(Goal.GoalCoordinates.BLUE);
 
         //run robot reset
         RobotResetter robotReset = new PostAutonomousRobotReset();
@@ -89,11 +88,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("v", shooter.flywheel.v);
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
-
-            telemetry.addData("limelight result", shooter.llResult);
-            telemetry.addData("is limelight result valid?", shooter.llResult.isValid());
-
-            telemetry.addData("limelight tx", shooter.llResult.getTx());
+            telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
             telemetry.update();
 
         }

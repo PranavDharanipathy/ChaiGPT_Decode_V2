@@ -77,4 +77,11 @@ public strictfp class MathUtil {
     public static double inchesToMillimeters(double inches) {
         return inches * 25.4;
     }
+
+    public static double deadband(double targetValue, double currentValue, double deadbandValue) {
+
+        double deltaValue = targetValue - currentValue;
+
+        return Math.abs(deltaValue) < deadbandValue ? currentValue : targetValue;
+    }
 }

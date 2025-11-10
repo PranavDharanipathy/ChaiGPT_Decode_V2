@@ -31,6 +31,7 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -103,7 +104,7 @@ public final class CustomMecanumDrive {
 
     public final VoltageSensor voltageSensor;
 
-    public final LazyImu rev9AxisLazyImu;
+    public final Rev9AxisImu rev9AxisImu;
 
     public final Localizer localizer;
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
@@ -115,7 +116,7 @@ public final class CustomMecanumDrive {
 
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftBack, rightBack, rightFront;
-        public final IMU imu;
+        public final Rev9AxisImu imu;
 
         private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
         private Rotation2d lastHeading;
@@ -128,7 +129,7 @@ public final class CustomMecanumDrive {
             rightBack = new OverflowEncoder(new RawEncoder(CustomMecanumDrive.this.rightBack));
             rightFront = new OverflowEncoder(new RawEncoder(CustomMecanumDrive.this.rightFront));
 
-            imu = rev9AxisLazyImu.get();
+            imu = rev9AxisImu;
 
             // TODO: reverse encoders if needed
             //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -235,7 +236,9 @@ public final class CustomMecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        rev9AxisLazyImu = new LazyHardwareMapImu(hardwareMap, Constants.MapSetterConstants.rev9AxisIMUDeviceName, Constants.IMUConstants.REV_9_AXIS_IMU_ORIENTATION_IMU_PARAMETER);
+        rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
+        rev9AxisImu.initialize(Constants.IMUConstants.getRev9AxisIMUParams());
+
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);

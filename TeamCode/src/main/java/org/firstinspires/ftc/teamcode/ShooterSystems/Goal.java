@@ -13,8 +13,8 @@ public class Goal {
     @SuppressWarnings("all")
     public enum GoalCoordinates {
 
-        RED(60, -62),
-        BLUE(60, 62);
+        RED(59,-62),
+        BLUE(59, 62);
 
         private double x;
         private double y;
@@ -35,7 +35,11 @@ public class Goal {
     /// @param x In inches
     /// @param y In inches
     public static double getAngleToGoal(double x, double y, GoalCoordinates goalCoordinates) {
-        return Math.toDegrees(FastMath.atan2(goalCoordinates.x - x, goalCoordinates.y - y));
+
+        double dx = goalCoordinates.x - x;
+        double dy = goalCoordinates.y - y;
+
+        return Math.toDegrees(FastMath.atan2(dy, dx));
     }
 
     /// Gets the flat (2d) distance from the goal.

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,8 +13,8 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class TurretBase {
 
-    private CRServoImplEx leftTurretBase, rightTurretBase;
-    private Encoder encoder;
+    private final CRServoImplEx leftTurretBase, rightTurretBase;
+    private final Encoder encoder;
 
     private double kp, ki, kd, kf, kISmash;
     public double p, i, d, ff;
@@ -32,6 +33,14 @@ public class TurretBase {
         encoder = new Encoder(hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.turretExternalEncoderMotorPairName));
         encoder.setDirection(Encoder.Direction.FORWARD);
 
+    }
+
+    public void reverse() {
+
+        DcMotorSimple.Direction direction = leftTurretBase.getDirection() == DcMotorSimple.Direction.FORWARD ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD;
+
+        leftTurretBase.setDirection(direction);
+        rightTurretBase.setDirection(direction);
     }
 
     public void setPIDFCoefficients(double kp, double ki, double kd, double kf, double kISmash) {
@@ -90,7 +99,7 @@ public class TurretBase {
         if (Math.signum(prevError) != Math.signum(error)) i *= kISmash;
 
         //derivative
-        d = kd * (error - prevError) / dt;
+        d = dt > 0 ? kd * (error - prevError) / dt : 0;
 
         //feedforward
         ff = usingFeedforward ? kf * Math.signum(error) * Math.cos(Math.toRadians(currentPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
@@ -112,6 +121,10 @@ public class TurretBase {
 
     public double getPositionError() {
         return Math.abs(targetPosition - getCurrentPosition());
+    }
+
+    public double $getRawPositionError() {
+        return error;
     }
 
     public double[] $getServoPowers() {

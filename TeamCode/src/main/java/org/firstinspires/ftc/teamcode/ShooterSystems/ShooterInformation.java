@@ -30,12 +30,6 @@ public final class ShooterInformation {
     /// All shooter constants
     public static class ShooterConstants {
 
-        /// The radius in inches of the gear responsible for moving the hood and thus aiming the turret
-        public static double TURRET_GEAR_RADIUS;
-
-        /// Number of ticks the REV Through-Bore encoder needs to turn to turn 1 degree
-        public static double TURRET_ENCODER_DEGREE_MULTIPLIER = 8192.0 / 360.0;
-
         /// Weight of the entire shooter (turret) in grams
         public static double TURRET_WEIGHT = 2779;
 
@@ -75,6 +69,7 @@ public final class ShooterInformation {
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
+        public static double TURRET_DEADBAND_TICKS = 0.2 * 73.5179487179;
 
         public static double TURRET_CLOSE_MULTIPLIER = 1;
         public static double TURRET_FAR_MULTIPLIER = 0.9;
@@ -116,46 +111,42 @@ public final class ShooterInformation {
         /// <p>
         /// The driver drives to the reZeroPose after which when this calculation is run it creates offsets
         /// to offset the current the known pose which the driver has driven to.
-        public static void calculateBotPoseReZeroingOffsets(Pose2d robotPose, Pose2d reZeroPose) {
+        public static void calculateBotPoseReZeroingOffsets(Vector2d currentRobotPosition, double currentHeadingRad, Pose2d robotReZeroPose) {
 
             //pose what the pose should be
-            Vector2d reZeroPosition = reZeroPose.position;
-            double reZeroHeading = Math.toDegrees(reZeroPose.heading.toDouble());
+            Vector2d reZeroPosition = robotReZeroPose.position;
+            double reZeroHeading = Math.toDegrees(robotReZeroPose.heading.toDouble());
 
-            Vector2d rawPosition = robotPose.position;
+            double rawHeading = Math.toDegrees(currentHeadingRad);
 
-            double rawHeading = Math.toDegrees(robotPose.heading.toDouble());
+            robotOffsetX = reZeroPosition.x - currentRobotPosition.x;
+            robotOffsetY = reZeroPosition.y - currentRobotPosition.y;
 
-            double robotOffsetX = reZeroPosition.x - rawPosition.x;
-            double robotOffsetY = reZeroPosition.y - rawPosition.y;
-
-            double robotOffsetHeading = reZeroHeading - rawHeading;
+            robotOffsetHeading = reZeroHeading - rawHeading;
         }
 
         /// Gets the re-zeroed bot pose.
-        public static Pose2d getBotPose(Pose2d robotPose) {
+        public static Pose2d getBotPose(Vector2d robotPosition, double headingRad) {
 
-            Vector2d position = robotPose.position;
-            double heading = Math.toDegrees(robotPose.heading.toDouble());
+            double heading = Math.toDegrees(headingRad);
 
             return new Pose2d(
-                    position.x + robotOffsetX,
-                    position.y + robotOffsetY,
+                    robotPosition.x + robotOffsetX,
+                    robotPosition.y + robotOffsetY,
                     heading + robotOffsetHeading
             );
         }
 
         /// Field-relative
-        public static Pose2d getTurretPoseFromBotPose(Pose2d reZeroedRobotPose, double reZeroedTurretTicks) {
+        public static Pose2d getTurretPoseFromBotPose(Vector2d reZeroedRobotPosition, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
 
-            Vector2d robotPosition = reZeroedRobotPose.position;
+            double reZeroedTurretTicks = turretPositionTicks - turretStartPositionTicks;
+            double turretRotation = reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE;
 
-            double robotHeading = Math.toDegrees(reZeroedRobotPose.heading.toDouble());
+            double turretHeading = Math.toDegrees(headingRad) + turretRotation + ShooterConstants.TURRET_ANGULAR_OFFSET;
 
-            double turretX = robotPosition.x + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(robotHeading));
-            double turretY = robotPosition.y + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(robotHeading));
-
-            double turretHeading = robotHeading + ShooterConstants.TURRET_ANGULAR_OFFSET + (reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE);
+            double turretX = reZeroedRobotPosition.x + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
+            double turretY = reZeroedRobotPosition.y + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
 
             return new Pose2d(
                     turretX,
@@ -164,6 +155,15 @@ public final class ShooterInformation {
             );
         }
 
+    }
+
+    public static class Odometry {
+
+        public static double[][] REZERO_POSES = {
+                {0,0,0}, //center-center-forwardpoint
+                {-62.5,0,180}, //back-center-backwardpoint
+                {62.5,0,0} //front-center-forwardpoint
+        };
     }
 
     public static class Regressions {

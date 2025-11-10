@@ -25,10 +25,10 @@ public class RobotCentricDrive extends Subsystem {
     @Override
     public void update() {
 
-        double lfPower = controller1.left_stick_y() - controller1.right_stick_x() - controller1.left_stick_x();
-        double lbPower = controller1.left_stick_y() - controller1.right_stick_x() + controller1.left_stick_x();
-        double rfPower = controller1.left_stick_y() + controller1.right_stick_x() + controller1.left_stick_x();
-        double rbPower = controller1.left_stick_y() + controller1.right_stick_x() - controller1.left_stick_x();
+        double lfPower = -controller1.left_stick_y() + controller1.right_stick_x() + controller1.left_stick_x();
+        double lbPower = -controller1.left_stick_y() + controller1.right_stick_x() - controller1.left_stick_x();
+        double rfPower = -controller1.left_stick_y() - controller1.right_stick_x() - controller1.left_stick_x();
+        double rbPower = -controller1.left_stick_y() - controller1.right_stick_x() + controller1.left_stick_x();
 
         left_front.setPower(Math.abs(lfPower) > Constants.JOYSTICK_MINIMUM ? lfPower : 0);
         right_front.setPower(Math.abs(rfPower) > Constants.JOYSTICK_MINIMUM ? rfPower : 0);

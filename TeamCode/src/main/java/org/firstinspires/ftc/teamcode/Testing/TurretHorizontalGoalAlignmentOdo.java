@@ -5,18 +5,22 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
+import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.opencv.core.Mat;
 
 @Config
 @TeleOp (group = "testing")
@@ -35,10 +39,8 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
     public static GOAL goal = GOAL.RED;
 
-    public static long LOOP_TIME_DELAY = 0;
-
     //normalized
-    public static double MIN_TURRET_POSITION_IN_DEGREES = -170, MAX_TURRET_POSITION_IN_DEGREES = 170;
+    public static double MIN_TURRET_POSITION_IN_DEGREES = -130, MAX_TURRET_POSITION_IN_DEGREES = 130;
 
     public static double TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
 
@@ -48,6 +50,12 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
     private TurretBase turret;
 
+    private Rev9AxisImu rev9AxisImu;
+
+    private RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
+
+    private BetterGamepad controller1;
+
     private Telemetry telemetry;
 
     @Override
@@ -55,11 +63,23 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        controller1 = new BetterGamepad(gamepad1);
+
+        rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
+        rev9AxisImu.initialize(Constants.IMUConstants.getRev9AxisIMUParams());
+
+        DcMotor left_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftFrontMotorDeviceName);
+        DcMotor right_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightFrontMotorDeviceName);
+        DcMotor left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
+        DcMotor right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
+
+        left_back.setDirection(DcMotor.Direction.REVERSE);
+
+        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
+
         customDrive = new CustomMecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
         turret = new TurretBase(hardwareMap);
-
-        turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
         turret.setPIDFCoefficients(
                 Constants.TURRET_PIDF_COEFFICIENTS[0],
                 Constants.TURRET_PIDF_COEFFICIENTS[1],
@@ -67,6 +87,8 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[3],
                 Constants.TURRET_PIDF_COEFFICIENTS[4]
         );
+        turret.reverse();
+        turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 
     }
 
@@ -75,7 +97,7 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
     @Override
     public void start() {
 
-        startPosition = turret.getCurrentPosition();
+        turretStartPosition = turret.getCurrentPosition();
         position = 0;
 
         Pose2d reZeroPose = new Pose2d(
@@ -87,54 +109,76 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
         customDrive.updatePoseEstimate();
 
-        ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose(), reZeroPose);
+        ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
+
+        rev9AxisImu.resetYaw();
     }
 
-    private double startPosition;
+    private double turretStartPosition;
 
     private double position;
-
-    private ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void loop() {
 
-        double MIN_TURRET_POSITION = (MIN_TURRET_POSITION_IN_DEGREES * TICKS_PER_DEGREE) + startPosition;
-        double MAX_TURRET_POSITION = (MAX_TURRET_POSITION_IN_DEGREES * TICKS_PER_DEGREE) + startPosition;
+        controller1.getInformation();
 
-        double currentPosition = turret.getCurrentPosition();
+        double turretCurrentPosition = turret.getCurrentPosition();
+
+        double robotYawRad = rev9AxisImu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         PoseVelocity2d robotVelocity = customDrive.updatePoseEstimate();
-        Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose());
-        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, currentPosition + startPosition);
+        Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
+        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretCurrentPosition, turretStartPosition);
 
         double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goal.GOAL_COORDINATES);
-        position = Math.toDegrees(robotPose.heading.toDouble()) + (angleToGoal * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+        double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET);
+        double tt = route(rawtt);
 
-        double normalizedTargetPosition = position + startPosition;
-        turret.setPosition(MathUtil.clamp(normalizedTargetPosition, MIN_TURRET_POSITION, MAX_TURRET_POSITION));
+        telemetry.addData("angleToGoal", angleToGoal);
+        telemetry.addData("rawtt", rawtt);
+        telemetry.addData("tt", tt);
+        telemetry.addData("rawtt in ticks", rawtt * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition);
+        telemetry.addData("rev9axis imu heading", rev9AxisImu.getRobotYawPitchRollAngles().getYaw());
 
-        if (timer.milliseconds() >= LOOP_TIME_DELAY) {
-            turret.update();
-            timer.reset();
-        }
+        position = tt * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
+        double targetPosition = MathUtil.deadband(position, turret.getTargetPosition(), ShooterInformation.ShooterConstants.TURRET_DEADBAND_TICKS);
+        telemetry.addData("$turret$targetPosition", targetPosition);
+        turret.setPosition(targetPosition);
 
-        telemetry.addData("turret target position", "normalized: %.4f, rezeroed: %.4f", normalizedTargetPosition, position);
-        telemetry.addData("turret start position", startPosition);
+        turret.update();
+        robotCentricDrive.update();
 
-        telemetry.addData("turret position error", turret.getPositionError());
+        telemetry.addData("turret target position", "normalized: %.4f, rezeroed: %.4f", turret.getTargetPosition(), position);
+        telemetry.addData("turret start position", turretStartPosition);
 
-        telemetry.addData("turret current position", currentPosition);
+        telemetry.addData("turret current position", turretCurrentPosition);
 
-        telemetry.addData("robot velocity", "x vel: %.4f, y vel: %.4f, ang vel: %.4f", robotVelocity.linearVel.x, robotVelocity.linearVel.y, robotVelocity.angVel);
-        telemetry.addData("robot pose", "x: %.4f, y: %.4f, heading: %.4f", robotPose.position.x, robotPose.position.y, robotPose.heading);
-        telemetry.addData("turret pose", "x: %.4f, y: %.4f, heading: %.4f", turretPose.position.x, turretPose.position.y, turretPose.heading);
+        //telemetry.addData("robot velocity", "x vel: %.4f, y vel: %.4f, ang vel: %.4f", robotVelocity.linearVel.x, robotVelocity.linearVel.y, robotVelocity.angVel);
+        telemetry.addData("robot pose", "x: %.4f, y: %.4f, heading: %.4f", robotPose.position.x, robotPose.position.y, Math.toDegrees(robotYawRad));
+        telemetry.addData("turret pose", "x: %.4f, y: %.4f, heading: %.4f", turretPose.position.x, turretPose.position.y, turretPose.heading.toDouble());
 
-        telemetry.addData("turret distance from goal", Goal.getDistanceFromGoal(turretPose.position.x, turretPose.position.y, goal.GOAL_COORDINATES));
         telemetry.addData("turret angle to goal", angleToGoal);
 
-        telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
+        //telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
         telemetry.update();
+    }
+
+    private double route(double rawtt) {
+
+        if (rawtt >= MIN_TURRET_POSITION_IN_DEGREES && rawtt <= MAX_TURRET_POSITION_IN_DEGREES) return rawtt; //no need to reroute
+
+        double[] reroutes = {rawtt - 360, rawtt + 360};
+        if (reroutes[0] >= MIN_TURRET_POSITION_IN_DEGREES && reroutes[0] <= MAX_TURRET_POSITION_IN_DEGREES) {
+            return reroutes[0];
+        }
+        else if (reroutes[1] >= MIN_TURRET_POSITION_IN_DEGREES && reroutes[1] <= MAX_TURRET_POSITION_IN_DEGREES) {
+            return reroutes[1];
+        }
+
+        // go to closest limit if target position is outside the min and max
+        else if (rawtt < MIN_TURRET_POSITION_IN_DEGREES) return MIN_TURRET_POSITION_IN_DEGREES;
+        else return MAX_TURRET_POSITION_IN_DEGREES;
     }
 
 }
