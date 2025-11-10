@@ -197,7 +197,7 @@ public class Constants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00013, 0.0000001, 0.0125, -0.075, 0.6}; //{0.0.000129, 0.0.000000055, 0.01, -0.075.07, 0.9}
+    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00013, 0.0000001, 0.0125, -0.085, 0.8}; //{0.00013, 0.0000001, 0.0125, -0.075, 0.6}
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
