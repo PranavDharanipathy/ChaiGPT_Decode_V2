@@ -118,6 +118,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[4]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
+        turret.reverse();
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
     }

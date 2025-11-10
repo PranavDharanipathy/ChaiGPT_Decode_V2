@@ -226,7 +226,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         }
 
         //derivative
-        d = kd * (error - prevError) / dt;
+        d = dt > 0 ? kd * (error - prevError) / dt : 0;
 
         //positional feedforward for holding
         f = targetVelocity != 0 ? kf : 0; /* cos(0 degrees) = 1 so no need to multiply kf by it */;

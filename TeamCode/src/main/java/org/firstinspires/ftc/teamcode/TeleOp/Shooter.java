@@ -1,17 +1,21 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.chaigptrobotics.shenanigans.Peak;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
+import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
+import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
@@ -24,19 +28,23 @@ public class Shooter implements SubsystemInternal {
 
     private BetterGamepad controller1, controller2;
 
+    private CustomMecanumDrive customDrive;
+
     public ExtremePrecisionFlywheel flywheel;
 
     private TurretBase turret;
 
     public HoodAngler hoodAngler;
 
-    private Limelight3A limelight;
+    private Rev9AxisImu rev9AxisImu;
 
     private ElapsedTime timer = new ElapsedTime();
 
-    public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Limelight3A unstartedLimelight, BetterGamepad controller1, BetterGamepad controller2) {
+    public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, CustomMecanumDrive customDrive, Rev9AxisImu rev9AxisImu, BetterGamepad controller1, BetterGamepad controller2) {
 
-        limelight = unstartedLimelight;
+        this.rev9AxisImu = rev9AxisImu;
+
+        this.customDrive = customDrive;
 
         this.flywheel = flywheel;
 
@@ -49,24 +57,29 @@ public class Shooter implements SubsystemInternal {
 
     }
 
-    private double MIN_TURRET_POSITION, MAX_TURRET_POSITION;
-
     private double turretStartPosition;
 
-    private double lastTx = 0;
-    private double tx = 0;
-    private double turretPosition;
+    private Goal.GoalCoordinates goalCoordinates;
 
-    public void start() {
+    public void start(Goal.GoalCoordinates goalCoordinates) {
+
+        this.goalCoordinates = goalCoordinates;
 
         turretStartPosition = turret.getCurrentPosition();
-        turretPosition = turretStartPosition;
+        turretPosition = 0;
 
-        MIN_TURRET_POSITION = ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
-        MAX_TURRET_POSITION = ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE;
+        Pose2d reZeroPose = new Pose2d(
+
+                ShooterInformation.Odometry.REZERO_POSES[0][0],
+                ShooterInformation.Odometry.REZERO_POSES[0][1],
+                ShooterInformation.Odometry.REZERO_POSES[0][2]
+        );
+
+        customDrive.updatePoseEstimate();
+
+        ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
 
         flywheel.reset();
-        limelight.start();
     }
 
     private boolean shooterToggle = false;
@@ -90,7 +103,9 @@ public class Shooter implements SubsystemInternal {
 
     private double hoodPosition;
 
-    public LLResult llResult;
+    private double turretPosition;
+
+    private double robotYawRad;
 
     public void update() {
 
@@ -151,34 +166,37 @@ public class Shooter implements SubsystemInternal {
         }
 
         //turret
-        llResult = limelight.getLatestResult();
+        turretPosition = turret.getCurrentPosition();
 
-        if (llResult != null && llResult.isValid()) {
+        robotYawRad = rev9AxisImu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-            lastTx = tx;
-            tx = llResult.getTx();
+        PoseVelocity2d robotVelocity = customDrive.updatePoseEstimate();
+
+        //triggering robot relocalization
+        if (controller2.main_buttonHasJustBeenPressed) {
+
+            Pose2d reZeroPose = new Pose2d(
+
+                    ShooterInformation.Odometry.REZERO_POSES[1][0],
+                    ShooterInformation.Odometry.REZERO_POSES[1][1],
+                    ShooterInformation.Odometry.REZERO_POSES[1][2]
+            );
+
+            ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, robotYawRad, reZeroPose);
         }
 
-        double currentPosition = turret.getCurrentPosition();
+        Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
+        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretPosition, turretStartPosition);
 
-        if (llResult != null && llResult.isValid()) {
-            turretPosition = currentPosition + (tx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-        }
-        else {
-            turretPosition = currentPosition + (lastTx * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-        }
+        double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinates);
+        double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET);
+        double tt = route(rawtt);
 
-        if (controller2.right_stick_x() > Constants.JOYSTICK_MINIMUM) {
-            turretPosition += Constants.TURRET_MANUAL_ADJUSTMENT;
-            lastTx = 0;
-        }
-        else if (controller2.right_stick_x() < -Constants.JOYSTICK_MINIMUM) {
-            turretPosition -= Constants.TURRET_MANUAL_ADJUSTMENT;
-            lastTx = 0;
-        }
-        else{
-            turret.setPosition(MathUtil.clamp(turretPosition, MIN_TURRET_POSITION + turretStartPosition, MAX_TURRET_POSITION + turretStartPosition));
-        }
+        turretPosition = tt * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
+        double targetPosition = MathUtil.deadband(turretPosition, turret.getTargetPosition(), ShooterInformation.ShooterConstants.TURRET_DEADBAND_TICKS);
+        turret.setPosition(targetPosition);
+
+        turret.update();
 
         //updating
         if (timer.milliseconds() >= Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
@@ -200,22 +218,25 @@ public class Shooter implements SubsystemInternal {
         }
     }
 
-    private int pipeline;
+    private double route(double rawtt) {
 
-    public void setPipeline(int pipeline) {
+        if (rawtt >= ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES && rawtt <= ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES) return rawtt; //no need to reroute
 
-        if (this.pipeline != pipeline) {
-            limelight.pipelineSwitch(pipeline);
-            this.pipeline = pipeline;
+        double[] reroutes = {rawtt - 360, rawtt + 360};
+        if (reroutes[0] >= ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES && reroutes[0] <= ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES) {
+            return reroutes[0];
         }
+        else if (reroutes[1] >= ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES && reroutes[1] <= ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES) {
+            return reroutes[1];
+        }
+
+        // go to closest limit if target position is outside the min and max
+        else if (rawtt < ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES) return ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES;
+        else return ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES;
     }
 
-    public int getSetPipeline() {
-        return pipeline;
-    }
-
-    public int getCurrentPipeline() {
-        return limelight.getLatestResult().getPipelineIndex();
+    public double rev9AxisImuHeadingDeg() {
+        return Math.toDegrees(robotYawRad);
     }
 
 }

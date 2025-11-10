@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
+import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 import java.util.List;
@@ -32,6 +34,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
     public volatile Limelight3A unstartedLimelight;
+
+    public volatile CustomMecanumDrive customDrive;
 
     public volatile TurretBase turret;
 
@@ -75,6 +79,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
 
+        customDrive = new CustomMecanumDrive(hardwareMap, new Pose2d(0,0,0));
+
         rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
 
         intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
@@ -100,8 +106,6 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     /// Provide traits
     public void applyComponentTraits() {
-
-        left_back.setDirection(DcMotor.Direction.REVERSE);
 
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -155,6 +159,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDF_COEFFICIENTS[4]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
+        turret.reverse();
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
 
