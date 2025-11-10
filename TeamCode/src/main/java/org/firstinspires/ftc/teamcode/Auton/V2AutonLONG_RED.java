@@ -68,56 +68,34 @@ public class V2AutonLONG_RED extends AutonomousBaseOpMode {
 
 
         Action mainPath =
-                //GO TO FIRST INTAKE(RED)
-
                 new ParallelAction(
                         robot.intake(),
 
-                        //GO TO FIRST INTAKE(RED)
                         drive.actionBuilder(initialPose)
+                                //PRELOAD POSITION TODO: Test and make angle more accurate
+                                .splineToSplineHeading(new Pose2d(5, 4, Math.toRadians(140)), 0, new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
+
+                                //FIRST INTAKE
+
                                 .splineTo(new Vector2d(33, -43), -Math.PI / 2,
                                         new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
 
-                        //GO TO SMALL TRIANGLE
-                                //.splineToSplineHeading(new Pose2d(22, 4, -180), Math.toRadians(-90))
-
+                                //SMALL TRIANGLE
                                 .splineToSplineHeading(new Pose2d(13, -13, -186), -90,
                                         new TranslationalVelConstraint(90), new ProfileAccelConstraint(-33, 33))
-                                //OLD CODE
-                                /*.setReversed(true)
-                                .splineToSplineHeading(new Pose2d(25, -21, Math.toRadians(-145)), -Math.PI / 2,
-                                        new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
-                                .splineToSplineHeading(new Pose2d(22, 4, -Math.PI), -Math.PI / 2,
-                                        new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))*/
 
                                 .waitSeconds(5)
 
-
-
-                                //GO TO SECOND INTAKE(RED)
-                                //52, -44
-                                .splineToSplineHeading(new Pose2d(38, -30, Math.toRadians(135)), Math.toRadians(180))
-                                .splineToSplineHeading(new Pose2d(52, -44, Math.toRadians(45)), Math.toRadians(45))
-
+                                //SECOND INTAKE
+                                //(52, -44)
+                                .splineToSplineHeading(new Pose2d(38, -43, Math.toRadians(-90)), Math.toRadians(180),
+                                        new TranslationalVelConstraint(90), new ProfileAccelConstraint(-50, 50))
 
                                 //GO TO SMALL TRIANGLE
-                                .splineToSplineHeading(new Pose2d(30, -16, Math.toRadians(-135)), Math.PI / 2,
-                                        new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
-                                .splineToSplineHeading(new Pose2d(22, -16, -Math.PI), -Math.PI / 2,
-                                        new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
+                                .splineToSplineHeading(new Pose2d(13, -13, -186), -90,
+                                        new TranslationalVelConstraint(90), new ProfileAccelConstraint(-33, 33))
 
                                 .waitSeconds(5)
-
-
-
-
-
-
-
-
-
-
-
                                 .build()
 
                 );
