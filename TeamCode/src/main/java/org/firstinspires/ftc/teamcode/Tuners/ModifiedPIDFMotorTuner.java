@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.ModifiedPIDFMot
 @TeleOp(group = "tuning")
 public class ModifiedPIDFMotorTuner extends OpMode {
 
-    private ModifiedPIDFMotor motor;   
+    private ModifiedPIDFMotor motor;
 
     public static double kp, ki, kd, kf, KF_ENABLE_RANGE;
     public static int targetPosition;
