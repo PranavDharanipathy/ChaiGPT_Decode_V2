@@ -1,5 +1,6 @@
 package com.example.meepmeeptesting;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
@@ -7,6 +8,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
+
+import java.util.Vector;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
@@ -19,41 +22,31 @@ public class MeepMeepTesting {
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, 0))
 
-                        //TANGENT = 90
-                        //FIRST INTAKE
-                        .splineTo(new Vector2d(21, 42), Math.PI / 2,
-                                new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
 
 
-                        //GO TO SMALL TRIANGLE
-                        .setReversed(true)
-                        .splineToSplineHeading(new Pose2d(20, 6.7, Math.toRadians(135)), Math.PI / 2,
-                                new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
-                        .splineToSplineHeading(new Pose2d(20, -11, Math.PI), Math.PI / 2,
-                                new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
-//1.5 secs
-                        .waitSeconds(3)
-                        //MOVE TO 2nd INTAKE POINT
+                .splineToSplineHeading(new Pose2d(-35, -64, -45), Math.toRadians(-90))
 
-                        .setReversed(false)
+                //FIRST INTAKE
 
-                        .splineToSplineHeading(new Pose2d(47, 0, Math.PI / 2), Math.PI,
-                                new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
+                //.splineTo(new Vector2d(-21, -27), -Math.PI / 2)
+                .splineTo(new Vector2d(-42, 0), -Math.PI / 2)
 
-                        .splineToConstantHeading(new Vector2d(46, 46.3), Math.PI / 2,
-                                new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-                        //.splineTo(new Vector2d(44, 47), Math.PI / 2
+                //GO TO shooting spot(big triangle)
+                .splineToSplineHeading(new Pose2d(-35, -64, -45), Math.toRadians(-90))
 
-                        //GO TO SMALL TRIANGLE
-                        .setReversed(true)
-                        .splineToConstantHeading(new Vector2d(38, 30), Math.PI / 2,
-                                new TranslationalVelConstraint(110), new ProfileAccelConstraint(-75, 75))
-                        .splineToSplineHeading(new Pose2d(20, -12, Math.PI), Math.PI / 2,
-                                new TranslationalVelConstraint(90), new ProfileAccelConstraint(-60, 60))
-//1.5 secs
-                        .waitSeconds(3)
+                .waitSeconds(4)
 
-                        .build());
+                //SECOND INTAKE
+                .splineTo(new Vector2d(-65, -0), 90)
+
+                //GO TO shooting spot(big triangle)
+
+                .splineToSplineHeading(new Pose2d(70, 0, -45), Math.toRadians(-90))
+                .waitSeconds(4)
+
+                .build()
+        );
+
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_LIGHT)
                 .setDarkMode(true)
