@@ -32,7 +32,7 @@ public class Shooter implements SubsystemInternal {
 
     public ExtremePrecisionFlywheel flywheel;
 
-    private TurretBase turret;
+    public TurretBase turret;
 
     public HoodAngler hoodAngler;
 
@@ -61,9 +61,14 @@ public class Shooter implements SubsystemInternal {
 
     private Goal.GoalCoordinates goalCoordinates;
 
+    private double turretAngularOffset = ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET;
+
     public void start(Goal.GoalCoordinates goalCoordinates) {
 
         this.goalCoordinates = goalCoordinates;
+
+        if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_MULTIPLIER;
+        else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_MULTIPLIER;
 
         turretStartPosition = turret.getCurrentPosition();
         turretPosition = 0;
@@ -77,7 +82,8 @@ public class Shooter implements SubsystemInternal {
 
         customDrive.updatePoseEstimate();
 
-        ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
+        //ShooterInformation.Calculator.reZeroToNormalizedPose(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
+        customDrive.localizer.setPose(reZeroPose);
 
         flywheel.reset();
     }
@@ -182,14 +188,15 @@ public class Shooter implements SubsystemInternal {
                     ShooterInformation.Odometry.REZERO_POSES[1][2]
             );
 
-            ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, robotYawRad, reZeroPose);
+            //ShooterInformation.Calculator.reZeroToNormalizedPose(customDrive.localizer.getPose().position, robotYawRad, reZeroPose);
+            customDrive.localizer.setPose(reZeroPose);
         }
 
         Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
         Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretPosition, turretStartPosition);
 
         double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinates);
-        double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET);
+        double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + turretAngularOffset);
         double tt = route(rawtt);
 
         turretPosition = tt * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;

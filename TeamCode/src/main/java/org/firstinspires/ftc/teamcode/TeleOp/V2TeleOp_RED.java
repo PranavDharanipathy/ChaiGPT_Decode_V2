@@ -88,6 +88,8 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
             telemetry.addData("v", shooter.flywheel.v);
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
+            telemetry.addData("turret position error", shooter.turret.$getRawPositionError());
+
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
             telemetry.update();
 

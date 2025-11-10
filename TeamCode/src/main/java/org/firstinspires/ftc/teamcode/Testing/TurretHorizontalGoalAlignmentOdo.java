@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-import org.opencv.core.Mat;
 
 @Config
 @TeleOp (group = "testing")
@@ -109,7 +108,8 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
         customDrive.updatePoseEstimate();
 
-        ShooterInformation.Calculator.calculateBotPoseReZeroingOffsets(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
+        //ShooterInformation.Calculator.reZeroToNormalizedPose(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
+        customDrive.localizer.setPose(reZeroPose);
 
         rev9AxisImu.resetYaw();
     }

@@ -71,16 +71,20 @@ public final class ShooterInformation {
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.2 * 73.5179487179;
 
-        public static double TURRET_CLOSE_MULTIPLIER = 1;
-        public static double TURRET_FAR_MULTIPLIER = 0.9;
-
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
         public static double HOOD_CLOSE_POSITION = 0.51;
-        public static double HOOD_FAR_POSITION = 0.19;
+        public static double HOOD_FAR_POSITION = 0.225;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
         public static double TURRET_ANGULAR_OFFSET = 180;
+
+        /*
+         * the TURRET_ANGULAR_OFFSET is multiplier by the correct multiplier to make
+         * the turret spin the proper way.
+         */
+        public static int BLUE_TURRET_ANGULAR_OFFSET_MULTIPLIER = -1;
+        public static int RED_TURRET_ANGULAR_OFFSET_MULTIPLIER = 1;
     }
 
     public static class Calculator {
@@ -93,60 +97,28 @@ public final class ShooterInformation {
             return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL, 2));
         }
 
-        public static double robotOffsetX = 0;
-        public static double robotOffsetY = 0;
-        public static double robotOffsetHeading = 0;
-
-        public static void setBotPoseReZeroingOffsets(double offsetX, double offsetY, double offsetHeading) {
-
-            robotOffsetX = offsetX;
-            robotOffsetY = offsetY;
-            robotOffsetHeading = offsetHeading;
-        }
-
-        /// Field-relative
-        /// <p>
-        /// Gets an x, y, and heading offset that are to be added to the robot pose to help us determine the
-        /// robot's coordinates and heading where the center of the field and pointing forward is (0,0,0).
-        /// <p>
-        /// The driver drives to the reZeroPose after which when this calculation is run it creates offsets
-        /// to offset the current the known pose which the driver has driven to.
-        public static void calculateBotPoseReZeroingOffsets(Vector2d currentRobotPosition, double currentHeadingRad, Pose2d robotReZeroPose) {
-
-            //pose what the pose should be
-            Vector2d reZeroPosition = robotReZeroPose.position;
-            double reZeroHeading = Math.toDegrees(robotReZeroPose.heading.toDouble());
-
-            double rawHeading = Math.toDegrees(currentHeadingRad);
-
-            robotOffsetX = reZeroPosition.x - currentRobotPosition.x;
-            robotOffsetY = reZeroPosition.y - currentRobotPosition.y;
-
-            robotOffsetHeading = reZeroHeading - rawHeading;
-        }
-
-        /// Gets the re-zeroed bot pose.
+        /// @return The normalized bot pose as a {@link Pose2d}
         public static Pose2d getBotPose(Vector2d robotPosition, double headingRad) {
 
             double heading = Math.toDegrees(headingRad);
 
             return new Pose2d(
-                    robotPosition.x + robotOffsetX,
-                    robotPosition.y + robotOffsetY,
-                    heading + robotOffsetHeading
+                    robotPosition.x,
+                    robotPosition.y,
+                    heading
             );
         }
 
         /// Field-relative
-        public static Pose2d getTurretPoseFromBotPose(Vector2d reZeroedRobotPosition, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
+        public static Pose2d getTurretPoseFromBotPose(Vector2d normalizedRobotPosition, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
 
             double reZeroedTurretTicks = turretPositionTicks - turretStartPositionTicks;
             double turretRotation = reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE;
 
             double turretHeading = Math.toDegrees(headingRad) + turretRotation + ShooterConstants.TURRET_ANGULAR_OFFSET;
 
-            double turretX = reZeroedRobotPosition.x + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
-            double turretY = reZeroedRobotPosition.y + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
+            double turretX = normalizedRobotPosition.x + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
+            double turretY = normalizedRobotPosition.y + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
 
             return new Pose2d(
                     turretX,
@@ -160,9 +132,9 @@ public final class ShooterInformation {
     public static class Odometry {
 
         public static double[][] REZERO_POSES = {
-                {0,0,0}, //center-center-forwardpoint
-                {-62.5,0,180}, //back-center-backwardpoint
-                {62.5,0,0} //front-center-forwardpoint
+                {0,0,0}, //center-center-forward-pointing
+                {-62.5,0,180}, //back-center-backward-pointing
+                {62.5,0,0} //front-center-forward-pointing
         };
     }
 
