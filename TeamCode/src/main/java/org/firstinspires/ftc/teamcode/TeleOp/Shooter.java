@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
 @Peak
@@ -36,13 +37,13 @@ public class Shooter implements SubsystemInternal {
 
     public HoodAngler hoodAngler;
 
-    private Rev9AxisImu rev9AxisImu;
+    private Rev9AxisImuWrapped rev9AxisImuWrapped;
 
     private ElapsedTime timer = new ElapsedTime();
 
     public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, CustomMecanumDrive customDrive, Rev9AxisImu rev9AxisImu, BetterGamepad controller1, BetterGamepad controller2) {
 
-        this.rev9AxisImu = rev9AxisImu;
+        rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);
 
         this.customDrive = customDrive;
 
@@ -67,23 +68,14 @@ public class Shooter implements SubsystemInternal {
 
         this.goalCoordinates = goalCoordinates;
 
-        if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_MULTIPLIER;
-        else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_MULTIPLIER;
+        if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
+        else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
 
         turretStartPosition = turret.getCurrentPosition();
         turretPosition = 0;
 
-        Pose2d reZeroPose = new Pose2d(
-
-                ShooterInformation.Odometry.REZERO_POSES[0][0],
-                ShooterInformation.Odometry.REZERO_POSES[0][1],
-                ShooterInformation.Odometry.REZERO_POSES[0][2]
-        );
-
-        customDrive.updatePoseEstimate();
-
-        //ShooterInformation.Calculator.reZeroToNormalizedPose(customDrive.localizer.getPose().position, rev9AxisImu.getRobotYawPitchRollAngles().getYaw(), reZeroPose);
-        customDrive.localizer.setPose(reZeroPose);
+        if (goalCoordinates == Goal.GoalCoordinates.BLUE) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BLUE_FAR_START_POSITION);
+        else relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.RED_FAR_START_POSITION);
 
         flywheel.reset();
     }
@@ -112,6 +104,9 @@ public class Shooter implements SubsystemInternal {
     private double turretPosition;
 
     private double robotYawRad;
+    public double tt;
+
+    public Pose2d robotPose;
 
     public void update() {
 
@@ -174,34 +169,27 @@ public class Shooter implements SubsystemInternal {
         //turret
         turretPosition = turret.getCurrentPosition();
 
-        robotYawRad = rev9AxisImu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
 
-        PoseVelocity2d robotVelocity = customDrive.updatePoseEstimate();
+        customDrive.updatePoseEstimate();
 
-        //triggering robot relocalization
         if (controller2.main_buttonHasJustBeenPressed) {
 
-            Pose2d reZeroPose = new Pose2d(
-
-                    ShooterInformation.Odometry.REZERO_POSES[1][0],
-                    ShooterInformation.Odometry.REZERO_POSES[1][1],
-                    ShooterInformation.Odometry.REZERO_POSES[1][2]
-            );
-
-            //ShooterInformation.Calculator.reZeroToNormalizedPose(customDrive.localizer.getPose().position, robotYawRad, reZeroPose);
-            customDrive.localizer.setPose(reZeroPose);
+            relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
         }
 
-        Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
+        robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
         Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretPosition, turretStartPosition);
 
         double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinates);
         double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + turretAngularOffset);
-        double tt = route(rawtt);
+        tt = route(rawtt);
 
         turretPosition = tt * ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
         double targetPosition = MathUtil.deadband(turretPosition, turret.getTargetPosition(), ShooterInformation.ShooterConstants.TURRET_DEADBAND_TICKS);
-        turret.setPosition(targetPosition);
+
+        if (controller2.left_trigger(Constants.TRIGGER_THRESHOLD)) turret.setPosition(turretStartPosition);
+        else turret.setPosition(targetPosition);
 
         turret.update();
 
@@ -240,6 +228,21 @@ public class Shooter implements SubsystemInternal {
         // go to closest limit if target position is outside the min and max
         else if (rawtt < ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES) return ShooterInformation.ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES;
         else return ShooterInformation.ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES;
+    }
+
+    private void relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES pose) {
+
+        double heading = ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][2];
+
+        Pose2d reZeroPose = new Pose2d(
+
+                ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][0],
+                ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][1],
+                Math.toRadians(heading)
+        );
+
+        customDrive.localizer.setPose(reZeroPose);
+        rev9AxisImuWrapped.setYaw(heading);
     }
 
     public double rev9AxisImuHeadingDeg() {

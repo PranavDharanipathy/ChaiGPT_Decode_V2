@@ -39,7 +39,7 @@ public final class ShooterInformation {
         /// Weight of an moment-of-inertia disc that goes on the flywheel in grams
         public static double MOI_DISC_WEIGHT = 34;
 
-        public static int NUMBER_OF_MOI_DISCS = 3;
+        public static int NUMBER_OF_MOI_DISCS = 0;
 
         public static double SHAFT_DIAMETER = 8;
 
@@ -74,7 +74,7 @@ public final class ShooterInformation {
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
         public static double HOOD_CLOSE_POSITION = 0.51;
-        public static double HOOD_FAR_POSITION = 0.225;
+        public static double HOOD_FAR_POSITION = 0.12;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
         public static double TURRET_ANGULAR_OFFSET = 180;
@@ -83,8 +83,8 @@ public final class ShooterInformation {
          * the TURRET_ANGULAR_OFFSET is multiplier by the correct multiplier to make
          * the turret spin the proper way.
          */
-        public static int BLUE_TURRET_ANGULAR_OFFSET_MULTIPLIER = -1;
-        public static int RED_TURRET_ANGULAR_OFFSET_MULTIPLIER = 1;
+        public static int BLUE_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
+        public static int RED_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
     }
 
     public static class Calculator {
@@ -131,10 +131,30 @@ public final class ShooterInformation {
 
     public static class Odometry {
 
+        public enum RELOCALIZATION_POSES {
+
+            CENTER(0),
+            BACK(1),
+            BLUE_FAR_START_POSITION(2),
+            RED_FAR_START_POSITION(3);
+
+            private int index;
+
+            RELOCALIZATION_POSES(int index) {
+                this.index = index;
+            }
+
+            public int getPoseIndex() {
+                return index;
+            }
+        }
+
         public static double[][] REZERO_POSES = {
                 {0,0,0}, //center-center-forward-pointing
                 {-62.5,0,180}, //back-center-backward-pointing
-                {62.5,0,0} //front-center-forward-pointing
+                {-62.5,15,0}, //BLUE start position
+                {-62.5,-15,0} //RED start position
+//                {62.5,0,0} //front-center-forward-pointing
         };
     }
 
