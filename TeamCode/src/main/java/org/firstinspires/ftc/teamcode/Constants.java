@@ -163,7 +163,7 @@ public class Constants {
 
     public static double TRANSFER_VELOCITY = 1600;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
-    public static double ANTI_TRANSFER_VELOCITY = -200;
+    public static double ANTI_TRANSFER_VELOCITY = -250;
 
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
@@ -197,7 +197,7 @@ public class Constants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00013, 0.0000001, 0.0125, -0.085, 0.8}; //{0.00013, 0.0000001, 0.0125, -0.075, 0.6}
+    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00014, 0.00000015, 0.0125, -0.06, 0.8}; //{0.00013, 0.0000001, 0.0125, -0.075, 0.6}
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;

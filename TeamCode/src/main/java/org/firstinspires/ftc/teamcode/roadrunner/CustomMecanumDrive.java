@@ -59,7 +59,7 @@ public final class CustomMecanumDrive {
         // drive model parameters
         public double inPerTick = 0.00196216198; //99.978% accuracy
         public double lateralInPerTick = 0.0013776745; //99.8% accuracy
-        public double trackWidthTicks = 9000;
+        public double trackWidthTicks = 7389.80784859;
 
         // feedforward parameters (in tick units)
         public double kS = 0.9;

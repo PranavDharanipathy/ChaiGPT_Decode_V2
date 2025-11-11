@@ -90,6 +90,9 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
 
             telemetry.addData("turret position error", shooter.turret.$getRawPositionError());
 
+            telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
+            telemetry.addData("Turret target angle", shooter.robotPose);
+
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
             telemetry.update();
 

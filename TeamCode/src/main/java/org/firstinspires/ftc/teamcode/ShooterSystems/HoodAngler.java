@@ -32,8 +32,6 @@ public class HoodAngler {
         };
     }
 
-    private double position;
-
     public void setPosition(double position) {
 
         leftHoodAngler.setPosition(position);
@@ -41,6 +39,6 @@ public class HoodAngler {
     }
 
     public double getPosition() {
-        return position;
+        return leftHoodAngler.getPosition();
     }
 }

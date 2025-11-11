@@ -102,7 +102,7 @@ public class TurretBase {
         d = dt > 0 ? kd * (error - prevError) / dt : 0;
 
         //feedforward
-        ff = usingFeedforward ? kf * Math.signum(error) * Math.cos(Math.toRadians(currentPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
+        ff = usingFeedforward ? kf * Math.cos(Math.toRadians(targetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
 
         double power = p + i + d + ff;
 
