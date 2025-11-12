@@ -88,9 +88,15 @@ public class V2AutonCLOSE_Red extends AutonomousBaseOpMode {
 
                                 .splineTo(new Vector2d(-70, -2), Math.toRadians(90))
 
-                                .setReversed((true))
+                                //GO TO big triangle
+
+                                .setReversed(true)
 
                                 .splineToSplineHeading(new Pose2d(36, 54, 90), 180)
+
+                                //THIRD INTAKE
+
+                                .splineToSplineHeading(new Pose2d(43 ,43,3), Math.toRadians(32))
 
 
 
