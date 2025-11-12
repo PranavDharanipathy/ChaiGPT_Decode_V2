@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
+import org.firstinspires.ftc.teamcode.TeleOp.Shooter;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 @Autonomous (name = "V2AutonLONG(RED)", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_RED")
 public class V2AutonLONG_RED extends AutonomousBaseOpMode {
@@ -87,12 +88,35 @@ public class V2AutonLONG_RED extends AutonomousBaseOpMode {
                                 .splineToSplineHeading(new Pose2d(23, -14, Math.PI), Math.PI / 2,
                                         new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
 
-                                .waitSeconds(5)
+                        .build(),
+
+                                //Shoot
+                        new SequentialAction(
+                                robot.setFlywheelToFarSideVelocity(),
+                                drive.actionBuilder(initialPose)
+                                        .waitSeconds(6)
+                                        .build(),
+
+                                robot.intake(),
+                                robot.transferArtifact(),
+                                robot.transferArtifact(),
+                                robot.transferArtifact()
+                        ),
+
+
+
+
+
+                                drive.actionBuilder(initialPose)
+
 
                                 //SECOND INTAKE
                                 //(52, -44)
-                                .splineToSplineHeading(new Pose2d(71, -54, Math.toRadians(-90)), Math.toRadians(180),
-                                        new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
+                                        .splineTo(new Vector2d(75, -54), Math.toRadians(-180),
+                                                new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
+
+                                        //.splineToSplineHeading(new Pose2d(75, -54, Math.toRadians(-90)), Math.toRadians(-180),
+                                  //      new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
                                 //.splineToSplineHeading(new Pose2d(69, -49, Math.toRadians(-90)), Math.toRadians(-90),
                                         //new TranslationalVelConstraint(90), new ProfileAccelConstraint(-50, 50))
 

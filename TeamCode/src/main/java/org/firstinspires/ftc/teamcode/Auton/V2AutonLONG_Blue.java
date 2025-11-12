@@ -96,7 +96,24 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
                                                 new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
                                         .splineToSplineHeading(new Pose2d(20, -11, Math.PI), Math.PI / 2,
                                                 new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
-//1.5 secs
+
+                        .build(),
+                    //SHOOT!
+
+                    new SequentialAction(
+                            robot.setFlywheelToFarSideVelocity(),
+                            drive.actionBuilder(initialPose)
+                                    .waitSeconds(6)
+                                    .build(),
+
+                            robot.intake(),
+                            robot.transferArtifact(),
+                            robot.transferArtifact(),
+                            robot.transferArtifact()
+                    ),
+
+                drive.actionBuilder(initialPose)
+                                    //1.5 secs originally
                                         .waitSeconds(3)
                                     //MOVE TO 2nd INTAKE POINT
 
