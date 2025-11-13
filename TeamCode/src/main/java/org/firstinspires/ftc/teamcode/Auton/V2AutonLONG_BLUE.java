@@ -6,14 +6,12 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.internal.files.MediaTransferProtocolMonitorService;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.TeleOp.Intake;
@@ -22,7 +20,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
-public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
+public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
 
     public class RobotElements {
@@ -82,55 +80,35 @@ public class V2AutonLONG_Blue extends AutonomousBaseOpMode {
 
                                         //PRELOAD SPLINE TODO: Test and make angle more accurate
 
-                                        .splineToSplineHeading(new Pose2d(5, 4, Math.toRadians(-150)), 0, new TranslationalVelConstraint(90), new ProfileAccelConstraint(-70, 70))
-
                                         //TANGENT = 90
                                         //FIRST INTAKE
-                                        .splineTo(new Vector2d(21, 42), Math.PI / 2,
-                                                new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
+                                        .splineTo(new Vector2d(-21, -52), -Math.PI / 2,
+                                                new TranslationalVelConstraint(90), new ProfileAccelConstraint(-60, 60))
 
 
                                         //GO TO SMALL TRIANGLE
                                         .setReversed(true)
-                                        .splineToSplineHeading(new Pose2d(20, 6.7, Math.toRadians(135)), Math.PI / 2,
-                                                new TranslationalVelConstraint(95), new ProfileAccelConstraint(-50, 50))
-                                        .splineToSplineHeading(new Pose2d(20, -11, Math.PI), Math.PI / 2,
-                                                new TranslationalVelConstraint(60), new ProfileAccelConstraint(-33, 33))
 
-                        .build(),
-                    //SHOOT!
-
-                    new SequentialAction(
-                            robot.setFlywheelToFarSideVelocity(),
-                            drive.actionBuilder(initialPose)
-                                    .waitSeconds(6)
-                                    .build(),
-
-                            robot.intake(),
-                            robot.transferArtifact(),
-                            robot.transferArtifact(),
-                            robot.transferArtifact()
-                    ),
-
-                drive.actionBuilder(initialPose)
-                                    //1.5 secs originally
-                                        .waitSeconds(3)
-                                    //MOVE TO 2nd INTAKE POINT
+                                        .splineToSplineHeading(new Pose2d(-15, -6, 0), -Math.PI / 2,
+                                                new TranslationalVelConstraint(90), new ProfileAccelConstraint(-60, 60))
 
                                     .setReversed(false)
 
-                                    .splineToSplineHeading(new Pose2d(44, 0, Math.PI / 2), Math.PI,
-                                            new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
+                                    ///.splineToSplineHeading(new Pose2d(-44, 0, -Math.PI / 2), 0,
+                                            //new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
 
-                                    .splineToConstantHeading(new Vector2d(43, 46.3), Math.PI / 2,
-                                            new TranslationalVelConstraint(50), new ProfileAccelConstraint(-50, 50))
-                                    //.splineTo(new Vector2d(44, 47), Math.PI / 2
+                                        //SECOND INTAKE
+
+                                    .splineToSplineHeading(new Pose2d(-43, -19, -Math.PI / 2), 0,
+                                            new TranslationalVelConstraint(90), new ProfileAccelConstraint(-50, 50))
+                                        .splineToConstantHeading(new Vector2d(-44, -59), -Math.PI / 2)
 
                                     //GO TO SMALL TRIANGLE
+
                                     .setReversed(true)
-                                    .splineToConstantHeading(new Vector2d(38, 30), Math.PI / 2,
+                                    .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2,
                                                 new TranslationalVelConstraint(110), new ProfileAccelConstraint(-75, 75))
-                                    .splineToSplineHeading(new Pose2d(20, -12, Math.PI), Math.PI / 2,
+                                    .splineToSplineHeading(new Pose2d(-18, -5, Math.toRadians(36)), -Math.PI / 2,
                                             new TranslationalVelConstraint(90), new ProfileAccelConstraint(-60, 60))
 //1.5 secs
                                         .waitSeconds(3)
