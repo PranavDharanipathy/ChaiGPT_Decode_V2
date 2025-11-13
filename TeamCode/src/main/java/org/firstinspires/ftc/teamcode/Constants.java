@@ -131,7 +131,7 @@ public class Constants {
     /// Height of AprilTag on goal in inches
     public static double HEIGHT_OF_GOAL_APRIL_TAG = 27;
 
-    public static float TRIGGER_THRESHOLD = 0.07f;
+    public static float TRIGGER_THRESHOLD = 0.11f;
 
     /// Index 0 is the left crservo.
     /// <p>
@@ -183,7 +183,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0002, 0.00064, 0.0000075, 0.015, 0.0000241, 0.000000075, 0.0001, 0.9, 0.175
+            0.0002, 0.0007, 0.0000072, 0.015, 0.0000235, 0.000000075, 0.0001, 0.9, 0.2
     };
 
     public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 30;
@@ -197,7 +197,7 @@ public class Constants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00014, 0.00000015, 0.0125, -0.06, 0.8}; //{0.00013, 0.0000001, 0.0125, -0.075, 0.6}
+    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00014, 0.00000015, 0.0125, -0.06, 0.8, 1, 1}; //{0.00013, 0.0000001, 0.0125, -0.075, 0.6}
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;

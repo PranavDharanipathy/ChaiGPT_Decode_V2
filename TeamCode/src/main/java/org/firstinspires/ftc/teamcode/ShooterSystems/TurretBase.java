@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class TurretBase {
@@ -16,8 +17,11 @@ public class TurretBase {
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    private double kp, ki, kd, kf, kISmash;
+    private double kp, ki, kd, kf, kISmash, kDFilter, kPowerFilter;
     public double p, i, d, ff;
+
+    public double filteredDerivative = 0;
+    public double filteredPower = 0;
 
     public TurretBase(HardwareMap hardwareMap) {
 
@@ -43,7 +47,7 @@ public class TurretBase {
         rightTurretBase.setDirection(direction);
     }
 
-    public void setPIDFCoefficients(double kp, double ki, double kd, double kf, double kISmash) {
+    public void setPIDFCoefficients(double kp, double ki, double kd, double kf, double kISmash, double kDFilter, double kPowerFilter) {
 
         this.kp = kp;
         this.ki = ki;
@@ -51,6 +55,9 @@ public class TurretBase {
         this.kf = kf;
 
         this.kISmash = kISmash;
+
+        this.kDFilter = kDFilter;
+        this.kPowerFilter = kPowerFilter;
     }
 
     private double targetPosition = 0;
@@ -99,15 +106,18 @@ public class TurretBase {
         if (Math.signum(prevError) != Math.signum(error)) i *= kISmash;
 
         //derivative
-        d = dt > 0 ? kd * (error - prevError) / dt : 0;
+        double rawDerivative = (error - prevError) / dt;
+        filteredDerivative = LowPassFilter.getFilteredValue(filteredDerivative, rawDerivative, kDFilter);
+        d = dt > 0 ? kd * filteredDerivative : 0;
 
         //feedforward
         ff = usingFeedforward ? kf * Math.cos(Math.toRadians(targetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
 
-        double power = p + i + d + ff;
+        double rawPower = p + i + d + ff;
+        filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
 
-        leftTurretBase.setPower(power);
-        rightTurretBase.setPower(power);
+        leftTurretBase.setPower(rawPower);
+        rightTurretBase.setPower(rawPower);
 
         prevTime = currTime;
         prevError = error;
@@ -137,7 +147,7 @@ public class TurretBase {
     }
 
     /// used for tuning
-    public void updateCoefficients(double kp, double ki, double kd, double kf, double kISmash) {
+    public void updateCoefficients(double kp, double ki, double kd, double kf, double kISmash, double kDFilter, double kPowerFilter) {
 
         this.kp = kp;
         this.ki = ki;
@@ -145,6 +155,9 @@ public class TurretBase {
         this.kf = kf;
 
         this.kISmash = kISmash;
+
+        this.kDFilter = kDFilter;
+        this.kPowerFilter = kPowerFilter;
     }
 
 }

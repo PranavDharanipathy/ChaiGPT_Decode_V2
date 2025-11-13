@@ -27,6 +27,9 @@ public class TurretBaseTuner extends OpMode {
 
     public static double KI_SMASH = Constants.TURRET_PIDF_COEFFICIENTS[4];
 
+    public static double KD_FILTER = Constants.TURRET_PIDF_COEFFICIENTS[5];
+    public static double KPOWER_FILTER = Constants.TURRET_PIDF_COEFFICIENTS[6];
+
     public static double MIN_I = Constants.TURRET_MIN_INTEGRAL_LIMIT, MAX_I = Constants.TURRET_MAX_INTEGRAL_LIMIT;
     public static double TARGET_POSITION;
 
@@ -38,7 +41,7 @@ public class TurretBaseTuner extends OpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         turret = new TurretBase(hardwareMap);
-        turret.setPIDFCoefficients(KP, KI, KD, KF, KI_SMASH);
+        turret.setPIDFCoefficients(KP, KI, KD, KF, KI_SMASH, KD_FILTER, KPOWER_FILTER);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class TurretBaseTuner extends OpMode {
 
         turret.setPosition(TARGET_POSITION);
         turret.setIConstraints(MIN_I, MAX_I);
-        turret.updateCoefficients(KP, KI, KD, KF, KI_SMASH);
+        turret.updateCoefficients(KP, KI, KD, KF, KI_SMASH, KD_FILTER, KPOWER_FILTER);
         turret.update();
 
         sleep(LOOP_TIME);
