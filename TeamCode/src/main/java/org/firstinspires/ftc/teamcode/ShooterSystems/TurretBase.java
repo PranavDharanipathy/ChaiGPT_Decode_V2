@@ -37,6 +37,9 @@ public class TurretBase {
         encoder = new Encoder(hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.turretExternalEncoderMotorPairName));
         encoder.setDirection(Encoder.Direction.FORWARD);
 
+        // first targetPosition is the position it starts at
+        lastTargetPosition = targetPosition = startPosition = encoder.getCurrentPosition();
+        directionOfMovement = 1;
     }
 
     public void reverse() {
@@ -60,7 +63,11 @@ public class TurretBase {
         this.kPowerFilter = kPowerFilter;
     }
 
-    private double targetPosition = 0;
+    private double startPosition;
+    private double lastTargetPosition;
+    private double targetPosition;
+
+    private double directionOfMovement;
 
     private double MAX_I = Double.MAX_VALUE;
     private double MIN_I = -Double.MAX_VALUE;
@@ -72,7 +79,14 @@ public class TurretBase {
     }
 
     public void setPosition(double position) {
-        targetPosition = position;
+
+        if (targetPosition != position) {
+
+            lastTargetPosition = targetPosition;
+            targetPosition = position;
+
+            directionOfMovement = targetPosition >= lastTargetPosition ? 1 : -1;
+        }
     }
 
     public double getTargetPosition() {
@@ -111,13 +125,14 @@ public class TurretBase {
         d = dt > 0 ? kd * filteredDerivative : 0;
 
         //feedforward
-        ff = usingFeedforward ? kf * Math.cos(Math.toRadians(targetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
+        double reZeroedTargetPosition = targetPosition + startPosition;
+        ff = usingFeedforward ? kf * directionOfMovement * Math.cos(Math.toRadians(reZeroedTargetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
 
         double rawPower = p + i + d + ff;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
 
-        leftTurretBase.setPower(rawPower);
-        rightTurretBase.setPower(rawPower);
+        leftTurretBase.setPower(filteredPower);
+        rightTurretBase.setPower(filteredPower);
 
         prevTime = currTime;
         prevError = error;

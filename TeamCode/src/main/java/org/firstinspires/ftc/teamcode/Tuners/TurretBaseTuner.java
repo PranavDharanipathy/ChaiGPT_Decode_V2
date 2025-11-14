@@ -18,7 +18,7 @@ public class TurretBaseTuner extends OpMode {
 
     private TurretBase turret;
 
-    public static long LOOP_TIME = 20;
+    public static long LOOP_TIME = 40;
 
     public static double KP = Constants.TURRET_PIDF_COEFFICIENTS[0];
     public static double KI = Constants.TURRET_PIDF_COEFFICIENTS[1];
