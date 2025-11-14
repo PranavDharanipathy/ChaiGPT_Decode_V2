@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
+@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
 public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
@@ -74,7 +74,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
         }
         public InstantAction setFlywheelToFarSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(36_000, true));
+            return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
         }
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
@@ -257,7 +257,6 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
                                 .splineToSplineHeading(new Pose2d(-44, -19, -Math.PI / 2), 0)
-                                .waitSeconds(0.1)
                                 .splineToConstantHeading(new Vector2d(-44, -59), -Math.PI / 2)
 
 
@@ -268,16 +267,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                                 .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2)
                                 .splineToSplineHeading(new Pose2d(-18, -6, Math.toRadians(36)), -Math.PI / 2)
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-
-                                                robot.thirdShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition))
-                                        )
-                                )
-
-                                //movement rp
-                                .splineToLinearHeading(new Pose2d(-20, -12, Math.toRadians(0)), Math.toRadians(36))
+                                .stopAndAdd(robot.thirdShootSequence())
                                 .build());
 
 
@@ -303,7 +293,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
         Actions.runBlocking(
                 new ParallelAction(
 
-                        new InstantAction(() -> hoodAngler.setPosition(0.115)),
+                        new InstantAction(() -> hoodAngler.setPosition(0.11)),
 
                         robot.setFlywheelToFarSideVelocity(),
                         robot.updates(),
