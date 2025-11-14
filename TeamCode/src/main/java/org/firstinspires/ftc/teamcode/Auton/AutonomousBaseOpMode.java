@@ -1,23 +1,21 @@
-package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
+package org.firstinspires.ftc.teamcode.Auton;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Auton.ForAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
-
-import java.util.List;
 
 public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
