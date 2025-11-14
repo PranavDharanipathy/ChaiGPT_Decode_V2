@@ -13,8 +13,8 @@ public class Goal {
     @SuppressWarnings("all")
     public enum GoalCoordinates {
 
-        RED(58,-61),
-        BLUE(58, 61);
+        RED(60,-60),
+        BLUE(60, 60);
 
         private double x;
         private double y;
