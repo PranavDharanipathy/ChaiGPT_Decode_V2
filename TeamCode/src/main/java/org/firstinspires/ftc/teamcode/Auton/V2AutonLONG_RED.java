@@ -13,19 +13,15 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
-import org.firstinspires.ftc.teamcode.TeleOp.Shooter;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 @Autonomous (name = "V2AutonLONG(RED)", group = "AAAA_MatchPurpose",  preselectTeleOp = "V2TeleOp_RED")
 public class V2AutonLONG_RED extends AutonomousBaseOpMode {

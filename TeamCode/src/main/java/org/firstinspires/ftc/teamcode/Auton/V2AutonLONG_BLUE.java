@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Auton;
 import androidx.annotation.NonNull;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -17,21 +18,21 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.AutonomousBaseOpMode;
+import org.firstinspires.ftc.teamcode.Auton.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 
 
-import org.firstinspires.ftc.teamcode.TeleOp.Intake;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 
 import org.firstinspires.ftc.teamcode.Constants;
 
-
+@Config
 @Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
 public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
 
+    public static double[] TURRET_POSITIONS = {-800};
 
 
     public class RobotElements {
@@ -108,6 +109,14 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
         public class WaitTilFlywheelAtVelocity implements Action {
 
+            private ElapsedTime timer = new ElapsedTime();
+
+            private double minimumTime;
+
+            public WaitTilFlywheelAtVelocity(double minimumTime) {
+                this.minimumTime = minimumTime;
+            }
+
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -115,10 +124,53 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 33000);
+                return !(flywheel.getFrontendCalculatedVelocity() > 31000 && flywheel.getLastFrontendCalculatedVelocity() > 31000);
             }
         }
 
+        public Action waitTilFlywheelAtVelocity(double minimumTime) {
+            return new WaitTilFlywheelAtVelocity(minimumTime);
+        }
+
+        public Action firstShootSequence() {
+
+            return new SequentialAction(
+                    waitTilFlywheelAtVelocity(3),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(1.5),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(1.5),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer()
+            );
+        }
+
+        public Action secondShootSequence() {
+
+            return new SequentialAction(
+                    waitTilFlywheelAtVelocity(0),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer()
+            );
+        }
+
+        public Action thirdShootSequence() {
+
+            return new SequentialAction(
+                    waitTilFlywheelAtVelocity(0),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer()
+            );
+        }
 
     }
     public double turretStartPosition;
@@ -150,13 +202,17 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
 
                         robot.intake(),
+                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+
                         drive.actionBuilder(initialPose)
 
 
+                                //preload
+                                .splineToLinearHeading(new Pose2d(-18, -6, Math.toRadians(36)), 0)
 
+                                .stopAndAdd(robot.firstShootSequence())
 
-                                //TANGENT = 90
-                                //FIRST INTAKE
+                                //first intake
                                 .splineTo(new Vector2d(-21, -52), -Math.PI / 2)
 
 
@@ -169,14 +225,7 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
                                 .splineToSplineHeading(new Pose2d(-15, -6, 0), -Math.PI / 2)
 
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-                                                robot.transferArtifact()
-
-
-
-                                                )
-                                )
+                                .stopAndAdd(robot.secondShootSequence())
 
 
                                 .setReversed(false)
@@ -198,8 +247,9 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
                                 .setReversed(true)
                                 .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2)
-                                .splineToSplineHeading(new Pose2d(-18, -5, Math.toRadians(36)), -Math.PI / 2)
-//1.5 secs
+                                .splineToSplineHeading(new Pose2d(-18, -6, Math.toRadians(36)), -Math.PI / 2)
+
+                                .stopAndAdd(robot.thirdShootSequence())
                                 .build());
 
 
@@ -225,6 +275,7 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
         Actions.runBlocking(
                 new ParallelAction(
 
+                        new InstantAction(() -> hoodAngler.setPosition(0.12)),
 
                         robot.setFlywheelToFarSideVelocity(),
                         robot.updates(),
