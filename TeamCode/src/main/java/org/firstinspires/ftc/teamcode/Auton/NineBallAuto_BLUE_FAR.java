@@ -10,7 +10,6 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,11 +25,11 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
-public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
+@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
+public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
-    public static double[] TURRET_POSITIONS = {1000, -2100, 1100};
+    public static double[] TURRET_POSITIONS = {-1000, 2100, -1100};
 
 
     public class RobotElements {
@@ -167,7 +166,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
                     antiTransfer(),
 
                     //setup for third
-                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
+            new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
             );
         }
 
@@ -227,21 +226,21 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-7.5, 7.5, Math.toRadians(-36)), 0)
+                                .splineToLinearHeading(new Pose2d(-18, -7.5, Math.toRadians(36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
                                 //first intake
+                                .splineTo(new Vector2d(-21, -57), -Math.PI / 2)
 
-                                .splineToLinearHeading(new Pose2d(-33, 7.5, Math.PI / 2), Math.toRadians(-36))
-                                .lineToXConstantHeading(50)
+
 
 
                                 //GO TO SMALL TRIANGLE
                                 .setReversed(true)
 
 
-                                .splineToSplineHeading(new Pose2d(-15, 7, 0), Math.PI / 2)
+                                .splineToSplineHeading(new Pose2d(-15, -7, 0), -Math.PI / 2)
 
 
                                 .stopAndAdd(robot.secondShootSequence())
@@ -257,16 +256,16 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
                                 //SECOND INTAKE
 
 
-                                .splineToLinearHeading(new Pose2d(-56, 8, Math.PI / 2), 0)
-                                .lineToXConstantHeading(50)
+                                .splineToSplineHeading(new Pose2d(-44, -19, -Math.PI / 2), 0)
+                                .splineToConstantHeading(new Vector2d(-44, -59), -Math.PI / 2)
 
 
                                 //GO TO SMALL TRIANGLE
 
 
                                 .setReversed(true)
-                                .splineToConstantHeading(new Vector2d(-38, 30), Math.PI / 2)
-                                .splineToSplineHeading(new Pose2d(-18, 6, Math.toRadians(-36)), Math.PI / 2)
+                                .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2)
+                                .splineToSplineHeading(new Pose2d(-18, -6, Math.toRadians(36)), -Math.PI / 2)
 
                                 .stopAndAdd(robot.thirdShootSequence())
                                 .build());
