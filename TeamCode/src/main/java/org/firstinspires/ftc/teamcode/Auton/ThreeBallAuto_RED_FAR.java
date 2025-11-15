@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
-public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
+@Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
+public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
     public static double[] TURRET_POSITIONS = {1200, -1950, 1370};
@@ -133,63 +133,18 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(2.5),
+                    waitTilFlywheelAtVelocity(3),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(2.5),
+                    waitTilFlywheelAtVelocity(3),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    //setup for second
-                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[1]))
-            );
-        }
-
-        public Action secondShootSequence() {
-
-            return new SequentialAction(
-                    waitTilFlywheelAtVelocity(4),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(3.5),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(3.5),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    //setup for third
-                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
-            );
-        }
-
-        public Action thirdShootSequence() {
-
-            return new SequentialAction(
-//                    new InstantAction(() -> hoodAngler.setPosition(0.11)),
-                    waitTilFlywheelAtVelocity(4),
-                    transferArtifact(),
-                    new SleepAction(0.3),
-                    antiTransfer(),
-
-//                    new InstantAction(() -> hoodAngler.setPosition(0.112)),
-                    waitTilFlywheelAtVelocity(2),
-                    transferArtifact(),
-                    new SleepAction(0.3),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(2),
-                    transferArtifact(),
-                    new SleepAction(0.3),
-                    antiTransfer()
+                    //setup for teleop
+                    new InstantAction(() -> turret.setPosition(turretStartPosition))
             );
         }
 
@@ -229,58 +184,12 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-7, 7, Math.toRadians(-36)), 0)
+                                .splineToLinearHeading(new Pose2d(-6, 7, Math.toRadians(-36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
-                                //first intake
-
-                                .splineToLinearHeading(new Pose2d(-33, 7.5, Math.PI / 2), Math.toRadians(-36))
-                                .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-33, 41), Math.PI / 2)
-
-                                //GO TO SMALL TRIANGLE
-                                .setReversed(true)
-
-
-                                .splineToSplineHeading(new Pose2d(-13, 7, 0), Math.PI / 2)
-
-
-                                .stopAndAdd(robot.secondShootSequence())
-
-
-                                .setReversed(false)
-
-
-                                ///.splineToSplineHeading(new Pose2d(-44, 0, -Math.PI / 2), 0,
-                                //new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
-
-
-                                //SECOND INTAKE
-
-
-                                .splineToLinearHeading(new Pose2d(-56, 8, Math.PI / 2), 0)
-                                .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-56, 35), -Math.PI / 2)
-
-
-                                //GO TO SMALL TRIANGLE
-
-
-                                .setReversed(true)
-                                .splineToConstantHeading(new Vector2d(-38, 30), Math.PI / 2)
-                                .splineToSplineHeading(new Pose2d(-7, 7, Math.toRadians(-36)), Math.PI / 2)
-
-                                .stopAndAdd(
-                                        new SequentialAction(
-
-                                                robot.thirdShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition))
-                                        )
-                                )
-
                                 //movement rp
-                                .splineToLinearHeading(new Pose2d(-20, 12, Math.toRadians(0)), Math.toRadians(-36))
+                                .splineToLinearHeading(new Pose2d(-22, 5, Math.toRadians(0)), Math.toRadians(-36))
                                 .build());
 
 
