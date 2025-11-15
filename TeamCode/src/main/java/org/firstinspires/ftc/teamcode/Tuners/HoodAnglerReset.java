@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
@@ -18,10 +19,10 @@ public class HoodAnglerReset extends LinearOpMode {
 
     public static int STAGE = 0;
 
+    private final Telemetry telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());;
+
     @Override
     public void runOpMode() {
-
-        telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
@@ -40,16 +41,22 @@ public class HoodAnglerReset extends LinearOpMode {
 
                 case 1:
 
-                    hoodAngler.setPosition(Constants.HOOD_ANGLER_INITIAL_RESETTING_POSITION);
-                    addSingleLine("hood angler set to initial resetting position");
+                    hoodAngler.setPosition(0.5);
+                    addSingleLine("hood angler initial movement");
                     break;
 
+
                 case 2:
+                    hoodAngler.setPosition(Constants.HOOD_ANGLER_INITIAL_RESETTING_POSITION);
+                    addSingleLine("hood angler set to resetting position");
+                    break;
+
+                case 3:
 
                     addSingleLine("rest hood on hood angler");
                     break;
 
-                case 3:
+                case 4:
 
                     hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION);
                     addSingleLine("hood retracted");
