@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
+@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 

@@ -59,8 +59,8 @@ public final class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 35_200;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 27_350;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 32_500;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_200;
 
         public static double FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN = 800;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
@@ -70,6 +70,8 @@ public final class ShooterInformation {
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.2 * 73.5179487179;
+
+        public static double TURRET_HOME_POSITION_INCREMENT = 20;
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 

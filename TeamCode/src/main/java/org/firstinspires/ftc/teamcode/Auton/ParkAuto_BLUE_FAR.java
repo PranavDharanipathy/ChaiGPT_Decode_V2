@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-@Autonomous(name = "ParkAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp BLUE")
+@Autonomous(name = "ParkAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class ParkAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
