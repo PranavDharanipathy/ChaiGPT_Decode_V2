@@ -34,7 +34,7 @@ public class BetterGamepad {
     public boolean left_trigger(float threshold) { return gamepad.left_trigger >= threshold; }
     public boolean right_trigger(float threshold) { return gamepad.right_trigger >= threshold; }
 
-    public boolean back() { return gamepad.back; }
+    public boolean back() { return gamepad.back;}
 
     public boolean main_button() { return gamepad.guide || gamepad.ps; }
 
