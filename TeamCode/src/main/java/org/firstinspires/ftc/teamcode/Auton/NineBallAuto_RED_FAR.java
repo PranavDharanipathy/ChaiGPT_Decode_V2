@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
+@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
@@ -229,7 +229,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-7.5, 7.5, Math.toRadians(-36)), 0)
+                                .splineToLinearHeading(new Pose2d(-7, 7, Math.toRadians(-36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
