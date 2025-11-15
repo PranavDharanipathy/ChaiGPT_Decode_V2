@@ -177,8 +177,11 @@ public class Shooter implements SubsystemInternal {
             relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
         }
 
-        if (controller2.right_trigger(1 - Constants.TRIGGER_THRESHOLD)) { //to prevent accidental triggering, trigger is required to be pressed more
-            turretStartPosition = turret.getCurrentPosition();
+        if (controller2.dpad_leftHasJustBeenPressed) {
+            turretStartPosition+=ShooterInformation.ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
+        }
+        else if (controller2.dpad_rightHasJustBeenPressed) {
+                turretStartPosition-=ShooterInformation.ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
         }
 
         robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);

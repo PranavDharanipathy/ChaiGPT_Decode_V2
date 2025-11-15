@@ -1,178 +1,231 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Constants;
+
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
+
+
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-@Autonomous (name = "ThreeBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp BLUE")
+
+import org.firstinspires.ftc.teamcode.Constants;
+
+@Config
+@Autonomous (name = "ThreeBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class ThreeBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
+
+
+    public static double[] TURRET_POSITIONS = {-1000, 2100, -1100};
+
 
     public class RobotElements {
 
-        public InstantAction setFlywheelToFarSideVelocity() {
-            return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
+        public class AllUpdate implements Action {
+
+
+            private ElapsedTime timer = new ElapsedTime();
+
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+
+                if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
+
+
+                    flywheel.update();
+                    timer.reset();
+                }
+
+
+                turret.update();
+
+                telemetry.addData("turret target position", turret.getTargetPosition());
+                telemetry.addData("turret current position", turret.getCurrentPosition());
+                telemetry.update();
+
+                if (opModeIsActive()) {
+                    return true;
+                }
+                else {
+                    flywheel.setVelocity(0, true);
+                    return false;
+                }
+            }
         }
 
 
+        public Action updates() {
+            return new AllUpdate();
+        }
+        public InstantAction setFlywheelToFarSideVelocity() {
+
+            return new InstantAction(() -> flywheel.setVelocity(36_000, true));
+        }
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
         }
+
 
         //transfer
         public InstantAction antiTransfer() {
             return new InstantAction(() -> transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY));
         }
-
         public InstantAction transferArtifact() {
             return new InstantAction(() -> transfer.setVelocity(Constants.TRANSFER_VELOCITY));
         }
-
         //intake
         public InstantAction reverseIntake() {
             return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
         }
 
+
         public InstantAction intake() {
             return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
         }
 
-    }
 
+        public class WaitTilFlywheelAtVelocity implements Action {
+
+            private ElapsedTime timer = new ElapsedTime();
+
+            private double minimumTime;
+
+            public WaitTilFlywheelAtVelocity(double minimumTime) {
+                this.minimumTime = minimumTime;
+            }
+
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+
+                telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+                telemetry.update();
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 30500 && flywheel.getLastFrontendCalculatedVelocity() > 30500);
+            }
+        }
+
+        public Action waitTilFlywheelAtVelocity(double minimumTime) {
+            return new WaitTilFlywheelAtVelocity(minimumTime);
+        }
+
+        public Action firstShootSequence() {
+
+            return new SequentialAction(
+                    waitTilFlywheelAtVelocity(4),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(2.5),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(2.5),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    //setup for teleop
+                    new InstantAction(() -> turret.setPosition(turretStartPosition))
+            );
+        }
+
+    }
     public double turretStartPosition;
 
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
-        Pose2d startPose = new Pose2d(0,0,0);
-
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         fullInit();
 
-        ElapsedTime timer = new ElapsedTime();
 
         final RobotElements robot = new RobotElements();
 
-        turretStartPosition = turret.getCurrentPosition();
 
-        telemetry.addData("turret current position", turretStartPosition);
-        telemetry.update();
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-                Action shootPreloadedArtifacts =
 
-                new SequentialAction(
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
-
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
-
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        )
-                );
+        Action mainPath =
 
 
 
 
-        Actions.runBlocking(robot.setFlywheelToFarSideVelocity());
+                //MOVE TO FIRST INTAKE POINT
 
-        waitForStart();
-
-         //START!
-
-        hoodAngler.setPosition(ShooterInformation.ShooterConstants.HOOD_FAR_POSITION);
-
-        timer.reset();
-
-        Actions.runBlocking(
 
                 new ParallelAction(
 
-                        telemetryPacket -> {
-                            if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
-
-                                flywheel.update();
-                                timer.reset();
-                            }
-
-                            if (opModeIsActive()) {
-                                return true;
-                            }
-                            else {
-                                flywheel.setVelocity(0, true);
-                                return false;
-                            }
-                        },
 
                         robot.intake(),
+                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+
+                        drive.actionBuilder(initialPose)
+
+
+                                //preload
+                                .splineToLinearHeading(new Pose2d(-18, -7.5, Math.toRadians(36)), 0)
+
+                                .stopAndAdd(robot.firstShootSequence())
+
+                                //movement rp
+                                .splineToLinearHeading(new Pose2d(-22, -5, Math.toRadians(0)), Math.toRadians(36))
+                                .build());
+
+
+
+
+
+
+        turretStartPosition = turret.getCurrentPosition();
+        telemetry.addData("turret current position", turretStartPosition);
+        telemetry.update();
+
+
+        waitForStart();
+
+
+        if (isStopRequested()) return;
+
+
+
+
+
+
+        Actions.runBlocking(
+                new ParallelAction(
+
+                        new InstantAction(() -> hoodAngler.setPosition(0.115)),
+
+                        robot.setFlywheelToFarSideVelocity(),
+                        robot.updates(),
+
+
                         robot.antiTransfer(),
-
-                        new SequentialAction(
-                                drive.actionBuilder(startPose)
-                                        .splineToLinearHeading(new Pose2d(-20, 0, Math.toRadians(25)), Math.toRadians(0))
-                                        .build(),
-
-                                telemetryPacket -> {
-
-                                    telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-                                    telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
-                                },
-
-                                robot.transferArtifact(),
-
-                                new SleepAction(0.45),
-
-                                robot.antiTransfer(),
-
-                                new SleepAction(1), //forcefully increase wait time
-
-                                telemetryPacket -> {
-
-                                    telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-                                    telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
-                                },
-
-                                robot.transferArtifact(),
-
-                                new SleepAction(0.3),
-
-                                robot.antiTransfer(),
-
-                                telemetryPacket -> {
-
-                                    telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-                                    telemetry.update();
-                                    return !(flywheel.getFrontendCalculatedVelocity() > 29000 && flywheel.getLastFrontendCalculatedVelocity() > 29000);
-                                },
-
-                                robot.transferArtifact()
-
-                        )
+                        mainPath
                 )
         );
-
-
-
+        //SHOOT!
+        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.update();
     }
-
 }
