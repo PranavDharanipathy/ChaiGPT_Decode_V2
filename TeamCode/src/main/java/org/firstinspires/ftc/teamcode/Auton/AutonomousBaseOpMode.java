@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.Auton;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,9 +14,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
-import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
-import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 public abstract class AutonomousBaseOpMode extends LinearOpMode {
@@ -26,6 +22,9 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
     public AutonomousBaseOpMode() {}
 
     public volatile Telemetry telemetry;
+
+    public volatile BetterGamepad controller1;
+    public volatile BetterGamepad controller2;
 
     public volatile BasicVeloMotor intake;
     public volatile BasicVeloMotor transfer;
@@ -65,6 +64,8 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
         hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
+        controller1 = new BetterGamepad(gamepad1);
+        controller2 = new BetterGamepad(gamepad2);
     }
 
     /// Provide traits
@@ -118,8 +119,6 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
         turret.reverse();
-
-
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
     }
