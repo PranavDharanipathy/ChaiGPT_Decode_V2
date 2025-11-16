@@ -244,9 +244,9 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                     //FIRST INTAKE
 
-                                    .splineToSplineHeading(new Pose2d(-48, 0, Math.toRadians(-90)), Math.toRadians(135))
+                                    .splineToSplineHeading(new Pose2d(-48, -3, Math.toRadians(-45)), Math.toRadians(135))
 
-                                    //GO TO BIG TRIANGLE
+                                    /*//GO TO BIG TRIANGLE
 
                                     .setReversed(true)
                                     .splineToLinearHeading(new Pose2d(-40, -50, Math.toRadians(-90)), Math.toRadians(-90))
@@ -291,7 +291,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                                             )
 
                                     )
-
+                                                        */
 
                                     .build()
                     );
