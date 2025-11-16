@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
-
 import androidx.annotation.NonNull;
-
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -18,27 +16,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-import org.firstinspires.ftc.teamcode.Auton.AutonomousBaseOpMode;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
-
-
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 
 import org.firstinspires.ftc.teamcode.Constants;
 
 @Config
-@Autonomous (name = "V2AutonLONG(BLUE)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2Teleop_BLUE")
-public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
+@Autonomous (name = "12 Ball Auto Blue FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
+public class TwelveBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
-    public static double[] TURRET_POSITIONS = {-800};
+    public static double[] TURRET_POSITIONS = {-1000, 2100, -1100};
 
 
     public class RobotElements {
-
-
-
 
         public class AllUpdate implements Action {
 
@@ -60,6 +51,9 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
                 turret.update();
 
+                telemetry.addData("turret target position", turret.getTargetPosition());
+                telemetry.addData("turret current position", turret.getCurrentPosition());
+                telemetry.update();
 
                 if (opModeIsActive()) {
                     return true;
@@ -77,12 +71,7 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
         }
         public InstantAction setFlywheelToFarSideVelocity() {
 
-
-
-
-
-
-            return new InstantAction(() -> flywheel.setVelocity(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY, true));
+            return new InstantAction(() -> flywheel.setVelocity(36_000, true));
         }
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
@@ -105,6 +94,9 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
         public InstantAction intake() {
             return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
         }
+        public InstantAction fact1() {
+            return new InstantAction(() -> telemetry.speak("Did you know that A crocodile cannot stick its tongue out?"));
+        }
 
 
         public class WaitTilFlywheelAtVelocity implements Action {
@@ -124,7 +116,7 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(flywheel.getFrontendCalculatedVelocity() > 31000 && flywheel.getLastFrontendCalculatedVelocity() > 31000);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 30500 && flywheel.getLastFrontendCalculatedVelocity() > 30500);
             }
         }
 
@@ -135,37 +127,82 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
         public Action firstShootSequence() {
 
             return new SequentialAction(
-                    waitTilFlywheelAtVelocity(3),
+                    waitTilFlywheelAtVelocity(4),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.5),
+                    waitTilFlywheelAtVelocity(2),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.5),
+                    waitTilFlywheelAtVelocity(2),
                     transferArtifact(),
                     new SleepAction(0.4),
-                    antiTransfer()
+                    antiTransfer(),
+
+                    //setup for second
+                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[1]))
             );
         }
 
         public Action secondShootSequence() {
 
             return new SequentialAction(
-                    waitTilFlywheelAtVelocity(0),
+                    waitTilFlywheelAtVelocity(4),
                     transferArtifact(),
-                    new SleepAction(0.3),
-                    antiTransfer()
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(3),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(3),
+                    transferArtifact(),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    //setup for third
+            new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
             );
         }
 
         public Action thirdShootSequence() {
 
             return new SequentialAction(
-                    waitTilFlywheelAtVelocity(0),
+                    waitTilFlywheelAtVelocity(4),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(2),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(2),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer()
+            );
+        }
+
+        public Action fourthShootSequence() {
+            return new SequentialAction(
+                    waitTilFlywheelAtVelocity(4),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(4),
+                    transferArtifact(),
+                    new SleepAction(0.3),
+                    antiTransfer(),
+
+                    waitTilFlywheelAtVelocity(4),
                     transferArtifact(),
                     new SleepAction(0.3),
                     antiTransfer()
@@ -191,70 +228,52 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
 
         Action mainPath =
-
-
-
-
                 //MOVE TO FIRST INTAKE POINT
-
-
                 new ParallelAction(
-
-
                         robot.intake(),
                         new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
 
                         drive.actionBuilder(initialPose)
-
-
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-18, -6, Math.toRadians(36)), 0)
+                                .splineToLinearHeading(new Pose2d(-18, -7.5, Math.toRadians(36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
                                 //first intake
-                                .splineTo(new Vector2d(-21, -52), -Math.PI / 2)
-
-
+                                .splineTo(new Vector2d(-21, -57), -Math.PI / 2)
 
 
                                 //GO TO SMALL TRIANGLE
                                 .setReversed(true)
-
-
-                                .splineToSplineHeading(new Pose2d(-15, -6, 0), -Math.PI / 2)
-
-
+                                .splineToSplineHeading(new Pose2d(-15, -7, 0), -Math.PI / 2)
                                 .stopAndAdd(robot.secondShootSequence())
 
+                                //.stopAndAdd(robot.fact1())
 
                                 .setReversed(false)
-
-
                                 ///.splineToSplineHeading(new Pose2d(-44, 0, -Math.PI / 2), 0,
                                 //new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
 
-
-                                //SECOND INTAKE
-
-
-                                .splineToSplineHeading(new Pose2d(-43, -19, -Math.PI / 2), 0)
+                                //SECOnD INTAKE
+                                .splineToSplineHeading(new Pose2d(-44, -19, -Math.PI / 2), 0)
+                                .waitSeconds(0.1)
                                 .splineToConstantHeading(new Vector2d(-44, -59), -Math.PI / 2)
 
-
                                 //GO TO SMALL TRIANGLE
-
-
                                 .setReversed(true)
                                 .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2)
                                 .splineToSplineHeading(new Pose2d(-18, -6, Math.toRadians(36)), -Math.PI / 2)
 
-                                .stopAndAdd(robot.thirdShootSequence())
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                robot.thirdShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition))
+                                        )
+                                )
+
+                                //movement rp
+                                .splineToLinearHeading(new Pose2d(-20, -12, Math.toRadians(0)), Math.toRadians(36))
                                 .build());
-
-
-
-
 
 
         turretStartPosition = turret.getCurrentPosition();
@@ -267,15 +286,10 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
 
         if (isStopRequested()) return;
 
-
-
-
-
-
         Actions.runBlocking(
                 new ParallelAction(
 
-                        new InstantAction(() -> hoodAngler.setPosition(0.12)),
+                        new InstantAction(() -> hoodAngler.setPosition(0.115)),
 
                         robot.setFlywheelToFarSideVelocity(),
                         robot.updates(),
@@ -290,4 +304,3 @@ public class V2AutonLONG_BLUE extends AutonomousBaseOpMode {
         telemetry.update();
     }
 }
-
