@@ -27,7 +27,7 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball BLUE CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {1000, -2100, 1100};
+    public static double[] TURRET_POSITIONS = {5000, -2100, 1100};
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -67,7 +67,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 30500 && flywheel.getLastFrontendCalculatedVelocity() > 30500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 26200 && flywheel.getLastFrontendCalculatedVelocity() > 26200);
             }
 
 
@@ -78,9 +78,9 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             return new RobotElements.AllUpdate();
         }
 
-        public InstantAction setFlywheelToFarSideVelocity() {
+        public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(36_000, true));
+            return new InstantAction(() -> flywheel.setVelocity(30300, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -209,44 +209,48 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             fullInit();
 
             final RobotElements robot = new RobotElements();
-            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(135));
+            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(225));
             MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
             Action mainPath =
                     new ParallelAction(
                             robot.intake(),
+
                             new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                             drive.actionBuilder(initialPose)
                                     //PRELOAD(BIG TRIANGLE)
-                                    //original y = 20, Tested using y = 0.
+                                    //original x = -30, Tested using y = 0.
 
-                                    .splineTo(new Vector2d(-30, 0), Math.toRadians(135))
+                                    .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(225))
+                                    //SHOOT
                                    //stopAndAdd(robot.fact1())
 
-                                    .stopAndAdd(
+                                  .stopAndAdd(
                                             new SequentialAction(
                                                     robot.firstShootSequence(),
-                                                    new InstantAction(() -> turret.setPosition(turretStartPosition))
+                                                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
                                             )
                                     )
 
                                     //FIRST INTAKE
 
-                                    .splineToSplineHeading(new Pose2d(-48, -3, Math.toRadians(-45)), Math.toRadians(135))
+                                    .splineToLinearHeading(new Pose2d(-57, 11, Math.toRadians(90)), Math.toRadians(145))
 
-                                    /*//GO TO BIG TRIANGLE
+                                    //.splineToConstantHeading(new Vector2d(-53, 10), Math.toRadians(90))
+
+                                    //GO TO BIG TRIANGLE
 
                                     .setReversed(true)
-                                    .splineToLinearHeading(new Pose2d(-40, -50, Math.toRadians(-90)), Math.toRadians(-90))
+                                    .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(90))
 
                                     .stopAndAdd(
                                             new SequentialAction(
-                                                    robot.firstShootSequence(),
-                                                    new InstantAction(() -> turret.setPosition(turretStartPosition))
+                                                    robot.secondShootSequence(),
+                                                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
                                             )
                                     )
 
-                                    //SECOND INTAKE
+                                    /* //SECOND INTAKE
 
                                     .setReversed(false)
 
@@ -278,8 +282,8 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                                                     new InstantAction(() -> turret.setPosition(turretStartPosition))
                                             )
 
-                                    )
-                                                        */
+                                    )*/
+
 
                                     .build()
                     );
@@ -293,11 +297,10 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             Actions.runBlocking(
                     new ParallelAction(
 
-                            new InstantAction(() -> hoodAngler.setPosition(0.115)),
+                            new InstantAction(() -> hoodAngler.setPosition(0.015)),
 
-                            robot.setFlywheelToFarSideVelocity(),
+                            robot.setFlywheelToCloseSideVelocity(),
                             robot.updates(),
-
 
                             robot.antiTransfer(),
                             mainPath
