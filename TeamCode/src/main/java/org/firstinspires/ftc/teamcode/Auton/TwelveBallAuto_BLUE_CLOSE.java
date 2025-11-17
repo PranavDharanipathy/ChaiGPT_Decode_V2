@@ -27,27 +27,18 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball BLUE CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
-
-    public static double[] TURRET_POSITIONS = {-1000, 2100, -1100};
-
-
+    public static double[] TURRET_POSITIONS = {1000, -2100, 1100};
     public class RobotElements {
-
         public class AllUpdate implements Action {
-
-
             private ElapsedTime timer = new ElapsedTime();
-
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
 
                 if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
                     flywheel.update();
                     timer.reset();
                 }
-
 
                 turret.update();
 
@@ -57,7 +48,8 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                 if (opModeIsActive()) {
                     return true;
-                } else {
+                }
+                else {
                     flywheel.setVelocity(0, true);
                     return false;
                 }
@@ -216,14 +208,9 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
         public void runOpMode() throws InterruptedException {
             fullInit();
 
-
             final RobotElements robot = new RobotElements();
-
-
             Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(135));
             MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-
-
 
             Action mainPath =
                     new ParallelAction(
@@ -231,8 +218,9 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                             new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                             drive.actionBuilder(initialPose)
                                     //PRELOAD(BIG TRIANGLE)
+                                    //original y = 20, Tested using y = 0.
 
-                                    .splineTo(new Vector2d(-30, 20), Math.toRadians(135))
+                                    .splineTo(new Vector2d(-30, 0), Math.toRadians(135))
                                    //stopAndAdd(robot.fact1())
 
                                     .stopAndAdd(
