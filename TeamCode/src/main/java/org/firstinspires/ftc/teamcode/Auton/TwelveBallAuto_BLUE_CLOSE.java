@@ -202,114 +202,114 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
     }
 
-        public double turretStartPosition;
+    public double turretStartPosition;
 
-        @Override
-        public void runOpMode() throws InterruptedException {
-            fullInit();
+    @Override
+    public void runOpMode() throws InterruptedException {
+        fullInit();
 
-            final RobotElements robot = new RobotElements();
-            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(225));
-            MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        final RobotElements robot = new RobotElements();
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(225));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-            Action mainPath =
-                    new ParallelAction(
-                            robot.intake(),
+        Action mainPath =
+                new ParallelAction(
+                        robot.intake(),
 
-                            new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
-                            drive.actionBuilder(initialPose)
-                                    //PRELOAD(BIG TRIANGLE)
-                                    //original x = -30, Tested using y = 0.
+                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                        drive.actionBuilder(initialPose)
+                                //PRELOAD(BIG TRIANGLE)
+                                //original x = -30, Tested using y = 0.
 
-                                    .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(225))
-                                    //SHOOT
-                                   //stopAndAdd(robot.fact1())
+                                .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(225))
+                                //SHOOT
+                                //stopAndAdd(robot.fact1())
 
-                                  .stopAndAdd(
-                                            new SequentialAction(
-                                                    robot.firstShootSequence(),
-                                                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
-                                            )
-                                    )
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                robot.firstShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                        )
+                                )
 
-                                    //FIRST INTAKE
+                                //FIRST INTAKE
 
-                                    .splineToLinearHeading(new Pose2d(-57, 11, Math.toRadians(90)), Math.toRadians(145))
+                                .splineToLinearHeading(new Pose2d(-57, 11, Math.toRadians(90)), Math.toRadians(145))
 
-                                    //.splineToConstantHeading(new Vector2d(-53, 10), Math.toRadians(90))
+                                //.splineToConstantHeading(new Vector2d(-53, 10), Math.toRadians(90))
 
-                                    //GO TO BIG TRIANGLE
+                                //GO TO BIG TRIANGLE
 
-                                    .setReversed(true)
-                                    .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(90))
+                                .setReversed(true)
+                                .splineToLinearHeading(new Pose2d(-38, -26, Math.toRadians(155)), Math.toRadians(90))
 
-                                    .stopAndAdd(
-                                            new SequentialAction(
-                                                    robot.secondShootSequence(),
-                                                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
-                                            )
-                                    )
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                robot.secondShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                        )
+                                )
 
-                                    /* //SECOND INTAKE
+                                /* //SECOND INTAKE
 
-                                    .setReversed(false)
+                                .setReversed(false)
 
-                                    .splineTo(new Vector2d(-72, 0), Math.toRadians(45))
+                                .splineTo(new Vector2d(-72, 0), Math.toRadians(45))
 
-                                    //GO TO BIG TRIANGLE
+                                //GO TO BIG TRIANGLE
 
-                                    .setReversed(true)
+                                .setReversed(true)
 
-                                    .splineTo(new Vector2d(-40, -50), Math.toRadians(-90))
-
-
-
-                                    //THIRD INTAKE
-                                    .setReversed(false)
-
-                                    .splineTo(new Vector2d(-96, 0), Math.toRadians(45))
+                                .splineTo(new Vector2d(-40, -50), Math.toRadians(-90))
 
 
-                                    //GO TO SMALL TRIANGLE
 
-                                    .setReversed(true)
+                                //THIRD INTAKE
+                                .setReversed(false)
 
-                                    .splineTo(new Vector2d(-40, -50), Math.toRadians(-90))
-
-                                    .stopAndAdd(
-                                            new SequentialAction(
-                                                    robot.thirdShootSequence(),
-                                                    new InstantAction(() -> turret.setPosition(turretStartPosition))
-                                            )
-
-                                    )*/
+                                .splineTo(new Vector2d(-96, 0), Math.toRadians(45))
 
 
-                                    .build()
-                    );
+                                //GO TO SMALL TRIANGLE
+
+                                .setReversed(true)
+
+                                .splineTo(new Vector2d(-40, -50), Math.toRadians(-90))
+
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                robot.thirdShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition))
+                                        )
+
+                                )*/
 
 
-            waitForStart();
+                                .build()
+                );
 
 
-            if (isStopRequested()) return;
-
-            Actions.runBlocking(
-                    new ParallelAction(
-
-                            new InstantAction(() -> hoodAngler.setPosition(0.015)),
-
-                            robot.setFlywheelToCloseSideVelocity(),
-                            robot.updates(),
-
-                            robot.antiTransfer(),
-                            mainPath
-                    )
-            );
-            //SHOOT!
-            telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-            telemetry.update();
+        waitForStart();
 
 
-        }
-        }
+        if (isStopRequested()) return;
+
+        Actions.runBlocking(
+                new ParallelAction(
+
+                        new InstantAction(() -> hoodAngler.setPosition(0.015)),
+
+                        robot.setFlywheelToCloseSideVelocity(),
+                        robot.updates(),
+
+                        robot.antiTransfer(),
+                        mainPath
+                )
+        );
+        //SHOOT!
+        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.update();
+
+
+    }
+}
