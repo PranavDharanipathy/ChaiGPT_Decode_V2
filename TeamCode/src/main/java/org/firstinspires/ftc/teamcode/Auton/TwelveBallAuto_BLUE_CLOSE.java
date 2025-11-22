@@ -27,9 +27,9 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball BLUE CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {5800, 5000, 5800};
+    public static double[] TURRET_POSITIONS = {5500, 5000, 5300};
 
-    public static double[] HOOD_ANGLING = {0.47, 0.04, 0.06};
+    public static double[] HOOD_ANGLING = {0.31, 0.04, 0.06};
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -69,7 +69,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 20500 && flywheel.getLastFrontendCalculatedVelocity() > 20500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 21500 && flywheel.getLastFrontendCalculatedVelocity() > 21500);
             }
 
 
@@ -82,7 +82,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(23600, true));
+            return new InstantAction(() -> flywheel.setVelocity(25600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -185,12 +185,14 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     waitFlywheelVel(2),
                     transferArtifact(),
                     new SleepAction(0.3),
-                    antiTransfer()
+                    antiTransfer(),
+                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
             );
         }
 
         public Action fourthShootSequence() {
             return new SequentialAction(
+                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(4),
                     transferArtifact(),
                     new SleepAction(0.3),
@@ -273,7 +275,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                                 .setReversed(false)
                                 .splineToLinearHeading(new Pose2d(-79, -14, Math.PI / 2), Math.toRadians(145))
 
-                                .splineToLinearHeading(new Pose2d(-79, 17, Math.PI / 2), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(-79, 19, Math.PI / 2), Math.toRadians(90))
 
                                 //GO TO BIG TRIANGLE
 
@@ -287,27 +289,27 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                                         )
                                 )
 
-                                /*
+
 
                                 //THIRD INTAKE
                                 .setReversed(false)
 
-                                .splineTo(new Vector2d(-96, 0), Math.toRadians(45))
+                                .splineToLinearHeading(new Pose2d(-105, -5, Math.PI / 2), Math.toRadians(145))
+
+                                .splineToLinearHeading(new Pose2d(-105, 19, Math.PI / 2), Math.toRadians(90))
 
 
                                 //GO TO SMALL TRIANGLE
 
                                 .setReversed(true)
-
-                                .splineTo(new Vector2d(-40, -50), Math.toRadians(-90))
+                                .splineToLinearHeading(new Pose2d(-41, -27, Math.toRadians(145)), Math.toRadians(90))
 
                                 .stopAndAdd(
                                         new SequentialAction(
-                                                robot.thirdShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition))
+                                                robot.fourthShootSequence()
+                                                //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
                                         )
-
-                                )*/
+                                )
 
 
                                 .build()
