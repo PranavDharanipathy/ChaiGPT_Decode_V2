@@ -1,26 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-/**
- * Wraps a motor instance to provide corrected velocity counts and allow reversing without changing the corresponding
- * slot's motor direction
- */
-
-/// FROM LEGACY ROADRUNNER (0.5.6)
 
 public class Encoder {
-
-    private final static int CPS_STEP = 0x10000;
-
-    private static double inverseOverflow(double input, double estimate) {
-        double real = input;
-        while (Math.abs(estimate - real) > CPS_STEP / 2.0) {
-            real += Math.signum(estimate - real) * CPS_STEP;
-        }
-        return real;
-    }
 
     public enum Direction {
         FORWARD(1),
@@ -38,23 +20,13 @@ public class Encoder {
     }
 
     private DcMotorEx motor;
-    private ElapsedTime timer = new ElapsedTime();
 
     private Direction direction;
-
-    private int lastPosition;
-    private double velocityEstimate;
-    private double lastUpdateTime;
-
     public Encoder(DcMotorEx motor) {
 
         this.motor = motor;
 
         this.direction = Direction.FORWARD;
-
-        this.lastPosition = 0;
-        this.velocityEstimate = 0.0;
-        this.lastUpdateTime = timer.seconds();
     }
 
     public Direction getDirection() {
@@ -71,33 +43,80 @@ public class Encoder {
 
     public int getCurrentPosition() {
         int multiplier = direction.getMultiplier();
-        int currentPosition = motor.getCurrentPosition() * multiplier;
-        if (currentPosition != lastPosition) {
-            double currentTime = timer.seconds();
-            double dt = currentTime - lastUpdateTime;
-            velocityEstimate = (currentPosition - lastPosition) / dt;
-            lastPosition = currentPosition;
-            lastUpdateTime = currentTime;
-        }
-        return currentPosition;
+        return motor.getCurrentPosition() * multiplier;
     }
 
-    public double getRawVelocity() {
+    public double getRawVelocityFromInternal() {
         int multiplier = direction.getMultiplier();
         return motor.getVelocity() * multiplier;
     }
 
-    //getCorrectedVelocity seems to return unstable values
+    private double filteredVelocity = 0;
 
-    public double getCorrectedVelocity() {
-        return inverseOverflow(getRawVelocity(), velocityEstimate);
+    private double kalmanGain = 0;
+
+    private double p = 1; //prediction step
+    private double q = 0; //uncertainty step
+    private double avgDt;
+    private double r = 0; //encoder uncertainty
+
+    private double outlierSigma = 1;
+    private double kRInflation = 1; //when outlier is caught
+
+    private boolean velocityKFInitialized = false;
+    public void initializeVelocityKalmanFilter(double q, double r, double outlierSigma, double kRInflation, double avgDt) {
+
+        velocityKFInitialized = true;
+
+        if (this.q != q || this.r != r) {
+            p = 1;
+        }
+
+        this.q = q;
+        this.avgDt = avgDt;
+        this.r = r;
+
+        this.outlierSigma = outlierSigma;
+        this.kRInflation = kRInflation;
     }
 
-    public double getCorrectedVelocity(double estimatedVelocity) {
-        return inverseOverflow(getRawVelocity(), estimatedVelocity);
+    /// Uses Kalman Filter.
+    /// @param velocityEstimate (curr_ticks - prev_ticks) / dt
+    public void runVelocityCalculation(double dt, double velocityEstimate/*, Telemetry telemetry*/) {
+
+        if (!velocityKFInitialized) throw new RuntimeException("Velocity Kalman Filter is not being used!");
+
+        double innovation = velocityEstimate - filteredVelocity;
+
+        double correctedQ = q * (dt / avgDt);
+        //telemetry.addData("correctedQ", correctedQ);
+
+        p += correctedQ;
+        //telemetry.addData("p", p);
+
+        double jump = p + r;
+
+        double correctedR = r; //deals with outliers
+        if (Math.abs(innovation) > outlierSigma * Math.sqrt(jump)) {
+            correctedR = kRInflation * r;
+        }
+
+        //telemetry.addData("correctedR", correctedR);
+
+        double kalmanGainDenominator = p + correctedR;
+        kalmanGain = kalmanGainDenominator != 0 ? p / kalmanGainDenominator : 0;
+        //telemetry.addData("kalmanGain", kalmanGain);
+
+        filteredVelocity += kalmanGain * innovation;
+        //telemetry.addData("filteredVelocity", filteredVelocity);
+
+        p *= (1 - kalmanGain);
     }
 
-    public double getVelocityEstimate() {
-        return velocityEstimate;
+    /// In ticks per second.
+    /// Using Kalman Filter.
+    /// @return The filtered velocity -- will return 0 if Kalman Filter wasn't initialized.
+    public double getRealVelocity() {
+        return filteredVelocity;
     }
 }

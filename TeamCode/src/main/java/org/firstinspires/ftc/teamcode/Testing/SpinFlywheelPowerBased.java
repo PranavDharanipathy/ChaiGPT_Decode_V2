@@ -47,7 +47,7 @@ public class SpinFlywheelPowerBased extends OpMode {
         leftFlywheel.setPower(LEFT_POWER);
         rightFlywheel.setPower(RIGHT_POWER);
 
-        telemetry.addData("encoder velocity", "corrected: %.4f, raw: %.4f, estimate: %.4f", encoder.getCorrectedVelocity(), encoder.getRawVelocity(), encoder.getVelocityEstimate());
+        telemetry.addData("encoder velocity", "cooked up raw: %.4f", encoder.getRawVelocityFromInternal());
         telemetry.addData("leftFlywheel power", leftFlywheel.getPower());
         telemetry.addData("rightFlywheel power", rightFlywheel.getPower());
         telemetry.update();

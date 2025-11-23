@@ -133,7 +133,16 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
         Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
         Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretCurrentPosition, turretStartPosition);
 
-        double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goal.GOAL_COORDINATES);
+        Goal.GoalCoordinate goalCoordinate;
+
+        if (robotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+            goalCoordinate = goal.GOAL_COORDINATES.getCloseCoordinate();
+        }
+        else {
+            goalCoordinate = goal.GOAL_COORDINATES.getFarCoordinate();
+        }
+
+        double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinate);
         double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET);
         double tt = route(rawtt);
 
