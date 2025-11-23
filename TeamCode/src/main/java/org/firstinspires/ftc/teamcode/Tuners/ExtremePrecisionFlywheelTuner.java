@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 @TeleOp (group = "tuning")
 public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
-    public static int LOOP_TIME = 50;
+    public static int LOOP_TIME = 70;
 
     public enum TUNING_STAGES {
 
@@ -29,7 +29,7 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
     public static TUNING_STAGES TUNING_STAGE = TUNING_STAGES.PIDFVAS;
 
     // Name of the hub that the motor is on.
-    public static String HUB_NAME = "";
+    public static String HUB_NAME = "Expansion Hub";
 
     public static double KP = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0];
     public static double KI = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
@@ -40,19 +40,19 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
     public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
     public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
     public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
-    public static double I_MIN = -Double.MAX_VALUE, I_MAX = Double.MAX_VALUE;
+    public static double I_MIN = Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, I_MAX = Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT;
 
     public static double VELOCITY;
     public static double BURST_VELOCITY;
 
-    public static double VELOCITY_MARGIN_OF_ERROR = 50;
-    public static double STABILITY_MARGIN_OF_ERROR = 50;
+    public static double VELOCITY_MARGIN_OF_ERROR = Constants.FLYWHEEL_VELOCITY_MARGIN_OF_ERROR;
+    public static double STABILITY_MARGIN_OF_ERROR = Constants.FLYWHEEL_STABILITY_MARGIN_OF_ERROR;
 
     public static double MASS_IN_GRAMS = ShooterInformation.ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT;
     public static double SHAFT_DIAMETER = ShooterInformation.ShooterConstants.SHAFT_DIAMETER;
     public static double MOTOR_CORE_VOLTAGE = ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE;
     public static double MOTOR_RPM = ShooterInformation.ShooterConstants.MOTOR_RPM;
-    public static double BURST_DECELERATION_RATE;
+    public static double BURST_DECELERATION_RATE = Constants.FLYWHEEL_BURST_DECELERATION_RATE;
 
     private ExtremePrecisionFlywheel flywheel;
 
@@ -127,7 +127,8 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
             currentPIDFUnits = flywheel.getPIDFVAS()[0] + flywheel.getPIDFVAS()[1] + flywheel.getPIDFVAS()[2] + flywheel.getPIDFVAS()[3];
 
             telemetry.addData("Target Velocity", flywheel.getTargetVelocity());
-            telemetry.addData("Velocity", flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("Real Velocity", flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("Velocity Estimate", flywheel.getCurrentVelocityEstimate());
             telemetry.addData("p", flywheel.getPIDFVAS()[0]);
             telemetry.addData("i", flywheel.getPIDFVAS()[1]);
             telemetry.addData("d", flywheel.getPIDFVAS()[2]);

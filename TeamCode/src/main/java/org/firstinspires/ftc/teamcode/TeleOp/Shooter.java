@@ -159,7 +159,7 @@ public class Shooter implements SubsystemInternal {
             flywheel.setVelocity(0, true);
         }
 
-        if (flywheel.getFrontendCalculatedVelocity() > launchZoneVelocity.getVelocity() - ShooterInformation.ShooterConstants.FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN) {
+        if (turret.getPositionError() < ShooterInformation.ShooterConstants.TURRET_TARGET_POSITION_ERROR_MARGIN) {
             controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
         else {
@@ -187,7 +187,16 @@ public class Shooter implements SubsystemInternal {
         robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
         Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretPosition, turretStartPosition);
 
-        double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinates);
+        Goal.GoalCoordinate goalCoordinate;
+
+        if (robotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+            goalCoordinate = goalCoordinates.getCloseCoordinate();
+        }
+        else {
+            goalCoordinate = goalCoordinates.getFarCoordinate();
+        }
+
+        double angleToGoal = Goal.getAngleToGoal(turretPose.position.x, turretPose.position.y, goalCoordinate);
         double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + turretAngularOffset);
         tt = route(rawtt);
 
@@ -197,16 +206,15 @@ public class Shooter implements SubsystemInternal {
         if (controller2.left_trigger(Constants.TRIGGER_THRESHOLD)) turret.setPosition(turretStartPosition);
         else turret.setPosition(targetPosition);
 
-        turret.update();
-
         //updating
-        if (timer.milliseconds() >= Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
-            //run instance of flywheel and turret systems
-            timer.reset();
-            flywheel.update();
-        }
-
         turret.update();
+        flywheel.update();
+//        if (timer.milliseconds() >= Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
+//            //run instance of flywheel and turret systems
+//            timer.reset();
+//            flywheel.update();
+//        }
+
     }
 
     private void manualUpdateHoodPositions() {

@@ -145,7 +145,7 @@ public class TurretBase {
     }
 
     public double getPositionError() {
-        return Math.abs(targetPosition - getCurrentPosition());
+        return Math.abs(error);
     }
 
     public double $getRawPositionError() {

@@ -183,25 +183,25 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0002, 0.0007, 0.0000072, 0.015, 0.0000235, 0.000000075, 0.0001, 0.9, 0.2
+            0.00001, 0.0000075, 0.000095, 0.015, 0.00000133, 0.0000000065, 0.00015, 0.9, 0.18
     };
 
-    public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 30;
+    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};
+
+    public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 25;
 
     public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.35;
-    public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 0.35;
+    public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 1;
 
-    public static double BURST_DECELERATION_RATE = 250;
+    public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
 
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00015, 0.0000001025, 0.017, 0.03, 0.31, 0.85, 0.965}; //{0.00014, 0.00000015, 0.0125, -0.06, 0.8, 1, 1}
+    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00013, 0.00000057, 0.0062, 0.024, 0.4, 0.9, 0.96}; //{0.00015, 0.0000001025, 0.017, 0.03, 0.31, 0.85, 0.965}
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
-
-    public static double TURRET_MANUAL_ADJUSTMENT = 0.1;
 
 }

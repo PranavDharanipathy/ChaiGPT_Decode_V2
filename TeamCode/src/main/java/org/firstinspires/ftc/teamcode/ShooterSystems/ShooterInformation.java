@@ -30,6 +30,9 @@ public final class ShooterInformation {
     /// All shooter constants
     public static class ShooterConstants {
 
+        /// Point that differentiates the turret pointing at the goal far/close position.
+        public static double FAR_ZONE_CLOSE_ZONE_BARRIER = -45;
+
         /// Weight of the entire shooter (turret) in grams
         public static double TURRET_WEIGHT = 2779;
 
@@ -59,10 +62,10 @@ public final class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 32_500;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 26_200;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 520_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 346_500;
 
-        public static double FLYWHEEL_SHOOT_VELOCITY_CONTROLLER_RUMBLE_MARGIN = 800;
+        public static double TURRET_TARGET_POSITION_ERROR_MARGIN = 50;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized

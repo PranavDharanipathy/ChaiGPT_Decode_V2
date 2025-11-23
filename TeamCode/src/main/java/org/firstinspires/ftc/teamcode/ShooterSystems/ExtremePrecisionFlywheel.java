@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 /// <p>S: Static Friction
 public final strictfp class ExtremePrecisionFlywheel {
 
-    private static final double EXTERNAL_ENCODER_VELOCITY_DIVISOR = 13.5617542039;
-
     private final Encoder encoder;
 
     private final DcMotorEx leftFlywheel; //has encoder
@@ -41,6 +39,13 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         encoder = new Encoder(leftFlywheel);
         encoder.setDirection(Encoder.Direction.REVERSE);
+        encoder.initializeVelocityKalmanFilter(
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[0],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[1],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[2],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[3],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[4]
+        );
 
         this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.rightFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -66,9 +71,9 @@ public final strictfp class ExtremePrecisionFlywheel {
     private double SHAFT_RADIUS;
 
     private double targetVelocity;
-    private double currentVelocity;
+    private double currentFilteredVelocity;
 
-    private double lastCurrentVelocity = 0;
+    private double lastCurrentFilteredVelocity = 0;
 
     private double burstVelocity = 0;
     private double BURST_DECELERATION_RATE;
@@ -178,6 +183,8 @@ public final strictfp class ExtremePrecisionFlywheel {
         targetVelocity += burstVelocity;
     }
 
+    private double velocityEstimate = 0;
+
     private boolean firstTick = true;
 
     private ElapsedTime timer = new ElapsedTime();
@@ -199,16 +206,18 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         burstVelocity = Math.max(0, burstVelocity - (BURST_DECELERATION_RATE * dt));
 
-        lastCurrentVelocity = currentVelocity;
+        lastCurrentFilteredVelocity = currentFilteredVelocity;
 
         lastPosition = currentPosition;
         currentPosition = encoder.getCurrentPosition();
 
-        currentVelocity = ((currentPosition - lastPosition) / dt) / EXTERNAL_ENCODER_VELOCITY_DIVISOR;
+        velocityEstimate = (currentPosition - lastPosition) / dt;
+        encoder.runVelocityCalculation(dt, velocityEstimate);
+        currentFilteredVelocity = encoder.getRealVelocity();
 
         //telemetry.addData("current vel", currentVelocity);
 
-        double error = targetVelocity - currentVelocity;
+        double error = targetVelocity - currentFilteredVelocity;
 
 
         //proportional
@@ -295,12 +304,19 @@ public final strictfp class ExtremePrecisionFlywheel {
     ///Calculated by external encoder using ticks
     /// <p>
     ///Gets past encoder overflow, if you're using a high resolution encoder like the REV Through-Bore, it's prone to these problems.
+    /// <p>
+    /// Uses Kalman Filter
     public double getFrontendCalculatedVelocity() {
-        return currentVelocity;
+        return currentFilteredVelocity;
+    }
+
+    /// @return distance in ticks / time in seconds => ticks per second
+    public double getCurrentVelocityEstimate() {
+        return currentFilteredVelocity;
     }
 
     public double getLastFrontendCalculatedVelocity() {
-        return lastCurrentVelocity;
+        return lastCurrentFilteredVelocity;
     }
 
     public double getBurstVelocity() {
@@ -327,9 +343,9 @@ public final strictfp class ExtremePrecisionFlywheel {
         boolean motorIsAtVelocityAndStable = false;
 
         double currentVelocity; //different for each type of calculation
-        currentVelocity = Math.abs(this.currentVelocity);
+        currentVelocity = Math.abs(this.currentFilteredVelocity);
 
-        if (Math.abs(Math.abs(targetVelocity - lastCurrentVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
+        if (Math.abs(Math.abs(targetVelocity - lastCurrentFilteredVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentFilteredVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
 
         return motorIsAtVelocityAndStable;
     }
@@ -351,9 +367,9 @@ public final strictfp class ExtremePrecisionFlywheel {
         prevTime = 0;
 
         targetVelocity = 0;
-        currentVelocity = 0;
+        currentFilteredVelocity = 0;
 
-        lastCurrentVelocity = 0;
+        lastCurrentFilteredVelocity = 0;
 
         lastPosition = 0;
         currentPosition = 0;
