@@ -31,7 +31,11 @@ import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 public class TurretTuning extends OpMode {
     public static double TURRET_POSITION = 0;
 
-    public static double[] HOOD_ANGLING = {0.11, 0.9};
+    //0.11 = hood fully forward/facing down
+
+    //0.9 = hood fully back(facing up)
+
+    public static double[] HOOD_ANGLES= {0.11, 0.9};
 
     public class RobotElements {
         public class AllUpdate implements Action {
@@ -104,56 +108,46 @@ public class TurretTuning extends OpMode {
         }
 
         //public double turretStartPosition;
-        public Action firstShootSequence() {
+        public Action Shoot() {
 
             return new SequentialAction(
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
-                    new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[0])),
-
+                    new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLES[0])),
                     waitFlywheelVel(3),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitFlywheelVel(2),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitFlywheelVel(2),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer()
-
-                    //setup for second
-                    //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                    transferArtifact()
             );
         }
 
     }
         public double turretStartPosition;
 
-    TurretBase turret = new TurretBase(hardwareMap);
-    ExtremePrecisionFlywheel flywheel = new ExtremePrecisionFlywheel(
-            hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName),
-            hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
-    );
+    TurretBase turret;
+    ExtremePrecisionFlywheel flywheel;
+    BasicVeloMotor transfer;
+    HoodAngler hoodAngler;
 
-    BasicVeloMotor transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
-    HoodAngler hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
 
 
     @Override
     public void init() {
+        turret = new TurretBase(hardwareMap);
+
+        flywheel = new ExtremePrecisionFlywheel(
+                hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName),
+                hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
+        );
+
+        transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
+        hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
+
+
 
 
 
     }
         @Override
         public void loop() {
-
-            init();
 
             final RobotElements robot = new RobotElements();
             Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
@@ -163,7 +157,9 @@ public class TurretTuning extends OpMode {
 
                     robot.setFlywheelToCloseSideVelocity();
 
-                    robot.firstShootSequence();
+                    //IF NEEDED, DRIVE TO LOCATION and then shoot
+
+
 
 
             turretStartPosition = turret.getCurrentPosition();
