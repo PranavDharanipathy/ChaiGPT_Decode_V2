@@ -27,7 +27,7 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball RED CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {6300, 6700 , 5800};
+    public static double[] TURRET_POSITIONS = {-3800, -6700 , -4000};
 
     public static double[] HOOD_ANGLING = {0.35, 0.04, 0.06};
     public class RobotElements {
@@ -69,7 +69,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 23500 && flywheel.getLastFrontendCalculatedVelocity() > 23500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 25500 && flywheel.getLastFrontendCalculatedVelocity() > 25500);
             }
 
 
@@ -82,7 +82,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(25600, true));
+            return new InstantAction(() -> flywheel.setVelocity(28600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -123,7 +123,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                     new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[0])),
 
-                    waitFlywheelVel(6),
+                    waitFlywheelVel(3),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
@@ -231,11 +231,41 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 //PRELOAD SPLINE
 
-                                .splineToLinearHeading(new Pose2d(-38, 26, Math.toRadians(0)), Math.toRadians(-225))
+                                .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(-180)), Math.toRadians(-225))
 
                                 .stopAndAdd(
-                                        robot.firstShootSequence()
+                                        new SequentialAction(
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+
+                                                robot.firstShootSequence(),
+                                                new InstantAction(() ->turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                                //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+
+                                        )
                                 )
+
+                                //FIRST INTAKE
+
+                                .splineToSplineHeading(new Pose2d(-31, 5, -Math.PI / 2), Math.PI)
+
+                                .splineToConstantHeading(new Vector2d(-31, -1), -Math.PI / 2)
+
+                                //GO TO BIG TRIANGLE
+
+                                .setReversed(true)
+                                .splineToSplineHeading(new Pose2d(-17, 28, -Math.PI), Math.toRadians(-90))
+
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                                                robot.secondShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                        )
+                                )
+
+                                //SECOND INTAKE
+
+                                .splineToLinearHeading(new Pose2d(-51, 5, -Math.PI / 2), -Math.PI)
 
 
 

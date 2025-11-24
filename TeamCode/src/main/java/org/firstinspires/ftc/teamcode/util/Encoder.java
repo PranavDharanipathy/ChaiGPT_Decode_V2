@@ -82,6 +82,7 @@ public class Encoder {
         return currentPosition;
     }
 
+
     public double getRawVelocity() {
         int multiplier = direction.getMultiplier();
         return motor.getVelocity() * multiplier;
