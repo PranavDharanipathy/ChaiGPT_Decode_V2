@@ -131,10 +131,6 @@ public class TurretTuning extends OpMode {
         }
 
     }
-
-
-
-
         public double turretStartPosition;
 
     TurretBase turret = new TurretBase(hardwareMap);
@@ -146,29 +142,17 @@ public class TurretTuning extends OpMode {
     BasicVeloMotor transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
     HoodAngler hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
+
+
     @Override
     public void init() {
 
-        this.turret = turret;
 
-        this.flywheel = flywheel;
-
-        this.transfer = transfer;
-
-        this.hoodAngler = hoodAngler;
 
     }
         @Override
         public void loop() {
 
-
-            this.turret = turret;
-
-            this.flywheel = flywheel;
-
-            this.transfer = transfer;
-
-            this.hoodAngler = hoodAngler;
             init();
 
             final RobotElements robot = new RobotElements();

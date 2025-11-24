@@ -27,9 +27,9 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball BLUE CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {6300, 6700 , 5800};
+    public static double[] TURRET_POSITIONS = {5900, 6300 , 5800, 6100};
 
-    public static double[] HOOD_ANGLING = {0.37, 0.04, 0.06};
+    public static double[] HOOD_ANGLING = {0.24, 0.26, 0.06};
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -69,7 +69,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 23500 && flywheel.getLastFrontendCalculatedVelocity() > 23500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 22500 && flywheel.getLastFrontendCalculatedVelocity() > 22500);
             }
 
 
@@ -82,7 +82,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(25600, true));
+            return new InstantAction(() -> flywheel.setVelocity(24600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -123,9 +123,9 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                     new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[0])),
 
-                    waitFlywheelVel(6),
+                    waitFlywheelVel(5),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
@@ -136,6 +136,11 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     waitFlywheelVel(2),
                     transferArtifact(),
                     new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitFlywheelVel(4),
+                    transferArtifact(),
+                    new SleepAction(0.5),
                     antiTransfer()
 
                     //setup for second
@@ -150,17 +155,22 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.7),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.7),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.7),
+                    antiTransfer(),
+
+                    waitFlywheelVel(2),
+                    transferArtifact(),
+                    new SleepAction(0.7),
                     antiTransfer()
 
                     //setup for third
@@ -174,17 +184,22 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.7),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.7),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.7),
+                    antiTransfer(),
+
+                    waitFlywheelVel(2),
+                    transferArtifact(),
+                    new SleepAction(0.7),
                     antiTransfer()
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
             );
@@ -195,17 +210,22 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.4),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.4),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.4),
+                    antiTransfer(),
+
+                    waitFlywheelVel(3),
+                    transferArtifact(),
+                    new SleepAction(0.4),
                     antiTransfer()
             );
         }
@@ -273,7 +293,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(
                                         new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[3])),
                                                 robot.secondShootSequence()
                                                 //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
                                         )
@@ -284,7 +304,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                                 .setReversed(false)
                                 .splineToLinearHeading(new Pose2d(-79, -15, Math.PI / 2), Math.toRadians(145))
 
-                                .splineToLinearHeading(new Pose2d(-79, 9, Math.PI / 2), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(-79, 11, Math.PI / 2), Math.toRadians(90))
 
                                 //GO TO BIG TRIANGLE
 
@@ -293,6 +313,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(
                                         new SequentialAction(
+                                                //new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
                                                 new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                                                 robot.thirdShootSequence()
                                                 //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
@@ -306,7 +327,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                 .splineToLinearHeading(new Pose2d(-105, -11, Math.PI / 2), Math.toRadians(145))
 
-                                .splineToLinearHeading(new Pose2d(-105, 16, Math.PI / 2), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(-105, 17, Math.PI / 2), Math.toRadians(90))
 
 
                                 //GO TO SMALL TRIANGLE
@@ -316,7 +337,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(
                                         new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[1])),
                                                 robot.fourthShootSequence()
                                                 //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
                                         )

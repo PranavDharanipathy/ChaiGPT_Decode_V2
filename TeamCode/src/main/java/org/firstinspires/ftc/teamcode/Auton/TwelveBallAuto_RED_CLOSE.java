@@ -29,7 +29,7 @@ import java.util.Vector;
 public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
     public static double[] TURRET_POSITIONS = {-3800, -6700 , -4000};
 
-    public static double[] HOOD_ANGLING = {0.35, 0.04, 0.06};
+    public static double[] HOOD_ANGLING = {0.23, 0.04, 0.06};
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -69,7 +69,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 25500 && flywheel.getLastFrontendCalculatedVelocity() > 25500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 27500 && flywheel.getLastFrontendCalculatedVelocity() > 27500);
             }
 
 
@@ -82,7 +82,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(28600, true));
+            return new InstantAction(() -> flywheel.setVelocity(31600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -246,9 +246,9 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 //FIRST INTAKE
 
-                                .splineToSplineHeading(new Pose2d(-31, 5, -Math.PI / 2), Math.PI)
+                                .splineToSplineHeading(new Pose2d(-33, 5, -Math.PI / 2), Math.PI)
 
-                                .splineToConstantHeading(new Vector2d(-31, -1), -Math.PI / 2)
+                                .splineToConstantHeading(new Vector2d(-33, -1), -Math.PI / 2)
 
                                 //GO TO BIG TRIANGLE
 
@@ -265,7 +265,8 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 //SECOND INTAKE
 
-                                .splineToLinearHeading(new Pose2d(-51, 5, -Math.PI / 2), -Math.PI)
+                                .splineToLinearHeading(new Pose2d(-58, -5, -Math.PI / 2), -Math.PI)
+                                .splineToConstantHeading(new Vector2d(-58, 5), -Math.PI / 2)
 
 
 
