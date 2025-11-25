@@ -46,7 +46,6 @@ public class TurretBaseTuner extends OpMode {
 
     @Override
     public void loop() {
-
         turret.setPosition(TARGET_POSITION);
         turret.setIConstraints(MIN_I, MAX_I);
         turret.updateCoefficients(KP, KI, KD, KF, KI_SMASH, KD_FILTER, KPOWER_FILTER);

@@ -1,14 +1,24 @@
 package org.firstinspires.ftc.teamcode.roadrunner.tuning;
 
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KD;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KD_FILTER;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KF;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KI;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KI_SMASH;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KP;
+import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KPOWER_FILTER;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -27,9 +37,18 @@ import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 
 @Config
-@TeleOp(name = "Turret Tuning", group="tuning")
+@TeleOp(group="tuning")
 public class TurretTuning extends OpMode {
-    public static double TURRET_POSITION = 0;
+
+    private double turretStartPosition;
+    private TurretBase  turret;
+    private ExtremePrecisionFlywheel flywheel;
+    private BasicVeloMotor transfer;
+    private HoodAngler hoodAngler;
+    private RobotElements robot = new RobotElements();
+    public double TURRET_POSITION = 300;
+
+    private MecanumDrive drive;
 
     //0.11 = hood fully forward/facing down
 
@@ -39,7 +58,7 @@ public class TurretTuning extends OpMode {
 
     public class RobotElements {
         public class AllUpdate implements Action {
-            private ElapsedTime timer = new ElapsedTime();
+            private final ElapsedTime timer = new ElapsedTime();
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -60,9 +79,9 @@ public class TurretTuning extends OpMode {
         }
 
         public class FlywheelWaitVel implements Action {
-            private ElapsedTime timer = new ElapsedTime();
+            private final ElapsedTime timer = new ElapsedTime();
 
-            private double minimumTime;
+            private final double minimumTime;
 
             public FlywheelWaitVel(double minimumTime) {
                 this.minimumTime = minimumTime;
@@ -72,7 +91,7 @@ public class TurretTuning extends OpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 25500 && flywheel.getLastFrontendCalculatedVelocity() > 25500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 22500 && flywheel.getLastFrontendCalculatedVelocity() > 22500);
             }
 
 
@@ -83,9 +102,10 @@ public class TurretTuning extends OpMode {
             return new RobotElements.AllUpdate();
         }
 
+
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(28600, true));
+            return new InstantAction(() -> flywheel.setVelocity(24600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -101,6 +121,7 @@ public class TurretTuning extends OpMode {
         public InstantAction transferArtifact() {
             return new InstantAction(() -> transfer.setVelocity(Constants.TRANSFER_VELOCITY));
         }
+
 
 
         public Action waitFlywheelVel(double minimumTime) {
@@ -119,21 +140,14 @@ public class TurretTuning extends OpMode {
         }
 
     }
-        public double turretStartPosition;
-
-    TurretBase turret;
-    ExtremePrecisionFlywheel flywheel;
-    BasicVeloMotor transfer;
-    HoodAngler hoodAngler;
-
-
 
 
     @Override
     public void init() {
-        turret = new TurretBase(hardwareMap);
+        telemetry.addData("STATUS: ", "In Progress");
+         turret = new TurretBase(hardwareMap);
 
-        flywheel = new ExtremePrecisionFlywheel(
+         flywheel = new ExtremePrecisionFlywheel(
                 hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName),
                 hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
         );
@@ -142,31 +156,46 @@ public class TurretTuning extends OpMode {
         hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
 
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
+        drive = new MecanumDrive(hardwareMap, initialPose);
+
+        robot = new RobotElements();
 
 
+
+
+        telemetry.addData("STATUS: ", "COMPLETE");
 
     }
+
         @Override
         public void loop() {
+                //IF NEEDED, DRIVE TO LOCATION and then shoot
+            turret.update();
+            flywheel.update();
 
-            final RobotElements robot = new RobotElements();
-            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
-            MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+                turret.setPosition(turretStartPosition + TURRET_POSITION);
+            robot.setFlywheelToCloseSideVelocity();
 
-            new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITION));
+            //flywheel.setVelocity(30000, true);
 
-                    robot.setFlywheelToCloseSideVelocity();
+            robot.Shoot();
 
-                    //IF NEEDED, DRIVE TO LOCATION and then shoot
+            telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
 
+            telemetry.addData("turret position", turret.getCurrentPosition());
 
+            telemetry.addData("Turret Target Position", (turretStartPosition + TURRET_POSITION));
+            telemetry.update();
 
 
             turretStartPosition = turret.getCurrentPosition();
 
-            //SHOOT!
-            telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-            telemetry.update();
+            turret.update();
+            flywheel.update();
+
+            robot.updates();
+
 
 
         }
