@@ -161,7 +161,7 @@ public class Constants {
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1600;
+    public static double TRANSFER_VELOCITY = 1790;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -250;
 
