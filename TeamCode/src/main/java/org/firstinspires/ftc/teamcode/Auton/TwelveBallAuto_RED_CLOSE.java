@@ -10,8 +10,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -27,9 +29,30 @@ import java.util.Vector;
 @Config
 @Autonomous (name = "12 Ball RED CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {-3800, -6700 , -4000};
+    public static double[] TURRET_POSITIONS = {-3600, -4700 , -4600};
 
-    public static double[] HOOD_ANGLING = {0.23, 0.04, 0.06};
+    //PRELOAD = [0]
+    //FIRST INTAKE = [2]
+    //SECOND INTAKE = [1]
+
+    public static double[] HOOD_ANGLING = {0.20, 0.19, 0};
+    //PRELOAD = [0]
+    // First intake = [0]
+    //SECOND INTAKE = [1]
+
+    public static double FLYWHEEL_VELOCITY = 19500;
+
+    public static double FIRSTX = -28;
+
+    public static double FIRSTY = -4;
+
+    public static double SECONDX = -56;
+
+    public static double SECONDY = -5.5;
+
+    //NOTE: ALL OF THEM USE [2]
+
+
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -69,7 +92,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 27500 && flywheel.getLastFrontendCalculatedVelocity() > 27500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY && flywheel.getLastFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY);
             }
 
 
@@ -82,7 +105,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(31600, true));
+            return new InstantAction(() -> flywheel.setVelocity(27600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -101,7 +124,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         //intake
         public InstantAction reverseIntake() {
-            return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
+            return new InstantAction(() -> intake.setVelocity(2700));
         }
 
 
@@ -123,19 +146,24 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                     new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[0])),
 
+                    waitFlywheelVel(1),
+                    transferArtifact(),
+                    new SleepAction(0.6),
+                    antiTransfer(),
+
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.6),
                     antiTransfer(),
 
-                    waitFlywheelVel(2),
+                    waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.8),
                     antiTransfer(),
 
-                    waitFlywheelVel(2),
+                    waitFlywheelVel(5),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(1.4),
                     antiTransfer()
 
                     //setup for second
@@ -148,19 +176,24 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
             return new SequentialAction(
 
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                    waitFlywheelVel(2),
+                    transferArtifact(),
+                    new SleepAction(0.6),
+                    antiTransfer(),
+
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.6),
                     antiTransfer(),
 
-                    waitFlywheelVel(2),
+                    waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.8),
                     antiTransfer(),
 
-                    waitFlywheelVel(2),
+                    waitFlywheelVel(5),
                     transferArtifact(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.8),
                     antiTransfer()
 
                     //setup for third
@@ -171,20 +204,27 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
         public Action thirdShootSequence() {
 
             return new SequentialAction(
+
+
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
-                    waitFlywheelVel(3),
+                    waitFlywheelVel(1),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.6),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.6),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.6),
+                    antiTransfer(),
+
+                    waitFlywheelVel(5),
+                    transferArtifact(),
+                    new SleepAction(0.6),
                     antiTransfer()
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
             );
@@ -204,6 +244,11 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                     antiTransfer(),
 
                     waitFlywheelVel(2),
+                    transferArtifact(),
+                    new SleepAction(0.6),
+                    antiTransfer(),
+
+                    waitFlywheelVel(5),
                     transferArtifact(),
                     new SleepAction(0.3),
                     antiTransfer()
@@ -235,7 +280,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(
                                         new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
 
                                                 robot.firstShootSequence(),
                                                 new InstantAction(() ->turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
@@ -246,9 +291,9 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 //FIRST INTAKE
 
-                                .splineToSplineHeading(new Pose2d(-33, 5, -Math.PI / 2), Math.PI)
+                                .splineToLinearHeading(new Pose2d(-28, 6, -Math.PI / 2), Math.PI, new TranslationalVelConstraint(140), new ProfileAccelConstraint(-90, 90))
 
-                                .splineToConstantHeading(new Vector2d(-33, -1), -Math.PI / 2)
+                                .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI / 2)
 
                                 //GO TO BIG TRIANGLE
 
@@ -257,16 +302,35 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(
                                         new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                                                 robot.secondShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
                                         )
                                 )
 
                                 //SECOND INTAKE
 
-                                .splineToLinearHeading(new Pose2d(-58, -5, -Math.PI / 2), -Math.PI)
-                                .splineToConstantHeading(new Vector2d(-58, 5), -Math.PI / 2)
+                                .setReversed(false)
+
+                                .splineToLinearHeading(new Pose2d(-56, 8, -Math.PI / 2), -Math.PI)
+                                .splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
+
+                                //GO TO BIG TRIANGLE
+
+                                .setReversed(true)
+
+                                .splineToSplineHeading(new Pose2d(-17, 28, -Math.PI), Math.toRadians(-90))
+
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                                robot.thirdShootSequence(),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
+                                        )
+                                )
+
+
 
 
 
