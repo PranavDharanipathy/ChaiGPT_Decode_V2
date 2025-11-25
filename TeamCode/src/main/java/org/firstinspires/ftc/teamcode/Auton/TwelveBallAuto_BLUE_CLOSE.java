@@ -29,7 +29,7 @@ import java.util.Vector;
 public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
     public static double[] TURRET_POSITIONS = {5900, 6300 , 5800, 6100};
 
-    public static double[] HOOD_ANGLING = {0.24, 0.26, 0.06};
+    public static double[] HOOD_ANGLING = {0.25, 0.27, 0};
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -155,22 +155,22 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer()
 
                     //setup for third
@@ -184,22 +184,22 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
                     waitFlywheelVel(3),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer(),
 
                     waitFlywheelVel(2),
                     transferArtifact(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.5),
                     antiTransfer()
                     //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
             );
@@ -244,7 +244,6 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
         Action mainPath =
                 new ParallelAction(
-
                         new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                         robot.intake(),
                         //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
