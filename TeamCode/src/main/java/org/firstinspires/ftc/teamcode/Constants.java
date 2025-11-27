@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.chaigptrobotics.shenanigans.Aura;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
@@ -165,8 +166,25 @@ public class Constants {
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -250;
 
+    // DIFFERENT TUNED VALUEs
+    public static double[] MECANUM_DRIVE_NORMAL_FEEDFORWARD  = {0.0003075, 0.9, 0.00008};
+
+    public static double[] MECANUM_DRIVE_FAST_FEEDFORWARD = {};
+
+    public static double[] MECANUM_DRIVE_NORMAL_GAINS = {};
+
+    public static double[] MECANUM_DRIVE_FAST_GAINS = {};
+
+    public static double[] MECANUM_DRIVE_NORMAL_VEL_GAINS = {};
+
+    public static double[] MECANUM_DRIVE_NORMAL_FAST_GAINS = {};
+
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
+
+
+
+
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 

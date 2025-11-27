@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.roadrunner.tuning;
 
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.NewMecanumDrive;
 
 @Autonomous (name = "RepetitiveSplineTuner")
 public final class RepetitiveSplineTuner extends LinearOpMode {
@@ -18,7 +14,7 @@ public final class RepetitiveSplineTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(0, 0, 0);
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+        NewMecanumDrive drive = new NewMecanumDrive(hardwareMap, startPose);
 
         if (isStopRequested()) return;
         waitForStart();

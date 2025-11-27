@@ -1,39 +1,24 @@
 package org.firstinspires.ftc.teamcode.roadrunner.tuning;
 
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KD;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KD_FILTER;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KF;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KI;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KI_SMASH;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KP;
-import static org.firstinspires.ftc.teamcode.Tuners.TurretBaseTuner.KPOWER_FILTER;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
+import org.firstinspires.ftc.teamcode.roadrunner.NewMecanumDrive;
 
 
 @Config
@@ -48,7 +33,7 @@ public class TurretTuning extends OpMode {
     private RobotElements robot = new RobotElements();
     public double TURRET_POSITION = 300;
 
-    private MecanumDrive drive;
+    private NewMecanumDrive drive;
 
     //0.11 = hood fully forward/facing down
 
@@ -157,7 +142,7 @@ public class TurretTuning extends OpMode {
 
 
         Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
-        drive = new MecanumDrive(hardwareMap, initialPose);
+        drive = new NewMecanumDrive(hardwareMap, initialPose);
 
         robot = new RobotElements();
 
@@ -171,11 +156,13 @@ public class TurretTuning extends OpMode {
         @Override
         public void loop() {
                 //IF NEEDED, DRIVE TO LOCATION and then shoot
+
+
+            turret.setPosition(turretStartPosition + TURRET_POSITION);
+            robot.setFlywheelToCloseSideVelocity();
+
             turret.update();
             flywheel.update();
-
-                turret.setPosition(turretStartPosition + TURRET_POSITION);
-            robot.setFlywheelToCloseSideVelocity();
 
             //flywheel.setVelocity(30000, true);
 
