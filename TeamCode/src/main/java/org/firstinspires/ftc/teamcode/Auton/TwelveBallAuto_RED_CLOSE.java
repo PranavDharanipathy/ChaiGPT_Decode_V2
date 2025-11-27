@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -17,38 +15,35 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-import java.util.Vector;
-
 
 @Config
 @Autonomous (name = "12 Ball RED CLOSE(AUTO)", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
-    public static double[] TURRET_POSITIONS = {-3600, -4700 , -4600};
+    public static double[] TURRET_POSITIONS = {-3800, -4100 , -4200};
 
     //PRELOAD = [0]
     //FIRST INTAKE = [2]
     //SECOND INTAKE = [1]
 
-    public static double[] HOOD_ANGLING = {0.20, 0.19, 0};
+    public static double[] HOOD_ANGLING = {0.11, 0.13, 0};
     //PRELOAD = [0]
     // First intake = [0]
     //SECOND INTAKE = [1]
 
-    public static double FLYWHEEL_VELOCITY = 19500;
+    public static double FLYWHEEL_VELOCITY = 10;
 
     public static double FIRSTX = -28;
 
-    public static double FIRSTY = -4;
+    public static double FIRSTY = -2;
 
-    public static double SECONDX = -56;
+    public static double SECONDX = -52;
 
-    public static double SECONDY = -5.5;
+    public static double SECONDY = -7.8;
 
     //NOTE: ALL OF THEM USE [2]
 
@@ -105,7 +100,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(27600, true));
+            return new InstantAction(() -> flywheel.setVelocity(100, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -124,7 +119,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         //intake
         public InstantAction reverseIntake() {
-            return new InstantAction(() -> intake.setVelocity(2700));
+            return new InstantAction(() -> intake.setVelocity(2900));
         }
 
 
@@ -291,9 +286,22 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 //FIRST INTAKE
 
-                                .splineToLinearHeading(new Pose2d(-28, 6, -Math.PI / 2), Math.PI, new TranslationalVelConstraint(140), new ProfileAccelConstraint(-90, 90))
+                                .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
 
-                                .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI / 2)
+                                .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
+
+                                .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI, new TranslationalVelConstraint(50), new ProfileAccelConstraint(-90, 90))
+
+                                //OPEN GATE
+
+                                .splineToConstantHeading(new Vector2d(-47, 25), Math.toRadians(-90))
+
+                                .splineToLinearHeading(new Pose2d(-47, -3, Math.toRadians(90)), -Math.PI / 2)
+
+                                .waitSeconds(2.5)
+
+
+
 
                                 //GO TO BIG TRIANGLE
 
@@ -312,14 +320,14 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                                 .setReversed(false)
 
-                                .splineToLinearHeading(new Pose2d(-56, 8, -Math.PI / 2), -Math.PI)
+                                .splineToLinearHeading(new Pose2d(-52, 28, -Math.PI / 2), -Math.PI / 2)
                                 .splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
 
                                 //GO TO BIG TRIANGLE
 
                                 .setReversed(true)
 
-                                .splineToSplineHeading(new Pose2d(-17, 28, -Math.PI), Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(-34, 23, -Math.PI), Math.toRadians(-90))
 
                                 .stopAndAdd(
                                         new SequentialAction(
@@ -327,6 +335,30 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                                                 new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
                                                 robot.thirdShootSequence(),
                                                 new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
+                                        )
+                                )
+
+                                //THIRD INTAKE
+
+                                .setReversed(false)
+
+                                .splineToLinearHeading(new Pose2d(-76, 29, -Math.PI / 2), -Math.PI / 2)
+
+                                .splineToConstantHeading(new Vector2d(-76, -7.5), -Math.PI / 2)
+
+
+                                //GO TO BIG TRIANGLE
+
+                                .setReversed(true)
+
+                                .splineToSplineHeading(new Pose2d(-38, 23, -Math.PI), Math.toRadians(-90))
+
+                                .stopAndAdd(
+                                        new SequentialAction(
+                                                new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
+                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                                robot.fourthShootSequence()
+                                                //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
                                         )
                                 )
 
