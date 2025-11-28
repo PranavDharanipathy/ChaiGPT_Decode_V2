@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
+import static android.os.Build.VERSION_CODES.R;
+
+import static com.sun.tools.doclint.HtmlTag.P;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -11,6 +15,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -19,6 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.NewMecanumDrive;
 
 
 @Config
@@ -260,107 +266,123 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         final RobotElements robot = new RobotElements();
         Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        NewMecanumDrive drive = new NewMecanumDrive(hardwareMap, initialPose);
+
+
+        //DEFINING EXPERIMENTAL FIRST INTAKE TRAJECTORY
+        TrajectoryActionBuilder firstIntake = drive.actionBuilder(initialPose)
+
+                .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
+
+                .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
+
+                .splineToConstantHeading(new Vector2d(-28, -2), -Math.PI)
+
+                .endTrajectory().fresh();
+
 
         Action mainPath =
-                new ParallelAction(
 
-                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
-                        robot.intake(),
-                        drive.actionBuilder(initialPose)
+        new ParallelAction(
 
-                                //PRELOAD SPLINE
+                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                robot.intake(),
+                drive.actionBuilder(initialPose)
+                        //PRELOAD SPLINE
 
-                                .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(-180)), Math.toRadians(-225))
+                        .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(-180)), Math.toRadians(-225))
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                        .stopAndAdd(
+                                new SequentialAction(
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                                        robot.firstShootSequence(),
+                                        new InstantAction(() ->turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
+                                        //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
 
-                                                robot.firstShootSequence(),
-                                                new InstantAction(() ->turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
-                                                //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0]))
-
-                                        )
                                 )
+                        )
 
-                                //FIRST INTAKE
+                        //FIRST INTAKE
 
-                                .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
+                        .stopAndAdd(firstIntake.build())
 
-                                .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
+                       /* .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
 
-                                .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI, new TranslationalVelConstraint(50), new ProfileAccelConstraint(-90, 90))
+                        .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
 
-                                //OPEN GATE
-
-                                .splineToConstantHeading(new Vector2d(-47, 25), Math.toRadians(-90))
-
-                                .splineToLinearHeading(new Pose2d(-47, -3, Math.toRadians(90)), -Math.PI / 2)
-
-                                .waitSeconds(2.5)
+                        .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI, new TranslationalVelConstraint(50), new ProfileAccelConstraint(-90, 90))
+                             */
 
 
+                        //OPEN GATE
+
+                        .splineToConstantHeading(new Vector2d(-47, 25), Math.toRadians(-90))
+
+                        .splineToLinearHeading(new Pose2d(-47, -3, Math.toRadians(90)), -Math.PI / 2)
+
+                        .waitSeconds(2.5)
 
 
-                                //GO TO BIG TRIANGLE
 
-                                .setReversed(true)
-                                .splineToSplineHeading(new Pose2d(-17, 28, -Math.PI), Math.toRadians(-90))
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
-                                                robot.secondShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
-                                        )
+                        //GO TO BIG TRIANGLE
+
+                        .setReversed(true)
+                        .splineToSplineHeading(new Pose2d(-17, 28, -Math.PI), Math.toRadians(-90))
+
+                        .stopAndAdd(
+                                new SequentialAction(
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                        robot.secondShootSequence(),
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
                                 )
+                        )
 
-                                //SECOND INTAKE
+                        //SECOND INTAKE
 
-                                .setReversed(false)
+                        .setReversed(false)
 
-                                .splineToLinearHeading(new Pose2d(-52, 28, -Math.PI / 2), -Math.PI / 2)
-                                .splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
+                        .splineToLinearHeading(new Pose2d(-52, 28, -Math.PI / 2), -Math.PI / 2)
+                        .splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
 
-                                //GO TO BIG TRIANGLE
+                        //GO TO BIG TRIANGLE
 
-                                .setReversed(true)
+                        .setReversed(true)
 
-                                .splineToSplineHeading(new Pose2d(-34, 23, -Math.PI), Math.toRadians(-90))
+                        .splineToSplineHeading(new Pose2d(-34, 23, -Math.PI), Math.toRadians(-90))
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-                                                new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
-                                                robot.thirdShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
-                                        )
+                        .stopAndAdd(
+                                new SequentialAction(
+                                        new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                        robot.thirdShootSequence(),
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
                                 )
+                        )
 
-                                //THIRD INTAKE
+                        //THIRD INTAKE
 
-                                .setReversed(false)
+                        .setReversed(false)
 
-                                .splineToLinearHeading(new Pose2d(-76, 29, -Math.PI / 2), -Math.PI / 2)
+                        .splineToLinearHeading(new Pose2d(-76, 29, -Math.PI / 2), -Math.PI / 2)
 
-                                .splineToConstantHeading(new Vector2d(-76, -7.5), -Math.PI / 2)
+                        .splineToConstantHeading(new Vector2d(-76, -7.5), -Math.PI / 2)
 
 
-                                //GO TO BIG TRIANGLE
+                        //GO TO BIG TRIANGLE
 
-                                .setReversed(true)
+                        .setReversed(true)
 
-                                .splineToSplineHeading(new Pose2d(-38, 23, -Math.PI), Math.toRadians(-90))
+                        .splineToSplineHeading(new Pose2d(-38, 23, -Math.PI), Math.toRadians(-90))
 
-                                .stopAndAdd(
-                                        new SequentialAction(
-                                                new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
-                                                robot.fourthShootSequence()
-                                                //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
-                                        )
+                        .stopAndAdd(
+                                new SequentialAction(
+                                        new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[1])),
+                                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2])),
+                                        robot.fourthShootSequence()
+                                        //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
                                 )
+                        )
 
 
 
@@ -383,8 +405,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                         //new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[1])),
 
 
-                        robot.setFlywheelToCloseSideVelocity(),
-                        robot.updates(),
+                        robot.setFlywheelToCloseSideVelocity(),                   robot.updates(),
 
                         robot.antiTransfer(),
                         mainPath
