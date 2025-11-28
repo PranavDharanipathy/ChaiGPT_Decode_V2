@@ -35,9 +35,9 @@ public class NikhilTestAutonPaths extends AutonomousBaseOpMode {
 
 
 
-        public NikhilTestAutonPaths(PATHNAME userChoice) {
-        this.userChoice = userChoice;
-            }
+    public NikhilTestAutonPaths(PATHNAME userChoice) {
+    this.userChoice = userChoice;
+        }
 
 
     public enum PATHNAME {
@@ -68,7 +68,7 @@ public class NikhilTestAutonPaths extends AutonomousBaseOpMode {
         System.out.println("NOTE: ANGLES MUST BE NEGATIVE");
 
         telemetry.speak("WELCOME TO THE AUTON PATH VISUALIZER!");
-        telemetry.speak("This was created to help you better visualize auton paths(obviously🤣)");
+        telemetry.speak("This was created to help you better visualize auton paths!");
 
         telemetry.addData("", "WELCOME TO THE AUTON PATH VISUALIZER!");
         telemetry.addData("", "To get started, use the key below:");
@@ -117,10 +117,6 @@ public class NikhilTestAutonPaths extends AutonomousBaseOpMode {
             else if (userChoice == PATHNAME.CONSTANT) {
                 Actions.runBlocking(splineToConstant);
             }
-
-
-
-
         else {
             System.out.println("PATH NAME NOT FOUND. PLEASE USE A NAME FROM THE KEY ABOVE.");
             telemetry.speak("PATH NAME NOT FOUND. PLEASE USE A NAME FROM THE KEY ABOVE.");
