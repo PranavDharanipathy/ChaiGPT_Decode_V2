@@ -17,4 +17,13 @@ public class InterpolationData {
 
         dataPoints = new double[][] {dataPoint1, dataPoint2, dataPoint3};
     }
+
+    /**
+     * @param dataPoint1 minimum
+     * @param dataPoint2 maximum
+     **/
+    public InterpolationData(double[] dataPoint1, double[] dataPoint2) {
+
+        dataPoints = new double[][] {dataPoint1, dataPoint2};
+    }
 }

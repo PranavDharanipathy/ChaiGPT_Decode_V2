@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.util;
 
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.Arrays;
+
 public strictfp class MathUtil {
 
     private MathUtil() {}
@@ -84,4 +86,36 @@ public strictfp class MathUtil {
 
         return Math.abs(deltaValue) < deadbandValue ? currentValue : targetValue;
     }
+
+    public static boolean valueWithinRange(double value, double minRange, double maxRange) {
+        return value > minRange && value < maxRange;
+    }
+
+    public static boolean valueWithinRangeIncludingPoles(double value, double minRange, double maxRange) {
+        return value >= minRange && value <= maxRange;
+    }
+
+    public static Double[] findBoundingValues(Double[] array, double value) {
+
+        Arrays.sort(array);
+
+        if (array.length < 2) {
+            return null;
+        }
+        if (value < array[0] || value > array[array.length - 1]) {
+            return null;
+        }
+
+        for (int index = 0; index < array.length - 1; index++) {
+            double lower = array[index];
+            double upper = array[index + 1];
+
+            if (value >= lower && value <= upper) {
+                return new Double[] {lower, upper};
+            }
+        }
+
+        return null;
+    }
+
 }
