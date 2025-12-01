@@ -36,12 +36,12 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
     //FIRST INTAKE = [2]
     //SECOND INTAKE = [1]
 
-    public static double[] HOOD_ANGLING = {0.11, 0.13, 0};
+    public static double[] HOOD_ANGLING = {0.18, 0.13, 0};
     //PRELOAD = [0]
     // First intake = [0]
     //SECOND INTAKE = [1]
 
-    public static double FLYWHEEL_VELOCITY = 10;
+    public static double FLYWHEEL_VELOCITY = 131500;
 
     public static double SECONDX = -52;
 
@@ -101,7 +101,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(100, true));
+            return new InstantAction(() -> flywheel.setVelocity(135500, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -260,8 +260,8 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
         fullInit();
 
         final RobotElements robot = new RobotElements();
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
-        NewMecanumDrive drive = new NewMecanumDrive(hardwareMap, initialPose);
+        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(135));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         //DEFINING EXPERIMENTAL FIRST INTAKE TRAJECTORY
@@ -285,7 +285,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                 drive.actionBuilder(initialPose)
                         //PRELOAD SPLINE
 
-                        .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(-180)), Math.toRadians(-225))
+                        .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(180)), Math.toRadians(135))
 
                         .stopAndAdd(
                                 new SequentialAction(
