@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.util;
 
-/// Interpolation in mathematics
-/// <p>
 public class LagrangeInterpolator {
 
     private LagrangeInterpolator() {}
 
-    public double estimateValue(double x, InterpolationData data) {
+    public static double estimateValue(double x, InterpolationData data) {
+
+        if (data.dataPoints.length != 3) throw new IllegalArgumentException("Interpolation data must have 3 data points.");
 
         double x1 = data.dataPoints[0][0];
         double x2 = data.dataPoints[1][0];

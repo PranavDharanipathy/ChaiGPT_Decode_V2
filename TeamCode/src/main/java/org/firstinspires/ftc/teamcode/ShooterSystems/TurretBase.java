@@ -17,8 +17,15 @@ public class TurretBase {
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    private double kp, ki, kd, kf, kISmash, kDFilter, kPowerFilter;
-    public double p, i, d, ff;
+    private double kp, ki, kd, ks, kISmash, kDFilter, kPowerFilter;
+    private Double kf;
+    private double realKf;
+
+    public double getRealKf() { return realKf; }
+
+    private double lanyardEquilibrium;
+    public double errorSum;
+    public double p, i, d, f, s;
 
     public double filteredDerivative = 0;
     public double filteredPower = 0;
@@ -39,7 +46,6 @@ public class TurretBase {
 
         // first targetPosition is the position it starts at
         lastTargetPosition = targetPosition = startPosition = encoder.getCurrentPosition();
-        directionOfMovement = 1;
     }
 
     public void reverse() {
@@ -50,24 +56,25 @@ public class TurretBase {
         rightTurretBase.setDirection(direction);
     }
 
-    public void setPIDFCoefficients(double kp, double ki, double kd, double kf, double kISmash, double kDFilter, double kPowerFilter) {
+    public void setPIDFCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium) {
 
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.kf = kf;
+        this.ks = ks;
 
         this.kISmash = kISmash;
 
         this.kDFilter = kDFilter;
         this.kPowerFilter = kPowerFilter;
+
+        this.lanyardEquilibrium = lanyardEquilibrium;
     }
 
     private double startPosition;
     private double lastTargetPosition;
     private double targetPosition;
-
-    private double directionOfMovement;
 
     private double MAX_I = Double.MAX_VALUE;
     private double MIN_I = -Double.MAX_VALUE;
@@ -84,8 +91,6 @@ public class TurretBase {
 
             lastTargetPosition = targetPosition;
             targetPosition = position;
-
-            directionOfMovement = targetPosition >= lastTargetPosition ? 1 : -1;
         }
     }
 
@@ -115,9 +120,8 @@ public class TurretBase {
         p = kp * error;
 
         //integral
-        i += ki * error * dt;
-        i = MathUtil.clamp(i, MIN_I, MAX_I);
-        if (Math.signum(prevError) != Math.signum(error)) i *= kISmash;
+        errorSum += error * dt;
+        if (Math.signum(prevError) != Math.signum(error)) errorSum *= kISmash;
 
         //derivative
         double rawDerivative = (error - prevError) / dt;
@@ -126,19 +130,61 @@ public class TurretBase {
 
         //feedforward
         double reZeroedTargetPosition = targetPosition + startPosition;
-        ff = usingFeedforward ? kf * directionOfMovement * Math.cos(Math.toRadians(reZeroedTargetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
 
-        double rawPower = p + i + d + ff;
+        double movementDirection;
+        if (currentPosition >= targetPosition) movementDirection = 1;
+        else movementDirection = -1;
+
+        // if the turret moves a certain amount beyond it's target position, the feedforward is shut off until it moves back within a range after which the feedforward is enabled again.
+        boolean feedforwardOverride = movementDirection == 1
+                ? error <= -ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE
+                : error >= ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE;
+
+        setUsingFeedforwardState(!feedforwardOverride);
+
+        if (kf != null) {
+            realKf = kf;
+        }
+        else if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.get(0), ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.get(ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.size() - 1))) {
+            realKf = ShooterInformation.Calculator.getTurretFeedforwardCoefficientFromInterpolation(reZeroedTargetPosition);
+        }
+        else {
+            realKf = ShooterInformation.Calculator.getTurretFeedforwardCoefficientFromRegression(reZeroedTargetPosition);
+        }
+
+        f = usingFeedforward ? realKf * (reZeroedTargetPosition - lanyardEquilibrium) : 0;
+
+        s = ks * Math.signum(error);
+
+        i = MathUtil.clamp(ki * errorSum, MIN_I, MAX_I);
+
+        double rawPower = p + i + d + f + s;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
 
-        leftTurretBase.setPower(filteredPower);
-        rightTurretBase.setPower(filteredPower);
+        if (powerOverride != null) {
+            leftTurretBase.setPower(powerOverride);
+            rightTurretBase.setPower(powerOverride);
+        }
+        else {
+            leftTurretBase.setPower(filteredPower);
+            rightTurretBase.setPower(filteredPower);
+        }
 
         prevTime = currTime;
         prevError = error;
     }
 
+    private Double powerOverride = null;
+
+    public void overridePower(Double power) {
+        powerOverride = power;
+    }
+
     private boolean usingFeedforward = true;
+
+    public boolean isUsingFeedforward() {
+        return usingFeedforward;
+    }
 
     public void setUsingFeedforwardState(boolean usingFeedforward) {
         this.usingFeedforward = usingFeedforward;
@@ -156,23 +202,27 @@ public class TurretBase {
         return new double[] {leftTurretBase.getPower(), rightTurretBase.getPower()};
     }
 
+    /// Sets the power to zero for this instance, if the update function sets power later, that power will be set.
     public void $stopTurret() {
         leftTurretBase.setPower(0);
         rightTurretBase.setPower(0);
     }
 
     /// used for tuning
-    public void updateCoefficients(double kp, double ki, double kd, double kf, double kISmash, double kDFilter, double kPowerFilter) {
+    public void updateCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium) {
 
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
         this.kf = kf;
+        this.ks = ks;
 
         this.kISmash = kISmash;
 
         this.kDFilter = kDFilter;
         this.kPowerFilter = kPowerFilter;
+
+        this.lanyardEquilibrium = lanyardEquilibrium;
     }
 
 }
