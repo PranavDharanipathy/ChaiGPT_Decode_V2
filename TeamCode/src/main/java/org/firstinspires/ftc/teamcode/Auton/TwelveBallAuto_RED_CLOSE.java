@@ -41,7 +41,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
     // First intake = [0]
     //SECOND INTAKE = [1]
 
-    public static double FLYWHEEL_VELOCITY = 131500;
+    public static double FLYWHEEL_VELOCITY = 21500;
 
     public static double SECONDX = -52;
 
@@ -264,18 +264,6 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
-        //DEFINING EXPERIMENTAL FIRST INTAKE TRAJECTORY
-        TrajectoryActionBuilder firstIntake = drive.actionBuilder(initialPose)
-
-                .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
-
-                .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
-
-                .splineToConstantHeading(new Vector2d(-28, -2), -Math.PI)
-
-                .endTrajectory();
-
-
         Action mainPath =
 
         new ParallelAction(
@@ -284,6 +272,8 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                 robot.intake(),
                 drive.actionBuilder(initialPose)
                         //PRELOAD SPLINE
+
+                        .splineToConstantHeading(new Vector2d(-17, 28), Math.toRadians(135))
 
                         .splineToLinearHeading(new Pose2d(-17, 28, Math.toRadians(180)), Math.toRadians(135))
 
@@ -299,23 +289,21 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                         //FIRST INTAKE
 
-                        .stopAndAdd(firstIntake.build())
+                       .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
 
-                       /* .splineToConstantHeading(new Vector2d(-26, 31), Math.PI)
+                        //.splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
 
-                        .splineToLinearHeading(new Pose2d(-28, 21, -Math.PI / 2), Math.PI)
-
-                        .splineToConstantHeading(new Vector2d(FIRSTX, FIRSTY), -Math.PI, new TranslationalVelConstraint(50), new ProfileAccelConstraint(-90, 90))
-                             */
-
+                        .splineToSplineHeading(new Pose2d(-28, 2, -Math.PI / 2), Math.PI)
 
                         //OPEN GATE
 
-                        .splineToConstantHeading(new Vector2d(-47, 25), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(-47, -7), Math.toRadians(-90))
 
-                        .splineToLinearHeading(new Pose2d(-47, -3, Math.toRadians(90)), -Math.PI / 2)
+                        .splineToLinearHeading(new Pose2d(-47, 13, Math.toRadians(90)), -Math.PI / 2)
 
                         .waitSeconds(2.5)
+
+                        .splineToConstantHeading(new Vector2d(-47, -2), Math.toRadians(-90))
 
 
 
@@ -337,14 +325,22 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                         .setReversed(false)
 
-                        .splineToLinearHeading(new Pose2d(-52, 28, -Math.PI / 2), -Math.PI / 2)
-                        .splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
+                        .splineToConstantHeading(new Vector2d(-52, -7.8), Math.PI)
+
+                        .splineToLinearHeading(new Pose2d(-52, 23, -Math.PI / 2), Math.PI)
+
+                        //.splineToLinearHeading(new Pose2d(-52, 28, -Math.PI / 2), -Math.PI / 2)
+                        //.splineToConstantHeading(new Vector2d(SECONDX, SECONDY), -Math.PI / 2)
 
                         //GO TO BIG TRIANGLE
 
                         .setReversed(true)
 
-                        .splineToSplineHeading(new Pose2d(-34, 23, -Math.PI), Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(-52, -3, Math.PI), -Math.PI / 2)
+
+                        .splineToConstantHeading(new Vector2d(-34, 23), Math.PI)
+
+                        //.splineToSplineHeading(new Pose2d(-34, 23, -Math.PI), Math.toRadians(-90))
 
                         .stopAndAdd(
                                 new SequentialAction(
@@ -359,9 +355,11 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                         .setReversed(false)
 
-                        .splineToLinearHeading(new Pose2d(-76, 29, -Math.PI / 2), -Math.PI / 2)
+                        .splineToConstantHeading(new Vector2d(-76, -3), Math.PI)
 
-                        .splineToConstantHeading(new Vector2d(-76, -7.5), -Math.PI / 2)
+                        .splineToLinearHeading(new Pose2d(-76, 29, -Math.PI / 2), Math.PI)
+
+                        //.splineToConstantHeading(new Vector2d(-76, -7.5), -Math.PI / 2)
 
 
                         //GO TO BIG TRIANGLE
