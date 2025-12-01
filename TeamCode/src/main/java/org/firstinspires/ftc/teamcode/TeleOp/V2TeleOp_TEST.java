@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
-import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @Config
@@ -76,14 +75,6 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 
-            double m = universalTimer.seconds() / 60d;
-            long lm = (long) universalTimer.seconds() / 60;
-            double s = (m - lm) * 60;
-            long ls = (long) (m - lm) * 60;
-            long lms = (long) MathUtil.secondsToMilliseconds(s - ls);
-
-            telemetry.addData("Elapsed Time", "m %.1f s %.1f ms %.1f", lm, ls, lms);
-
             telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
             telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
@@ -96,9 +87,6 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
 
             telemetry.addData("turret position error", shooter.turret.$getRawPositionError());
-            telemetry.addData("turret current position", shooter.turret.getCurrentPosition());
-            telemetry.addData("turret target position", shooter.turret.getTargetPosition());
-            telemetry.addData("turret is using ff", shooter.turret.isUsingFeedforward());
 
             telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
 

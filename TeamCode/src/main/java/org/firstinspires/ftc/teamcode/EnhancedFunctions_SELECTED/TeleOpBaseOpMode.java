@@ -152,15 +152,13 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
 
         turret.setPIDFCoefficients(
-                Constants.TURRET_PIDFS_COEFFICIENTS[0],
-                Constants.TURRET_PIDFS_COEFFICIENTS[1],
-                Constants.TURRET_PIDFS_COEFFICIENTS[2],
-                Constants.TURRET_PIDFS_COEFFICIENTS[3],
-                Constants.TURRET_PIDFS_COEFFICIENTS[4],
-                Constants.TURRET_PIDFS_COEFFICIENTS[5],
-                Constants.TURRET_PIDFS_COEFFICIENTS[6],
-                Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+                Constants.TURRET_PIDF_COEFFICIENTS[0],
+                Constants.TURRET_PIDF_COEFFICIENTS[1],
+                Constants.TURRET_PIDF_COEFFICIENTS[2],
+                Constants.TURRET_PIDF_COEFFICIENTS[3],
+                Constants.TURRET_PIDF_COEFFICIENTS[4],
+                Constants.TURRET_PIDF_COEFFICIENTS[5],
+                Constants.TURRET_PIDF_COEFFICIENTS[6]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
         turret.reverse();

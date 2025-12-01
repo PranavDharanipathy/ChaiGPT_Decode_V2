@@ -32,7 +32,6 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -52,15 +51,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+/// Used Rev9AxisImu instead of internal imu
 @Config
 public final class CustomMecanumDrive {
-
     public static class Params {
-
-        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
         public double inPerTick = 0.00196216198; //99.978% accuracy
@@ -110,7 +104,7 @@ public final class CustomMecanumDrive {
 
     public final VoltageSensor voltageSensor;
 
-    public final LazyImu lazyImu;
+    public final Rev9AxisImu rev9AxisImu;
 
     public final Localizer localizer;
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
@@ -122,7 +116,7 @@ public final class CustomMecanumDrive {
 
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftBack, rightBack, rightFront;
-        public final IMU imu;
+        public final Rev9AxisImu imu;
 
         private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
         private Rotation2d lastHeading;
@@ -135,7 +129,7 @@ public final class CustomMecanumDrive {
             rightBack = new OverflowEncoder(new RawEncoder(CustomMecanumDrive.this.rightBack));
             rightFront = new OverflowEncoder(new RawEncoder(CustomMecanumDrive.this.rightFront));
 
-            imu = lazyImu.get();
+            imu = rev9AxisImu;
 
             // TODO: reverse encoders if needed
             //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -242,8 +236,8 @@ public final class CustomMecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
-                PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+        rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
+        rev9AxisImu.initialize(Constants.IMUConstants.getRev9AxisIMUParams());
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 

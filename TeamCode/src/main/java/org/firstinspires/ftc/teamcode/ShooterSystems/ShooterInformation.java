@@ -7,12 +7,6 @@ import com.chaigptrobotics.systems.DeprecatedSystem;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.util.InterpolationData;
-import org.firstinspires.ftc.teamcode.util.LinearInterpolator;
-import org.firstinspires.ftc.teamcode.util.MathUtil;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Config
 public final class ShooterInformation {
@@ -78,12 +72,7 @@ public final class ShooterInformation {
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
-        public static double TURRET_DEADBAND_TICKS = 0.075 * 73.5179487179;
-
-        public static double TURRET_HOLD_OVERRIDE = 65;
-
-        public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
-        public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002405, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.000003);
+        public static double TURRET_DEADBAND_TICKS = 0.2 * 73.5179487179;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 20;
 
@@ -141,48 +130,6 @@ public final class ShooterInformation {
                     turretY,
                     turretHeading
             );
-        }
-
-        public static double getTurretFeedforwardCoefficientFromRegression(double reZeroedTargetPosition) {
-
-            return
-                    (1.56194 * 1e-20) * FastMath.pow(reZeroedTargetPosition, 4) -
-                    (7.49727 * 1e-17) * FastMath.pow(reZeroedTargetPosition, 3) -
-                    (7.79337 * 1e-13) * FastMath.pow(reZeroedTargetPosition, 2) +
-                    (2.14812 * 1e-9) * reZeroedTargetPosition +
-                    0.0000148625;
-        }
-
-        public static double getTurretFeedforwardCoefficientFromInterpolation(double reZeroedTargetPosition) {
-
-            //converting list to array
-            Double[] turretFeedforwardTargetPositions = ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.toArray(new Double[0]);
-
-            //getting bounds of the current target position
-            Double[] $bounds = MathUtil.findBoundingValues(turretFeedforwardTargetPositions, reZeroedTargetPosition);
-
-            assert $bounds != null;
-
-            double[] bounds = {$bounds[0], $bounds[1]};
-
-            double targetPosition0 = bounds[0];
-            double targetPosition1 = bounds[1];
-
-            double kf0 = ShooterConstants.TURRET_KFS.get(ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.indexOf(targetPosition0));
-            double kf1 = ShooterConstants.TURRET_KFS.get(ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS.indexOf(targetPosition1));
-
-            double kf = LinearInterpolator.estimateValue(
-
-                    reZeroedTargetPosition,
-
-                    new InterpolationData(
-                            new double[] {targetPosition0, kf0},
-                            new double[] {targetPosition1, kf1}
-                    )
-            );
-
-            return kf;
-
         }
 
     }
