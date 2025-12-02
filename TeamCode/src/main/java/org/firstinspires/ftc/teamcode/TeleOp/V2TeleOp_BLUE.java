@@ -55,7 +55,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
         shooter.start(Goal.GoalCoordinates.BLUE);
 
         //run robot reset
-        RobotResetter robotReset = new PostAutonomousRobotReset();
+        RobotResetter robotReset = new PostAutonomousRobotReset(this);
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -86,9 +86,9 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("i", shooter.flywheel.i);
             telemetry.addData("d", shooter.flywheel.d);
             telemetry.addData("v", shooter.flywheel.v);
-            telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
+            telemetry.addData("power", shooter.flywheel.getMotorPowers()[0]);
 
-            telemetry.addData("turret position error", shooter.turret.$getRawPositionError());
+            telemetry.addData("turret position error", shooter.turret.getRawPositionError());
 
             telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
 

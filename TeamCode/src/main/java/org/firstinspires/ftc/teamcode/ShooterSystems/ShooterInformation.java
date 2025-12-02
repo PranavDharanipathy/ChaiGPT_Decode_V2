@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.chaigptrobotics.systems.DeprecatedSystem;
@@ -8,8 +7,10 @@ import com.chaigptrobotics.systems.DeprecatedSystem;
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.Constants;
 
-@Config
-public final class ShooterInformation {
+import java.util.Arrays;
+import java.util.List;
+
+public class ShooterInformation {
 
     /// All Limelight3A camera constants
     public static class CameraConstants {
@@ -52,7 +53,7 @@ public final class ShooterInformation {
 
         /// Min and max limits for hood angler
         public static double HOOD_ANGLER_MIN_POSITION = 0.9;
-        public static double HOOD_ANGLER_MAX_POSITION = 0.11;
+        public static double HOOD_ANGLER_MAX_POSITION = 0.0;
 
         public static double getTotalFlywheelAssemblyWeight() {
             return ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT + (ShooterConstants.MOI_DISC_WEIGHT * ShooterConstants.NUMBER_OF_MOI_DISCS);
@@ -62,8 +63,8 @@ public final class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 520_000;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 346_500;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 475_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 405_000;
 
         public static double TURRET_TARGET_POSITION_ERROR_MARGIN = 50;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
@@ -74,18 +75,23 @@ public final class ShooterInformation {
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.2 * 73.5179487179;
 
+        public static double TURRET_HOLD_OVERRIDE = 65;
+
+        public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
+        public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002405, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.000003);
+
         public static double TURRET_HOME_POSITION_INCREMENT = 20;
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
-        public static double HOOD_CLOSE_POSITION = 0.48;
-        public static double HOOD_FAR_POSITION = 0.11;
+        public static double HOOD_CLOSE_POSITION = 0.2;
+        public static double HOOD_FAR_POSITION = 0.0;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
         public static double TURRET_ANGULAR_OFFSET = 180;
 
         /*
-         * the TURRET_ANGULAR_OFFSET is multiplier by the correct multiplier to make
+         * the TURRET_ANGULAR_OFFSET is multiplied by the correct multiplier to make
          * the turret spin the proper way.
          */
         public static int BLUE_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
@@ -93,14 +99,6 @@ public final class ShooterInformation {
     }
 
     public static class Calculator {
-
-        public static double convert2dGoalDistanceTo3dToAprilTag(double flatDistanceFromGoal) {
-            return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL_APRIL_TAG, 2));
-        }
-
-        public static double convert2dGoalDistanceTo3dToGoal(double flatDistanceFromGoal) {
-            return Math.sqrt(Math.pow(flatDistanceFromGoal, 2) + Math.pow(Constants.HEIGHT_OF_GOAL, 2));
-        }
 
         /// @return The normalized bot pose as a {@link Pose2d}
         public static Pose2d getBotPose(Vector2d robotPosition, double headingRad) {
@@ -169,7 +167,7 @@ public final class ShooterInformation {
         @DeprecatedSystem(notes = "We are now using odometry to get the distance from the goal, not the limelight")
         public static double getDistanceFromRegression(double ty) {
             //quadratic regression
-            return (0.34197 * Math.pow(ty, 2)) - (3.79725 * ty) + 53.01088;
+            return (0.34197 * ty * ty) - (3.79725 * ty) + 53.01088;
         }
     }
 

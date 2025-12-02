@@ -84,4 +84,38 @@ public strictfp class MathUtil {
 
         return Math.abs(deltaValue) < deadbandValue ? currentValue : targetValue;
     }
+
+    public static boolean valueWithinRange(double value, double minRange, double maxRange) {
+        return value > minRange && value < maxRange;
+    }
+
+    public static boolean valueWithinRangeIncludingPoles(double value, double minRange, double maxRange) {
+        return value >= minRange && value <= maxRange;
+    }
+
+    /// @param array must be sorted
+    public static double[] findBoundingValues(double[] array, double value) {
+
+        for (int index = 0; index < array.length - 1; index++) {
+            double lower = array[index];
+            double upper = array[index + 1];
+
+            if (value >= lower && value <= upper) {
+                return new double[] {lower, upper};
+            }
+        }
+
+        throw new IllegalArgumentException("No bounding values for input: value can be found from input array!");
+    }
+
+    public static double interpolateLinear(double x, InterpolationData data) {
+
+        double x0 = data.dataPoints[0][0];
+        double x1 = data.dataPoints[1][0];
+
+        double y0 = data.dataPoints[0][1];
+        double y1 = data.dataPoints[1][1];
+
+        return y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
+    }
 }

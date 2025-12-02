@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.Tuners;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -6,18 +6,39 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
+import org.firstinspires.ftc.teamcode.TeleOp.Intake;
+import org.firstinspires.ftc.teamcode.TeleOp.LiteralTransfer;
+import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
+import org.firstinspires.ftc.teamcode.TeleOp.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @Config
-@TeleOp (name = "V2TeleOp TEST")
-public class V2TeleOp_TEST extends TeleOpBaseOpMode {
+@TeleOp (group = "tuning")
+public class TurretDriveTuning extends TeleOpBaseOpMode {
 
-    public static PIPELINES PIPELINE = PIPELINES.BLUE_PIPELINE;
+    //turret tuning
+    public static double KP = Constants.TURRET_PIDFS_COEFFICIENTS[0];
+    public static double KI = Constants.TURRET_PIDFS_COEFFICIENTS[1];
+    public static double KD = Constants.TURRET_PIDFS_COEFFICIENTS[2];
+    public static double KS = Constants.TURRET_PIDFS_COEFFICIENTS[4];
+
+    public static double KI_SMASH = Constants.TURRET_PIDFS_COEFFICIENTS[5];
+
+    public static double KD_FILTER = Constants.TURRET_PIDFS_COEFFICIENTS[6];
+    public static double KPOWER_FILTER = Constants.TURRET_PIDFS_COEFFICIENTS[7];
+
+    public static double LANYARD_EQUILIBRIUM = Constants.TURRET_PIDFS_COEFFICIENTS[8];
+
+    public static double MIN_I = Constants.TURRET_MIN_INTEGRAL_LIMIT, MAX_I = Constants.TURRET_MAX_INTEGRAL_LIMIT;
+
+
+
 
     private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
 
@@ -26,8 +47,6 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
     private final LiteralTransfer literalTransfer = new LiteralTransfer();
 
     private final Shooter shooter = new Shooter();
-
-    private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -46,6 +65,8 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
         //setup lynx module
         setUpLynxModule();
+
+        //telemetry.speak("SIX SEVEN");
 
         if (isStopRequested()) return;
         waitForStart();
@@ -66,6 +87,8 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             intake.update();
             literalTransfer.update();
 
+            shooter.turret.setIConstraints(MIN_I, MAX_I);
+            shooter.turret.updateCoefficients(KP, KI, KD, null, KS, KI_SMASH, KD_FILTER, KPOWER_FILTER, LANYARD_EQUILIBRIUM);
             shooter.update();
 
             robotCentricDrive.update();
@@ -80,11 +103,12 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
-            telemetry.addData("p", shooter.flywheel.p);
-            telemetry.addData("i", shooter.flywheel.i);
-            telemetry.addData("d", shooter.flywheel.d);
-            telemetry.addData("v", shooter.flywheel.v);
-            telemetry.addData("power", shooter.flywheel.getMotorPowers()[0]);
+            telemetry.addData("p", shooter.turret.p);
+            telemetry.addData("i", shooter.turret.i);
+            telemetry.addData("d", shooter.turret.d);
+            telemetry.addData("f", shooter.turret.f);
+            telemetry.addData("s", shooter.turret.s);
+            telemetry.addData("power", shooter.turret.getServoPowers()[0]);
 
             telemetry.addData("turret position error", shooter.turret.getRawPositionError());
 
@@ -95,10 +119,8 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
         }
 
-        if(isStopRequested()) {
-            //end
-            closeLynxModule();
-        }
+        //end
+        closeLynxModule();
 
     }
 }

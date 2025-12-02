@@ -19,6 +19,6 @@ public class TickrateChecker {
     /// Predicts CPU Usage at a low-level
     /// @return CPU Usage as a percentage
     public static double getRunSpeedPercentage() {
-        return MathUtil.nanosecondsToMilliseconds((currentTime - lastTime)) / MathUtil.secondsToMilliseconds(Constants.CONTROL_HUB_HZ);
+        return (currentTime - lastTime) / (Constants.CONTROL_HUB_HZ / 1000);
     }
 }
