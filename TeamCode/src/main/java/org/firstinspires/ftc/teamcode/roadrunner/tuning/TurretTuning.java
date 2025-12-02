@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
@@ -28,7 +29,7 @@ import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 @Config
 @TeleOp(name = "Turret Tuning", group="tuning")
-public class TurretTuning extends OpMode {
+public class TurretTuning extends TeleOpBaseOpMode {
     public static double TURRET_POSITION = 0;
 
     public static double[] HOOD_ANGLING = {0.11, 0.9};
@@ -137,38 +138,8 @@ public class TurretTuning extends OpMode {
 
         public double turretStartPosition;
 
-    TurretBase turret = new TurretBase(hardwareMap);
-    ExtremePrecisionFlywheel flywheel = new ExtremePrecisionFlywheel(
-            hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName),
-            hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
-    );
-
-    BasicVeloMotor transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
-    HoodAngler hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
-
     @Override
-    public void init() {
-
-        this.turret = turret;
-
-        this.flywheel = flywheel;
-
-        this.transfer = transfer;
-
-        this.hoodAngler = hoodAngler;
-
-    }
-        @Override
-        public void loop() {
-
-
-            this.turret = turret;
-
-            this.flywheel = flywheel;
-
-            this.transfer = transfer;
-
-            this.hoodAngler = hoodAngler;
+    public void runOpMode() throws InterruptedException {
             init();
 
             final RobotElements robot = new RobotElements();
