@@ -52,8 +52,10 @@ public final strictfp class ExtremePrecisionFlywheel {
     }
 
     public double kp;
-    public double ki;
+    public double kiFar, kiClose;
     public double kISmash;
+    private double kISwitchError;
+    private double kISwitchTargetVelocity;
     public double kd;
     public double kf;
     public double kv;
@@ -108,14 +110,24 @@ public final strictfp class ExtremePrecisionFlywheel {
     public double v = 0, a = 0;
     public double s = 0;
 
-    public Double i_max = Double.MAX_VALUE;
-    public Double i_min = -Double.MAX_VALUE;
+    public double i_max = Double.MAX_VALUE;
+    public double i_min = -Double.MAX_VALUE;
 
-    public void setIConstraints(Double i_min, Double i_max) {
+    public void setIConstraints(double i_min, double i_max) {
 
         this.i_min = i_min;
         this.i_max = i_max;
     }
+
+    public double p_max = Double.MAX_VALUE;
+    public double p_min = -Double.MAX_VALUE;
+
+    public void setPConstraints(double p_min, double p_max) {
+
+        this.p_min = p_min;
+        this.p_max = p_max;
+    }
+
 
     public double[] getPIDFVAS() {
 
@@ -124,7 +136,8 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     /// @param kp Proportional
     /// <p>
-    /// @param ki Integral
+    /// @param kiFar Integral
+    /// @param kiClose Integral
     /// <p>
     /// <p>
     /// @param kd Derivative
@@ -138,10 +151,12 @@ public final strictfp class ExtremePrecisionFlywheel {
     /// @param ks Static Friction
     /// <p>
     /// @param kPIDFUnitsPerVolt delta PIDF / delta volts
-    public void setVelocityPIDFVASCoefficients(double kp, double ki, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash) {
+    /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
+    public void setVelocityPIDFVASCoefficients(double kp, double kiFar, double kiClose, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
         this.kp = kp;
-        this.ki = ki;
+        this.kiFar = kiFar;
+        this.kiClose = kiClose;
         this.kd = kd;
         this.kf = kf;
         this.kv = kv;
@@ -149,6 +164,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.ks = ks;
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
         this.kISmash = kISmash;
+        this.kISwitchError = kISwitchError;
     }
 
     private double currentTime = 0;
@@ -222,6 +238,17 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         //proportional
         p = kp * error;
+        p = MathUtil.clamp(p, p_min, p_max);
+
+        double ki;
+        if (kISwitchTargetVelocity == targetVelocity || error < kISwitchError) {
+
+            ki = kiClose;
+            kISwitchTargetVelocity = targetVelocity;
+        }
+        else {
+            ki = kiFar;
+        }
 
         //integral - is in fact reset when target velocity changes IF ALLOWED
         if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) i += ki * error * dt;
@@ -236,9 +263,11 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         //derivative
         d = dt > 0 ? kd * (error - prevError) / dt : 0;
+        if (!MathUtil.valueWithinRangeIncludingPoles(d, -1, 1)) d = 0;
+        d = MathUtil.clamp(d, -0.2, 0.2);
 
         //positional feedforward for holding
-        f = targetVelocity != 0 ? kf : 0; /* cos(0 degrees) = 1 so no need to multiply kf by it */;
+        f = targetVelocity != 0 ? kf : 0;
 
         //velocity feedforward
         v = kv * targetVelocity;
@@ -257,6 +286,12 @@ public final strictfp class ExtremePrecisionFlywheel {
         //telemetry.addData("PIDFVAPower", PIDFVAPower);
 
         power = PIDFVAPower + (Math.signum(PIDFVAPower) >= 0 ? s : -s);
+
+        if (targetVelocity == 0) {
+
+            power = 0;
+            i = 0;
+        }
 
         //telemetry.addData("power", power);
 
@@ -378,7 +413,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         i = 0; //integral reset
     }
 
-    public double[] $getMotorPowers() {
+    public double[] getMotorPowers() {
         return new double[] {leftFlywheel.getPower(), rightFlywheel.getPower()};
     }
 

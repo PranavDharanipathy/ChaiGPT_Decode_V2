@@ -32,15 +32,18 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
     public static String HUB_NAME = "Expansion Hub";
 
     public static double KP = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0];
-    public static double KI = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
-    public static double KD = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2];
-    public static double KF = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[3];
-    public static double KV = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4];
-    public static double KA = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
-    public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
-    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
-    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
+    public static double KI_FAR = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
+    public static double KI_CLOSE = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2];
+    public static double KD = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[3];
+    public static double KF = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4];
+    public static double KV = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
+    public static double KA = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
+    public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
+    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
+    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9];
+    public static double kISwitchError = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10];
     public static double I_MIN = Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, I_MAX = Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT;
+    public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 
     public static double VELOCITY;
     public static double BURST_VELOCITY;
@@ -110,9 +113,10 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
         while (opModeIsActive()) {
 
             flywheel.setIConstraints(I_MIN, I_MAX);
+            flywheel.setPConstraints(P_MIN, P_MAX);
 
-            if (TUNING_STAGE == TUNING_STAGES.kPIDFUnitsPerVolt) flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, 0, 0, 0, kPIDFUnitsPerVolt, kISmash);
-            else flywheel.setVelocityPIDFVASCoefficients(KP, KI, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt, kISmash);
+            if (TUNING_STAGE == TUNING_STAGES.kPIDFUnitsPerVolt) flywheel.setVelocityPIDFVASCoefficients(KP, KI_FAR, KI_CLOSE, KD, KF, 0, 0, 0, kPIDFUnitsPerVolt, kISmash, kISwitchError);
+            else flywheel.setVelocityPIDFVASCoefficients(KP, KI_FAR, KI_CLOSE, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt, kISmash, kISwitchError);
 
             if (TUNING_STAGE == TUNING_STAGES.BURST_VELOCITY) flywheel.setVelocityWithBurst(VELOCITY, BURST_VELOCITY, true);
             else flywheel.setVelocity(VELOCITY, true);
@@ -148,8 +152,8 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
                 telemetry.addData("kPIDFUnitsPerVolt", Math.abs(currentPIDFUnits - lastPIDFUnits) / Math.abs(currentVoltage - lastVoltage));
             }
 
-            telemetry.addData("Left flywheel motor power", flywheel.$getMotorPowers()[0]);
-            telemetry.addData("Right flywheel motor power", flywheel.$getMotorPowers()[1]);
+            telemetry.addData("Left flywheel motor power", flywheel.getMotorPowers()[0]);
+            telemetry.addData("Right flywheel motor power", flywheel.getMotorPowers()[1]);
             telemetry.addData("Is motor enabled", flywheel.getMotorEnabled());
             telemetry.update();
         }

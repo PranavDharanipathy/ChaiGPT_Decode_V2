@@ -162,7 +162,7 @@ public class Constants {
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1790;
+    public static double TRANSFER_VELOCITY = 2000;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -250;
 
@@ -182,10 +182,6 @@ public class Constants {
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
 
-
-
-
-
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 
     public static double[] INTAKE_PIDF_DEFAULT_COEFFICIENTS = {20, 2.5, 0, 10};
@@ -201,7 +197,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.00000000000112, 0.0000055, 0.000001, 0.0, 0.0000015, 0.0, 0.000075, 0.9, 0.1
+            0.000005, 0.00000038, 0.00001, 0.00000285, 0.0, 0.0000015, 0.0, 0.000075, 0.9, 0.1, 6700
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};
@@ -211,13 +207,16 @@ public class Constants {
     public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.05;
     public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 1;
 
+    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.05;
+    public static double FLYWHEEL_MAX_PROPORTIONAL_LIMIT = 1;
+
     public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
 
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
     //turret
-    public static double[] TURRET_PIDF_COEFFICIENTS = {0.00013, 0.00000057, 0.0062, 0.024, 0.4, 0.9, 0.96}; //{0.00015, 0.0000001025, 0.017, 0.03, 0.31, 0.85, 0.965}
+    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.0001336, 0.000000135, 0.0055, null, 0.014, 0.6, 0.9, 0.99, -2150.0};
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;

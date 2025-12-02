@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Testing;
 import static android.os.SystemClock.sleep;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -93,15 +92,17 @@ public class TurretHorizontalGoalAlignmentLimelight extends OpMode {
          turret = new TurretBase(hardwareMap);
 
          turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
-         turret.setPIDFCoefficients(
-                 Constants.TURRET_PIDF_COEFFICIENTS[0],
-                 Constants.TURRET_PIDF_COEFFICIENTS[1],
-                 Constants.TURRET_PIDF_COEFFICIENTS[2],
-                 Constants.TURRET_PIDF_COEFFICIENTS[3],
-                 Constants.TURRET_PIDF_COEFFICIENTS[4],
-                 Constants.TURRET_PIDF_COEFFICIENTS[5],
-                 Constants.TURRET_PIDF_COEFFICIENTS[6]
-         );
+        turret.setPIDFCoefficients(
+                Constants.TURRET_PIDFS_COEFFICIENTS[0],
+                Constants.TURRET_PIDFS_COEFFICIENTS[1],
+                Constants.TURRET_PIDFS_COEFFICIENTS[2],
+                Constants.TURRET_PIDFS_COEFFICIENTS[3],
+                Constants.TURRET_PIDFS_COEFFICIENTS[4],
+                Constants.TURRET_PIDFS_COEFFICIENTS[5],
+                Constants.TURRET_PIDFS_COEFFICIENTS[6],
+                Constants.TURRET_PIDFS_COEFFICIENTS[7],
+                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+        );
 
     }
 
@@ -190,7 +191,7 @@ public class TurretHorizontalGoalAlignmentLimelight extends OpMode {
         telemetry.addData("current position", currentPosition);
         telemetry.addData("position error", turret.getPositionError());
 
-        telemetry.addData("power", turret.$getServoPowers()[0]);
+        telemetry.addData("power", turret.getServoPowers()[0]);
 
         telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
         telemetry.update();

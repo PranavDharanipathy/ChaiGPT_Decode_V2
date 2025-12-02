@@ -10,11 +10,10 @@ public class InterpolationData {
 
     /**
      * @param dataPoint1 minimum
-     * @param dataPoint2 point in between minimum and maximum
-     * @param dataPoint3 maximum
+     * @param dataPoint2 maximum
      **/
-    public InterpolationData(double[] dataPoint1, double[] dataPoint2, double[] dataPoint3) {
+    public InterpolationData(double[] dataPoint1, double[] dataPoint2) {
 
-        dataPoints = new double[][] {dataPoint1, dataPoint2, dataPoint3};
+        dataPoints = new double[][] {dataPoint1, dataPoint2};
     }
 }
