@@ -197,7 +197,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.000005, 0.000000385, 0.00001, 0.000003, 0.0, 0.0000015, 0.0, 0.000075, 0.9, 0.1, 6700
+            0.000005, 0.00000038, 0.00001, 0.00000285, 0.0, 0.0000015, 0.0, 0.000075, 0.9, 0.1, 6700
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};

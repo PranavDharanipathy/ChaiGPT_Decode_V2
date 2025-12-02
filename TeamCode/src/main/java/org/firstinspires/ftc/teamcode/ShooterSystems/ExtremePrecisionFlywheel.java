@@ -55,6 +55,7 @@ public final strictfp class ExtremePrecisionFlywheel {
     public double kiFar, kiClose;
     public double kISmash;
     private double kISwitchError;
+    private double kISwitchTargetVelocity;
     public double kd;
     public double kf;
     public double kv;
@@ -239,7 +240,15 @@ public final strictfp class ExtremePrecisionFlywheel {
         p = kp * error;
         p = MathUtil.clamp(p, p_min, p_max);
 
-        double ki = error > kISwitchError ? kiFar : kiClose;
+        double ki;
+        if (kISwitchTargetVelocity == targetVelocity || error < kISwitchError) {
+
+            ki = kiClose;
+            kISwitchTargetVelocity = targetVelocity;
+        }
+        else {
+            ki = kiFar;
+        }
 
         //integral - is in fact reset when target velocity changes IF ALLOWED
         if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) i += ki * error * dt;
