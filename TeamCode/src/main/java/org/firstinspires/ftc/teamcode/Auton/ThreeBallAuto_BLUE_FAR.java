@@ -74,26 +74,26 @@ public class ThreeBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
         telemetry.addData("turret current position", turretStartPosition);
         telemetry.update();
 
-                Action shootPreloadedArtifacts =
+        Action shootPreloadedArtifacts =
 
-                new SequentialAction(
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
+        new SequentialAction(
+                new ParallelAction(
+                        robot.intake(),
+                        robot.transferArtifact()
+                ),
+                new SleepAction(1),
 
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        ),
-                        new SleepAction(1),
+                new ParallelAction(
+                        robot.intake(),
+                        robot.transferArtifact()
+                ),
+                new SleepAction(1),
 
-                        new ParallelAction(
-                                robot.intake(),
-                                robot.transferArtifact()
-                        )
-                );
+                new ParallelAction(
+                        robot.intake(),
+                        robot.transferArtifact()
+                )
+        );
 
 
 
