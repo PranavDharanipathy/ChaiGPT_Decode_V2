@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.chaigptrobotics.shenanigans.Aura;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
@@ -215,7 +214,7 @@ public class Constants {
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
-    public static double FLWYHEEL_VOLTAGE_FILTER_ALPHA = 0.8;
+    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.3;
 
     //turret
     public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.0001336, 0.000000135, 0.0055, null, 0.014, 0.6, 0.9, 0.99, -2150.0};

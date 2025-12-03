@@ -171,7 +171,7 @@ public class ShooterInformation {
 
         public static double getFlywheelKvFromRegression(double voltage) {
 
-            return 0.00000781985 * FastMath.pow(0.876847, voltage);
+            return -(1.24737 * 1e-7) * voltage + 0.00000302399;
         }
     }
 

@@ -152,7 +152,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10]
         );
-        flywheel.setVoltageFilterAlpha(Constants.FLWYHEEL_VOLTAGE_FILTER_ALPHA);
+        flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
 
