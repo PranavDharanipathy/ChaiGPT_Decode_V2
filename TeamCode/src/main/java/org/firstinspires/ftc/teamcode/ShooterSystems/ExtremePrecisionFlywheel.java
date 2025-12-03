@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import javax.annotation.Nullable;
@@ -29,6 +32,8 @@ public final strictfp class ExtremePrecisionFlywheel {
     private final DcMotorEx leftFlywheel; //has encoder
     private final DcMotorEx rightFlywheel; //follows leftFlywheel
 
+    private VoltageSensor batteryVoltageSensor;
+
     public ExtremePrecisionFlywheel(DcMotorEx leftFlywheel, DcMotorEx rightFlywheel) {
 
         this.leftFlywheel = leftFlywheel;
@@ -49,6 +54,11 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.rightFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+
+    public void initVoltageSensor(HardwareMap hardwareMap) {
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
     public double kp;
@@ -126,6 +136,21 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         this.p_min = p_min;
         this.p_max = p_max;
+    }
+
+    public double filteredVoltage;
+
+    private double voltageFilterAlpha;
+
+    public void setVoltageFilterAlpha(double voltageFilterAlpha) {
+        this.voltageFilterAlpha = voltageFilterAlpha;
+    }
+
+    public void updateKvBasedOnVoltage() {
+
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltageSensor.getVoltage(), voltageFilterAlpha);
+
+        kv = ShooterInformation.Regressions.getFlywheelKvFromRegression(filteredVoltage);
     }
 
 

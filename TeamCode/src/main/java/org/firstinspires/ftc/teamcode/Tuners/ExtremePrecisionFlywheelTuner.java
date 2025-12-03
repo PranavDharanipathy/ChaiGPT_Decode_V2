@@ -28,9 +28,6 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
     public static TUNING_STAGES TUNING_STAGE = TUNING_STAGES.PIDFVAS;
 
-    // Name of the hub that the motor is on.
-    public static String HUB_NAME = "Expansion Hub";
-
     public static double KP = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0];
     public static double KI_FAR = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
     public static double KI_CLOSE = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2];
@@ -69,32 +66,12 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
     private DcMotorEx leftFlywheel, rightFlywheel;
 
-    /*
-     * TUNING STEPS IN ORDER:
-     * Weigh/measure parts to provide setInternalParameters()
-     * Set all coefficients to 0 except for kPIDFUnitsPerVolt, set that to 1
-     * Tune ks
-     * Tune kv - as low as possible
-     * Tune ka - as low as possible
-     * Tune kf - try to keep it as low AS POSSIBLE, if it's even a bit too high, it can easily mess up your PIDFVAS system
-     * Tune kp
-     * Tune kd
-     * Tune ki - comfortably use integral and lower using kISmash
-     * Set kPIDFUnitsPerVolt (kv, ka, and ks should not interfere when getting this)
-     * Set everything except kPIDFUnitsPerVolt and ks to 0
-     * Update ks - if needed
-     * Add the other coefficients back
-     * After tuning these, you may or may not want to change your kf - update your kPIDFUnitsPerVolt
-     *
-     * PLOT THE PIDVA!
-     */
-
     @Override
     public void runOpMode() {
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        batteryVoltageSensor = hardwareMap.get(VoltageSensor.class, HUB_NAME);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         leftFlywheel = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName);
         rightFlywheel = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName);
@@ -126,6 +103,8 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
             lastVoltage = currentVoltage;
             currentVoltage = batteryVoltageSensor.getVoltage();
+
+            telemetry.addData("voltage", currentVoltage);
 
             lastPIDFUnits = currentPIDFUnits;
             currentPIDFUnits = flywheel.getPIDFVAS()[0] + flywheel.getPIDFVAS()[1] + flywheel.getPIDFVAS()[2] + flywheel.getPIDFVAS()[3];
