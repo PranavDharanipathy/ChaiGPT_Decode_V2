@@ -208,6 +208,7 @@ public class Shooter implements SubsystemInternal {
 
         //updating
         turret.update();
+        flywheel.updateKvBasedOnVoltage();
         flywheel.update();
 //        if (timer.milliseconds() >= Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
 //            //run instance of flywheel and turret systems

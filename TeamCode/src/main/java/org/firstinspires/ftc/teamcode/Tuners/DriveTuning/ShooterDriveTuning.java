@@ -1,23 +1,13 @@
-package org.firstinspires.ftc.teamcode.Tuners;
+package org.firstinspires.ftc.teamcode.Tuners.DriveTuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
-import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
-import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
-import org.firstinspires.ftc.teamcode.TeleOp.Intake;
-import org.firstinspires.ftc.teamcode.TeleOp.LiteralTransfer;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
-import org.firstinspires.ftc.teamcode.TeleOp.Shooter;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
-import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @Config
@@ -61,6 +51,7 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
             intake.setVelocity(INTAKE_VELOCITY);
             transfer.setVelocity(TRANSFER_VELOCITY);
             flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
+            flywheel.updateKvBasedOnVoltage();
             flywheel.update();
 
             //background action processes
@@ -73,7 +64,7 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
             telemetry.addData("p", flywheel.p);
             telemetry.addData("i", flywheel.i);
             telemetry.addData("d", flywheel.d);
-            telemetry.addData("v", flywheel.f);
+            telemetry.addData("v", flywheel.v);
 
             telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());

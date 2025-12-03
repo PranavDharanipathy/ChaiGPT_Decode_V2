@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.chaigptrobotics.systems.DeprecatedSystem;
 
 import org.apache.commons.math3.util.FastMath;
-import org.firstinspires.ftc.teamcode.Constants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -168,6 +167,11 @@ public class ShooterInformation {
         public static double getDistanceFromRegression(double ty) {
             //quadratic regression
             return (0.34197 * ty * ty) - (3.79725 * ty) + 53.01088;
+        }
+
+        public static double getFlywheelKvFromRegression(double voltage) {
+
+            return 0.00000781985 * FastMath.pow(0.876847, voltage);
         }
     }
 
