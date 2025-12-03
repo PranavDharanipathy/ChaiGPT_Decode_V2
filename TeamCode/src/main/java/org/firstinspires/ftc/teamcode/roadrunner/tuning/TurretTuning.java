@@ -6,30 +6,19 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Auton.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
-import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
-import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 
 @Config
 @TeleOp(name = "Turret Tuning", group="tuning")
-public class TurretTuning extends TeleOpBaseOpMode {
+public class TurretTuning extends AutonomousBaseOpMode {
     public static double TURRET_POSITION = 0;
 
     public static double[] HOOD_ANGLING = {0.11, 0.9};
@@ -80,9 +69,9 @@ public class TurretTuning extends TeleOpBaseOpMode {
             return new RobotElements.AllUpdate();
         }
 
-        public InstantAction setFlywheelToCloseSideVelocity() {
+        public void setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(28600, true));
+            new InstantAction(() -> flywheel.setVelocity(28600, true));
         }
 
         public InstantAction stopFlywheel() {
@@ -138,26 +127,38 @@ public class TurretTuning extends TeleOpBaseOpMode {
 
         public double turretStartPosition;
 
+
+
     @Override
     public void runOpMode() throws InterruptedException {
-            init();
 
-            final RobotElements robot = new RobotElements();
-            Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
-            MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        final RobotElements robot = new RobotElements();
+        //Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-225));
+        //MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-            new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITION));
+        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITION));
 
-                    robot.setFlywheelToCloseSideVelocity();
+        robot.setFlywheelToCloseSideVelocity();
 
-                    robot.firstShootSequence();
+        new InstantAction(() -> hoodAngler.setPosition(HOOD_ANGLING[0]));
+
+                robot.waitFlywheelVel(3);
+                robot.transferArtifact();
+                new SleepAction(0.4);
+                robot.antiTransfer();
 
 
-            turretStartPosition = turret.getCurrentPosition();
 
-            //SHOOT!
-            telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
-            telemetry.update();
+
+
+
+        turretStartPosition = turret.getCurrentPosition();
+
+        //SHOOT!
+        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.update();
+
+        waitForStart();
 
 
         }
