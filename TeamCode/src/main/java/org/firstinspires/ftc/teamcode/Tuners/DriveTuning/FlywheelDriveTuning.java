@@ -70,6 +70,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
             intake.setVelocity(INTAKE_VELOCITY);
             transfer.setVelocity(TRANSFER_VELOCITY);
             flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
+            flywheel.updateKvBasedOnVoltage();
             flywheel.update();
 
             telemetry.addData("Target Velocity", flywheel.getTargetVelocity());

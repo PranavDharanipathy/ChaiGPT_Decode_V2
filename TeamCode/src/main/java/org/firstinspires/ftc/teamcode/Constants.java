@@ -196,7 +196,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.00000985, 0.000000375, 0.00001, 0.00000285, 0.0, 0.00000173, 0.0, 0.000075, 0.9, 0.1, 6700
+            0.0000045085, 0.000001, 0.00000083, 0.00000077, 0.0, 0.00000173, 0.0, 0.00008, 0.9, 0.1, 7200
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};
@@ -214,10 +214,10 @@ public class Constants {
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
-    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.3;
+    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.2;
 
     //turret
-    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.0001336, 0.000000135, 0.0055, null, 0.014, 0.6, 0.9, 0.99, -2150.0};
+    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000134, 0.000000145, 0.0055, null, 0.014, 0.6, 0.9, 0.99, -2150.0};
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
