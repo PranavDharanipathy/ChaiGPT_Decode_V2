@@ -77,7 +77,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
             telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
-            telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("flywheel current velocity", "%.0f", shooter.flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
             telemetry.addData("p", shooter.flywheel.p);

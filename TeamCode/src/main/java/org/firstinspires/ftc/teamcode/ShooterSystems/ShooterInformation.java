@@ -63,7 +63,7 @@ public class ShooterInformation {
         }
 
         public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 475_000;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 405_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 397_000;
 
         public static double TURRET_TARGET_POSITION_ERROR_MARGIN = 50;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
@@ -77,13 +77,13 @@ public class ShooterInformation {
         public static double TURRET_HOLD_OVERRIDE = 65;
 
         public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
-        public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002405, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.000003);
+        public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002415, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.00000315);
 
         public static double TURRET_HOME_POSITION_INCREMENT = 20;
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
-        public static double HOOD_CLOSE_POSITION = 0.2;
+        public static double HOOD_CLOSE_POSITION = 0.15;
         public static double HOOD_FAR_POSITION = 0.0;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
