@@ -34,6 +34,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
                 if (timer.milliseconds() > Constants.FLYWHEEL_PIDFVAS_LOOP_TIME) {
+                    flywheel.updateKvBasedOnVoltage();
                     flywheel.update();
                     timer.reset();
                 }
@@ -266,9 +267,11 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
                                 //FIRST INTAKE
 
-                                .splineToLinearHeading(new Pose2d(-57, -6, Math.toRadians(90)), Math.toRadians(145))
+                                .splineToLinearHeading(new Pose2d(-57, 6, Math.toRadians(90)), Math.toRadians(145))
 
-                                .splineToLinearHeading(new Pose2d(-57, 2, Math.toRadians(90)), Math.toRadians(90))
+                                .lineToY(-2)
+
+                                //.splineToLinearHeading(new Pose2d(-57, 2, Math.toRadians(90)), Math.toRadians(90))
 
                                 //.splineToConstantHeading(new Vector2d(-53, 10), Math.toRadians(90))
 

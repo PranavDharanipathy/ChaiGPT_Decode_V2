@@ -254,7 +254,8 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                                 //preload
                                 .splineToLinearHeading(new Pose2d(-18, -7.5, Math.toRadians(36)), 0)
 
-                                .stopAndAdd(robot.firstShootSequence())
+                                .stopAndAdd(
+                                        robot.firstShootSequence())
 
                                 //first intake
                                 .splineTo(new Vector2d(-21, -57), -Math.PI / 2)
