@@ -87,7 +87,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[2],
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[3]
         );
-
+        flywheel.initVoltageSensor(hardwareMap);
         flywheel.setInternalParameters(
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
@@ -110,6 +110,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         );
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
+        flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
 
         turret.setPIDFCoefficients(
                 Constants.TURRET_PIDFS_COEFFICIENTS[0],
