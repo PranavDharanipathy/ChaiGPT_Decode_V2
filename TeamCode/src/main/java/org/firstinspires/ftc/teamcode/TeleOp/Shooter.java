@@ -72,7 +72,7 @@ public class Shooter implements SubsystemInternal {
         else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
 
         turretStartPosition = turret.getCurrentPosition();
-        turretPosition = 0;
+        turretPosition = turretStartPosition;
 
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BLUE_FAR_START_POSITION);
         else relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.RED_FAR_START_POSITION);
@@ -167,7 +167,7 @@ public class Shooter implements SubsystemInternal {
         }
 
         //turret
-        turretPosition = turret.getCurrentPosition();
+        turretPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
         robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
 
@@ -189,6 +189,7 @@ public class Shooter implements SubsystemInternal {
 
         Goal.GoalCoordinate goalCoordinate;
 
+        //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (robotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
             goalCoordinate = goalCoordinates.getCloseCoordinate();
         }

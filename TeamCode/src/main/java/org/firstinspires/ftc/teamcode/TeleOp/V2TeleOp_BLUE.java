@@ -52,6 +52,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
         if (isStopRequested()) return;
         waitForStart();
 
+        //all subsystem starting methods
         shooter.start(Goal.GoalCoordinates.BLUE);
 
         //run robot reset

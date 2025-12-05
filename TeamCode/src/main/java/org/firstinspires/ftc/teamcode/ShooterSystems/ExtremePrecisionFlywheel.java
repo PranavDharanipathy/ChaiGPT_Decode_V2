@@ -114,8 +114,8 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.BURST_DECELERATION_RATE = BURST_DECELERATION_RATE;
     }
 
-    // p i d f v a s
     public double p = 0, i = 0, d = 0;
+    private double errorSum = 0;
     public double f = 0; //constant feedforward - can be enabled or disabled
     public double v = 0, a = 0;
     public double s = 0;
@@ -276,14 +276,14 @@ public final strictfp class ExtremePrecisionFlywheel {
         }
 
         //integral - is in fact reset when target velocity changes IF ALLOWED
-        if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) i += ki * error * dt;
-        else i = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
+        if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) errorSum += error * dt;
+        else errorSum = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
         // i is prevented from getting too high or too low
-        i = MathUtil.clamp(i, i_min, i_max);
+        i = MathUtil.clamp(ki * errorSum, i_min, i_max);
 
         // i smashing
         if (Math.signum(error) != Math.signum(prevError)) {
-            i *= kISmash;
+            errorSum *= kISmash;
         }
 
         //derivative
@@ -312,11 +312,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         power = PIDFVAPower + (Math.signum(PIDFVAPower) >= 0 ? s : -s);
 
-        if (targetVelocity == 0) {
-
-            power = 0;
-            i = 0;
-        }
+        if (targetVelocity == 0) power = 0;
 
         //telemetry.addData("power", power);
 

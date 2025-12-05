@@ -31,7 +31,7 @@ public class ShooterInformation {
     public static class ShooterConstants {
 
         /// Point that differentiates the turret pointing at the goal far/close position.
-        public static double FAR_ZONE_CLOSE_ZONE_BARRIER = -45;
+        public static double FAR_ZONE_CLOSE_ZONE_BARRIER = -35;
 
         /// Weight of the entire shooter (turret) in grams
         public static double TURRET_WEIGHT = 2779;
@@ -62,8 +62,8 @@ public class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 475_000;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 397_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 455_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 340_000;
 
         public static double TURRET_TARGET_POSITION_ERROR_MARGIN = 50;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
@@ -79,12 +79,12 @@ public class ShooterInformation {
         public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
         public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002415, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.00000315);
 
-        public static double TURRET_HOME_POSITION_INCREMENT = 20;
+        public static double TURRET_HOME_POSITION_INCREMENT = 50;
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
         public static double HOOD_CLOSE_POSITION = 0.15;
-        public static double HOOD_FAR_POSITION = 0.0;
+        public static double HOOD_FAR_POSITION = 0.06;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
         public static double TURRET_ANGULAR_OFFSET = 180;

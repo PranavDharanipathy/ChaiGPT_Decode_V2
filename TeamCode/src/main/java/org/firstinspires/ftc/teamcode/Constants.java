@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
 
 @Config
 public class Constants {
@@ -100,8 +101,8 @@ public class Constants {
     public static String OBELISK_XML_FILE_NAME = "obelisk";
     /// the key used when saving and loading data to the obelisk xml file
     public static String OBELISK_XML_DATA_KEY = "id";
-    /// defaults to INVALID which is -1
-    public static int OBELISK_XML_DEFAULT_KEY = -1;
+    /// defaults to INVALID
+    public static int OBELISK_XML_DEFAULT_KEY = Obelisk.OBELISK.INVALID.getAprilTagNumber();
 
     /// time driver has to enter the obelisk code manually
     /// <p>
@@ -131,7 +132,7 @@ public class Constants {
     /// Height of AprilTag on goal in inches
     public static double HEIGHT_OF_GOAL_APRIL_TAG = 27;
 
-    public static float TRIGGER_THRESHOLD = 0.11f;
+    public static float TRIGGER_THRESHOLD = 0.2f;
 
     /// Index 0 is the left crservo.
     /// <p>
@@ -161,7 +162,7 @@ public class Constants {
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1100;
+    public static double TRANSFER_VELOCITY = 1200;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -250;
 
@@ -196,7 +197,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0000009, 0.000001, 0.0025, 0.0000003, 0.0, 0.00000173, 0.0, 0.00009, 0.9, 0.1, 7200 //0.000001, 0.000001, 0.0000004, 0.0000001, 0.0, 0.00000173, 0.0, 0.00008, 0.9, 0.1, 7200
+            0.000125, 0.0000005, 0, 0.00003, 0.0, 0.00000173, 0.0, 0.00013, 0.9, 0.1, 7200 //0.000001, 0.000001, 0.0000004, 0.0000001, 0.0, 0.00000173, 0.0, 0.00008, 0.9, 0.1, 7200
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};
@@ -206,7 +207,7 @@ public class Constants {
     public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.05;
     public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 1;
 
-    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.035;
+    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.04;
     public static double FLYWHEEL_MAX_PROPORTIONAL_LIMIT = 1;
 
     public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
