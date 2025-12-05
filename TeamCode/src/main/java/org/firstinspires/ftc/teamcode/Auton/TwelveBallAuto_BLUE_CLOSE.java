@@ -26,6 +26,10 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
     public static double[] TURRET_POSITIONS = {5900, 6300 , 5800, 6100};
 
     public static double[] HOOD_ANGLING = {0.25, 0.27, 0};
+
+    public static double FLYWHEEL_VELOCITY = 460500;
+
+    public static double SET_VEL = 465000;
     public class RobotElements {
         public class AllUpdate implements Action {
             private ElapsedTime timer = new ElapsedTime();
@@ -66,7 +70,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > 22500 && flywheel.getLastFrontendCalculatedVelocity() > 22500);
+                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY && flywheel.getLastFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY);
             }
 
 
@@ -79,7 +83,7 @@ public class TwelveBallAuto_BLUE_CLOSE extends AutonomousBaseOpMode {
 
         public InstantAction setFlywheelToCloseSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(24600, true));
+            return new InstantAction(() -> flywheel.setVelocity(SET_VEL, true));
         }
 
         public InstantAction stopFlywheel() {
