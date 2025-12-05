@@ -303,6 +303,9 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
                         .splineToSplineHeading(new Pose2d(-28, 2, -Math.PI / 2), Math.PI)
 
+                        .setTangent(Math.PI / 2)
+                        .lineToY(8)
+
                         //OPEN GATE
 
                         .turnTo(Math.PI / 2)
