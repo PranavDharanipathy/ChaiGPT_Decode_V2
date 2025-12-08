@@ -29,7 +29,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public volatile Rev9AxisImu rev9AxisImu;
 
-    public volatile BasicVeloMotor intake;
+    public volatile DcMotor intake;
     public volatile BasicVeloMotor transfer;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
@@ -83,7 +83,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
         rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
 
-        intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
+        intake = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.intakeMotorDeviceName);
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         unstartedLimelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
@@ -115,13 +115,6 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         intake.setDirection(DcMotor.Direction.REVERSE);
         transfer.setDirection(DcMotor.Direction.REVERSE);
 
-        intake.setVelocityPIDFCoefficients(
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
-        );
-
         transfer.setVelocityPIDFCoefficients(
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[0],
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[1],
@@ -138,7 +131,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE,
                 ShooterInformation.ShooterConstants.MOTOR_RPM,
                 ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
-                );
+        );
         flywheel.setVelocityPIDFVASCoefficients(
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1],

@@ -57,14 +57,13 @@ public class Encoder {
 
     private double p = 1; //prediction step
     private double q = 0; //uncertainty step
-    private double avgDt;
     private double r = 0; //encoder uncertainty
 
     private double outlierSigma = 1;
     private double kRInflation = 1; //when outlier is caught
 
     private boolean velocityKFInitialized = false;
-    public void initializeVelocityKalmanFilter(double q, double r, double outlierSigma, double kRInflation, double avgDt) {
+    public void initializeVelocityKalmanFilter(double q, double r, double outlierSigma, double kRInflation) {
 
         velocityKFInitialized = true;
 
@@ -73,7 +72,6 @@ public class Encoder {
         }
 
         this.q = q;
-        this.avgDt = avgDt;
         this.r = r;
 
         this.outlierSigma = outlierSigma;
@@ -82,16 +80,13 @@ public class Encoder {
 
     /// Uses Kalman Filter.
     /// @param velocityEstimate (curr_ticks - prev_ticks) / dt
-    public void runVelocityCalculation(double dt, double velocityEstimate/*, Telemetry telemetry*/) {
+    public void runVelocityCalculation(double velocityEstimate/*, Telemetry telemetry*/) {
 
         if (!velocityKFInitialized) throw new RuntimeException("Velocity Kalman Filter is not being used!");
 
         double innovation = velocityEstimate - filteredVelocity;
 
-        double correctedQ = q * (dt / avgDt);
-        //telemetry.addData("correctedQ", correctedQ);
-
-        p += correctedQ;
+        p += q;
         //telemetry.addData("p", p);
 
         double jump = p + r;

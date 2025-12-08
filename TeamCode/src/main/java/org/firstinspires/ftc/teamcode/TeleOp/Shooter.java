@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,11 +19,7 @@ import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
 @Peak
-@Config
 public class Shooter implements SubsystemInternal {
-
-    public static boolean MANUAL_HOOD_POSITION_FROM_DASH = false;
-    public static double HOOD_ANGLER_POSITION = 0;
 
     private BetterGamepad controller1, controller2;
 
@@ -99,7 +93,7 @@ public class Shooter implements SubsystemInternal {
 
     private FLYWHEEL_VELOCITY launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
 
-    private double hoodPosition;
+    private double hoodPosition = 0.4;
 
     private double turretPosition;
 
@@ -148,8 +142,6 @@ public class Shooter implements SubsystemInternal {
             controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
 
-        if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
-
         hoodAngler.setPosition(MathUtil.clamp(hoodPosition, ShooterInformation.ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION));
 
         if (shooterToggle) {
@@ -157,6 +149,14 @@ public class Shooter implements SubsystemInternal {
         }
         else {
             flywheel.setVelocity(0, true);
+        }
+
+        if (controller2.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+            if (flywheel.getMotorEnabled()) flywheel.runMotor(ExtremePrecisionFlywheel.RunningMotor.DISABLE);
+            flywheel.setPower(1);
+        }
+        else if (!flywheel.getMotorEnabled()) {
+            flywheel.runMotor(ExtremePrecisionFlywheel.RunningMotor.ENABLE);
         }
 
         if (turret.getPositionError() < ShooterInformation.ShooterConstants.TURRET_TARGET_POSITION_ERROR_MARGIN) {

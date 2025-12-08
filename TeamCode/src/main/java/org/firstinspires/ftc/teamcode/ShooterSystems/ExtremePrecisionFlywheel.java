@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
 /// <p>S: Static Friction
 public final strictfp class ExtremePrecisionFlywheel {
 
+    public final double FLYWHEEL_VELOCITY_DIVISOR = 13.37;
+
     private final Encoder encoder;
 
     private final DcMotorEx leftFlywheel; //has encoder
@@ -48,8 +50,7 @@ public final strictfp class ExtremePrecisionFlywheel {
                 Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[0],
                 Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[1],
                 Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[2],
-                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[3],
-                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[4]
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[3]
         );
 
         this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -253,8 +254,10 @@ public final strictfp class ExtremePrecisionFlywheel {
         currentPosition = encoder.getCurrentPosition();
 
         velocityEstimate = (currentPosition - lastPosition) / dt;
-        encoder.runVelocityCalculation(dt, velocityEstimate);
-        currentFilteredVelocity = encoder.getRealVelocity();
+        //velocityEstimate /= FLYWHEEL_VELOCITY_DIVISOR;
+        encoder.runVelocityCalculation(velocityEstimate);
+        //currentFilteredVelocity = encoder.getRealVelocity();
+        currentFilteredVelocity = velocityEstimate;
 
         //telemetry.addData("current vel", currentVelocity);
 
@@ -343,6 +346,14 @@ public final strictfp class ExtremePrecisionFlywheel {
         }
     }
 
+    public void setPower(double power) {
+
+        if (isMotorEnabled) throw new IllegalArgumentException("Must disable PID mode!");
+
+        leftFlywheel.setPower(power);
+        rightFlywheel.setPower(power);
+    }
+
     // default mode is enabled
     private boolean isMotorEnabled = true;
 
@@ -368,7 +379,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     /// @return distance in ticks / time in seconds => ticks per second
     public double getCurrentVelocityEstimate() {
-        return currentFilteredVelocity;
+        return velocityEstimate;
     }
 
     public double getLastFrontendCalculatedVelocity() {

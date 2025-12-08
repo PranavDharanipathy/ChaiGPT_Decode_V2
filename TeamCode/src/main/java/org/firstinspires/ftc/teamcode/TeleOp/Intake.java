@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
@@ -11,13 +11,13 @@ import org.firstinspires.ftc.teamcode.util.Subsystem;
 public final class Intake extends Subsystem {
 
     private BetterGamepad controller1;
-    private BasicVeloMotor intake;
+    private DcMotor intake;
 
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
 
-    public void provideComponents(BasicVeloMotor intake, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
+    public void provideComponents(DcMotor intake, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
 
         this.intake = intake;
 
@@ -55,52 +55,20 @@ public final class Intake extends Subsystem {
         isBallInTransfer = transferBeambreak.isBeamBroken().getBoolean();
     }
 
-    private double intakeVelocity;
-
-    private void intakePIDFAndVelocityProcesses() {
-
-        //If one ball is in Intake and one ball is in transfer
-
-        if (isBallInTransfer && isBallInIntake) {
-            //does not integral
-            intake.setVelocityPIDFCoefficients(
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[0],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[1],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[2],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[3]
-            );
-
-            intakeVelocity = Constants.INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER;
-        }
-        else {
-            //uses integral
-            intake.setVelocityPIDFCoefficients(
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
-            );
-
-            intakeVelocity = Constants.BASE_INTAKE_VELOCITY;
-        }
-    }
-
     @Override
     public void update() {
 
         beamBreakProcesses();
 
-        intakePIDFAndVelocityProcesses();
-
-        if (isBallInIntake) intake.setVelocity(intakeVelocity);
+        if (isBallInIntake) intake.setPower(Constants.INTAKE_POWER);
 
         //Intake and reverse-intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(intakeVelocity);
+            intake.setPower(Constants.INTAKE_POWER);
         } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
+            intake.setPower(Constants.REVERSE_INTAKE_POWER);
         } else if (!isBallInIntake) {
-            intake.setVelocity(0);
+            intake.setPower(0);
         }
 
     }

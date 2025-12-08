@@ -34,7 +34,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
     public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 
     public static double TRANSFER_VELOCITY = 1200;
-    public static double INTAKE_VELOCITY = 2000;
+    public static double INTAKE_POWER = 1;
     public static double FLYWHEEL_VELOCITY = 405000;
     public static double HOOD_POSITION = 0.2;
 
@@ -67,7 +67,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
             flywheel.setVelocityPIDFVASCoefficients(KP, KI_FAR, KI_CLOSE, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt, kISmash, kISwitchError);
 
             hoodAngler.setPosition(HOOD_POSITION);
-            intake.setVelocity(INTAKE_VELOCITY);
+            intake.setPower(INTAKE_POWER);
             transfer.setVelocity(TRANSFER_VELOCITY);
             flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
             flywheel.updateKvBasedOnVoltage();

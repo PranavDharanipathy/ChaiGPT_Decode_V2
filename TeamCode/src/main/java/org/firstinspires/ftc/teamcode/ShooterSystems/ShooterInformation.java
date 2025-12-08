@@ -62,8 +62,8 @@ public class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 455_000;
-        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 340_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_000;
+        public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
 
         public static double TURRET_TARGET_POSITION_ERROR_MARGIN = 50;
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
@@ -83,8 +83,8 @@ public class ShooterInformation {
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
 
-        public static double HOOD_CLOSE_POSITION = 0.15;
-        public static double HOOD_FAR_POSITION = 0.06;
+        public static double HOOD_CLOSE_POSITION = 0.25;
+        public static double HOOD_FAR_POSITION = 0.16;
 
         public static double TURRET_POSITIONAL_OFFSET = -2.231;
         public static double TURRET_ANGULAR_OFFSET = 180;

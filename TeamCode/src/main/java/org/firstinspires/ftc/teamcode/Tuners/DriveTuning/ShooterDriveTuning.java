@@ -16,8 +16,8 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
 
     //shooter tuning
     public static double TRANSFER_VELOCITY = 1200;
-    public static double INTAKE_VELOCITY = 2000;
-    public static double FLYWHEEL_VELOCITY = 39600;
+    public static double INTAKE_POWER = 1;
+    public static double FLYWHEEL_VELOCITY = 405_000;
     public static double HOOD_POSITION = 0.2;
 
 
@@ -48,7 +48,7 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
             clearCacheOfLynxModule();
 
             hoodAngler.setPosition(HOOD_POSITION);
-            intake.setVelocity(INTAKE_VELOCITY);
+            intake.setPower(INTAKE_POWER);
             transfer.setVelocity(TRANSFER_VELOCITY);
             flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
             flywheel.updateKvBasedOnVoltage();

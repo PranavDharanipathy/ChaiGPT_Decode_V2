@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-@Config
 @TeleOp (name = "V2TeleOp TEST")
 public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
@@ -77,7 +76,8 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
             telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
-            telemetry.addData("flywheel current velocity", "%.0f", shooter.flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("flywheel velocity estimate", "%.0f", shooter.flywheel.getCurrentVelocityEstimate());
+            telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
             telemetry.addData("p", shooter.flywheel.p);

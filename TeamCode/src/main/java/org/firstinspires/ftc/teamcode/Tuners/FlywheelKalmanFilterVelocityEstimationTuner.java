@@ -25,7 +25,6 @@ public class FlywheelKalmanFilterVelocityEstimationTuner extends OpMode {
     public static double R = Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[1];
     public static double OUTLIER_SIGMA = Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[2];
     public static double KR_INFLATION = Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[3];
-    public static double avgDt = Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[4];
 
     public static long LOOP_TIME = 70;
 
@@ -88,7 +87,7 @@ public class FlywheelKalmanFilterVelocityEstimationTuner extends OpMode {
         double calculatedAvgDt = sumOfDts / (dtHistoryLength);
 
         // updates constants
-        encoder.initializeVelocityKalmanFilter(Q, R, OUTLIER_SIGMA, KR_INFLATION, avgDt != 0 ? avgDt : calculatedAvgDt);
+        encoder.initializeVelocityKalmanFilter(Q, R, OUTLIER_SIGMA, KR_INFLATION);
 
         switch (STAGE) {
 
@@ -109,7 +108,7 @@ public class FlywheelKalmanFilterVelocityEstimationTuner extends OpMode {
         leftFlywheel.setPower(power);
         rightFlywheel.setPower(power);
 
-        encoder.runVelocityCalculation(instanceDt, velocityEstimate/*, telemetry*/);
+        encoder.runVelocityCalculation(velocityEstimate/*, telemetry*/);
 
         telemetry.addData("estimated velocity", velocityEstimate);
         telemetry.addData("real velocity", encoder.getRealVelocity());

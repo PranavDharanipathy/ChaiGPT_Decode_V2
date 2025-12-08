@@ -29,8 +29,8 @@ public class Goal {
     public enum GoalCoordinates {
 
         //            CLOSE                                  FAR
-        RED(new GoalCoordinate(64,-70), new GoalCoordinate(79,-72)),
-        BLUE(new GoalCoordinate(66, 66), new GoalCoordinate(79, 58));
+        RED(new GoalCoordinate(64,-66), new GoalCoordinate(77,-67.5)),
+        BLUE(new GoalCoordinate(66, 65), new GoalCoordinate(77, 62.5));
 
         private GoalCoordinate close;
         private GoalCoordinate far;

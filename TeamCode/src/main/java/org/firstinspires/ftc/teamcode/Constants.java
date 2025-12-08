@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
@@ -153,11 +154,9 @@ public class Constants {
     public static double HOOD_ANGLER_INITIAL_RESETTING_POSITION = 0;
 
     //intake and transfer
-    public static double BASE_INTAKE_VELOCITY = 2000;
+    public static double INTAKE_POWER = 1;
 
-    public static double INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER = 1200;
-
-    public static double REVERSE_INTAKE_VELOCITY = -1200;
+    public static double REVERSE_INTAKE_POWER = -0.5;
 
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
@@ -166,25 +165,14 @@ public class Constants {
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -250;
 
-    // DIFFERENT TUNED VALUEs
-    public static double[] MECANUM_DRIVE_NORMAL_FEEDFORWARD  = {0.0003075, 0.9, 0.00008};
-
-    public static double[] MECANUM_DRIVE_FAST_FEEDFORWARD = {};
-
-    public static double[] MECANUM_DRIVE_NORMAL_GAINS = {};
-
-    public static double[] MECANUM_DRIVE_FAST_GAINS = {};
-
-    public static double[] MECANUM_DRIVE_NORMAL_VEL_GAINS = {};
-
-    public static double[] MECANUM_DRIVE_NORMAL_FAST_GAINS = {};
-
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 
+    @DeprecatedSystem(notes = "Not using PID anymore as it's unnecessary.")
     public static double[] INTAKE_PIDF_DEFAULT_COEFFICIENTS = {20, 2.5, 0, 10};
+    @DeprecatedSystem(notes = "Not using PID anymore as it's unnecessary.")
     public static double[] INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER = {20, 0, 0, 10}; //integral is not being utilized
 
     //flywheel
@@ -200,7 +188,7 @@ public class Constants {
             0.000125, 0.0000005, 0, 0.00003, 0.0, 0.00000173, 0.0, 0.00013, 0.9, 0.1, 7200 //0.000001, 0.000001, 0.0000004, 0.0000001, 0.0, 0.00000173, 0.0, 0.00008, 0.9, 0.1, 7200
     };
 
-    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5, 5.3455149501661126};
+    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5};
 
     public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 25;
 

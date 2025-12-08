@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import org.firstinspires.ftc.teamcode.Constants;
 
-@Config
+//@Config
 @Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
@@ -93,12 +93,12 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
         }
         //intake
         public InstantAction reverseIntake() {
-            return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
+            return new InstantAction(() -> intake.setPower(Constants.REVERSE_INTAKE_POWER));
         }
 
 
         public InstantAction intake() {
-            return new InstantAction(() -> intake.setVelocity(2200));
+            return new InstantAction(() -> intake.setPower(1));
         }
 
         public class WaitTilFlywheelAtVelocity implements Action {
@@ -246,7 +246,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                                 .setReversed(true)
 
 
-                                .splineToSplineHeading(new Pose2d(-15, -7, 0), -Math.PI / 2)
+                                .splineToSplineHeading(new Pose2d(-12, -4, 0), -Math.PI / 2)
 
 
                                 .stopAndAdd(robot.secondShootSequence())
