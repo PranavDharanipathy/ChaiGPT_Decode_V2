@@ -270,8 +270,6 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         robot.setFlywheelToCloseSideVelocity();
-
-
         Action mainPath =
 
         new ParallelAction(
