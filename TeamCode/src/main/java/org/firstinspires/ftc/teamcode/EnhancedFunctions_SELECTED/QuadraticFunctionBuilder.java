@@ -19,9 +19,9 @@ public final strictfp class QuadraticFunctionBuilder {
         // a, b, and c values from ax² + bx + c
 
         /*
-         * y1 = ax1^2 + bx1 + c
-         * y2 = ax2^2 + bx2 + c
-         * y3 = ax3^2 + bx3 + c
+         * y1 = ax1² + bx1 + c
+         * y2 = ax2² + bx2 + c
+         * y3 = ax3² + bx3 + c
          */
 
         double a_x1 = Math.pow(X_DATA[0], 2);
