@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.example.cppoptimizations'
-    compileSdk 30
+    compileSdk 36
 
     defaultConfig {
         minSdk 24
@@ -31,7 +31,7 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
+            version "18.0.1"
         }
     }
 
