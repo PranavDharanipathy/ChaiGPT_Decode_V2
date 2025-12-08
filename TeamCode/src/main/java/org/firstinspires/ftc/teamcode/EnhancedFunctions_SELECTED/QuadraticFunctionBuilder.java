@@ -16,7 +16,7 @@ public final strictfp class QuadraticFunctionBuilder {
             throw new IllegalArgumentException("Both X_DATA and Y_DATA must have 3 elements each!");
         }
 
-        // a, b, and c values from ax^2 + bx + c
+        // a, b, and c values from ax² + bx + c
 
         /*
          * y1 = ax1^2 + bx1 + c
