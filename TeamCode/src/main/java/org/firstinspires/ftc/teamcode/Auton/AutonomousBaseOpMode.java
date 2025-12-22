@@ -26,7 +26,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
     public volatile BetterGamepad controller1;
     public volatile BetterGamepad controller2;
 
-    public volatile DcMotor intake;
+    public volatile DcMotorEx intake;
     public volatile BasicVeloMotor transfer;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
@@ -49,7 +49,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        intake = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.intakeMotorDeviceName);
+        intake = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.intakeMotorDeviceName);
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
@@ -84,8 +84,8 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         flywheel.setInternalParameters(
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
-                ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE,
-                ShooterInformation.ShooterConstants.MOTOR_RPM,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM,
                 ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
         );
         flywheel.setVelocityPIDFVASCoefficients(

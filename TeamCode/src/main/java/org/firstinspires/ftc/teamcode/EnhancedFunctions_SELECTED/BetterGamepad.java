@@ -36,6 +36,10 @@ public class BetterGamepad {
 
     public boolean back() { return gamepad.back;}
 
+    public boolean options() { return gamepad.options || gamepad.options; }
+
+    public boolean share() { return gamepad.share || gamepad.share; }
+
     public boolean main_button() { return gamepad.guide || gamepad.ps; }
 
     public boolean isRumbling() { return gamepad.isRumbling(); }
@@ -121,6 +125,14 @@ public class BetterGamepad {
     public boolean prev_main_button = false;
     public boolean main_buttonHasJustBeenPressed = false;
 
+    public boolean curr_options = false;
+    public boolean prev_options = false;
+    public boolean optionsHasJustBeenPressed = false;
+
+    public boolean curr_share = false;
+    public boolean prev_share = false;
+    public boolean shareHasJustBeenPressed = false;
+
     public void getInformation() {
 
         prev_a = curr_a;
@@ -186,6 +198,14 @@ public class BetterGamepad {
         prev_main_button = curr_main_button;
         curr_main_button = main_button();
         main_buttonHasJustBeenPressed = !prev_main_button && curr_main_button;
+
+        prev_options = curr_options;
+        curr_options = gamepad.options;
+        optionsHasJustBeenPressed = !prev_options && curr_options;
+
+        prev_share = curr_share;
+        curr_share = gamepad.share;
+        shareHasJustBeenPressed = !prev_share && curr_share;
     }
 
 }

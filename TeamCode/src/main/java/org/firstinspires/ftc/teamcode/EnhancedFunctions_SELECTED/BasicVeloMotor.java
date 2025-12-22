@@ -33,10 +33,6 @@ public class BasicVeloMotor {
         return motor.getVelocity(); //ticks per second
     }
 
-    public double getPower() {
-        return motor.getPower();
-    }
-
     public void setBrakeable(boolean brakeable) {
 
         if (brakeable) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

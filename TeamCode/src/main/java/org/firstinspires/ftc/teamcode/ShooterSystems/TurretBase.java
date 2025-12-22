@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,6 +17,8 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS;
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KFS;
 
+/// USES EXTERNAL ENCODER
+@Peak
 public class TurretBase {
 
     private final CRServoImplEx leftTurretBase, rightTurretBase;
@@ -98,6 +101,10 @@ public class TurretBase {
         }
     }
 
+    public double getLastTargetPosition() {
+        return lastTargetPosition;
+    }
+
     public double getTargetPosition() {
         return targetPosition;
     }
@@ -161,6 +168,7 @@ public class TurretBase {
 
         f = usingFeedforward ? realKf * (reZeroedTargetPosition - lanyardEquilibrium) : 0;
 
+        //static friction feedforward
         s = ks * Math.signum(error);
 
         i = MathUtil.clamp(ki * errorSum, MIN_I, MAX_I);

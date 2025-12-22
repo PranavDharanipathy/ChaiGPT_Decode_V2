@@ -12,10 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
-import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
+import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-
-import java.util.ArrayList;
 
 @Config
 @TeleOp (group = "tuning")
@@ -30,14 +29,14 @@ public class FlywheelKalmanFilterVelocityEstimationTuner extends OpMode {
 
     public static int STAGE = 0;
 
-    public static double FLYWHEEL_POWER = 0;
-    public static double FLYWHEEL_POWER_INCREMENT = 0.005;
-    private int powerDirection = 1;
+    public static double VELOCITY = 0;
+    public static double VELOCITY_INCREMENT = 0.005;
+    public static double MAX_VELOCITY = 520_000;
+    private int velDirection = 1;
 
-    private double power;
+    private double vel;
 
-    private DcMotorEx leftFlywheel, rightFlywheel;
-    private Encoder encoder;
+    private ExtremePrecisionFlywheel flywheel;
 
     private Telemetry telemetry;
 
@@ -46,75 +45,73 @@ public class FlywheelKalmanFilterVelocityEstimationTuner extends OpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        leftFlywheel = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName);
-        rightFlywheel = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName);
+        flywheel = new ExtremePrecisionFlywheel(
+                hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.leftFlywheelMotorDeviceName),
+                hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
+        );
 
-        leftFlywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
-        rightFlywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
+        flywheel.initVoltageSensor(hardwareMap);
 
-        encoder = new Encoder(leftFlywheel);
-        encoder.setDirection(Encoder.Direction.REVERSE);
+        flywheel.setInternalParameters(
+                ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
+                ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM,
+                ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
+        );
+
+        flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
+        flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
+        flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
+
+        flywheel.setVelocityPIDFVASCoefficients(
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[3],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10]
+        );
     }
-
-    private final ArrayList<Double> dtHistory = new ArrayList<>();
-
-    private final int dtHistoryMaxLength = 300;
-
-    private double prevTicks, currTicks;
 
     @Override
     public void loop() {
 
-        // gets the average dt
-        double instanceDt = TickrateChecker.getTimePerTick();
-
-        //calculates the raw velocity using distance/time
-        prevTicks = currTicks;
-        currTicks = encoder.getCurrentPosition();
-        double velocityEstimate = instanceDt > 0 ? (currTicks - prevTicks) / instanceDt : 0;
-
-        dtHistory.add(instanceDt);
-
-        double dtHistoryLength = dtHistory.size();
-        if (dtHistoryLength > dtHistoryMaxLength) dtHistory.remove(0);
-
-        double sumOfDts = 0.0;
-
-        for (Double dt : dtHistory) {
-            sumOfDts+=dt;
-        }
-
-        double calculatedAvgDt = sumOfDts / (dtHistoryLength);
+        double dt = TickrateChecker.getTimePerTick();
 
         // updates constants
-        encoder.initializeVelocityKalmanFilter(Q, R, OUTLIER_SIGMA, KR_INFLATION);
+        flywheel.getEncoder().initializeVelocityKalmanFilter(Q, R, OUTLIER_SIGMA, KR_INFLATION);
 
         switch (STAGE) {
 
             case 0:
 
-                power = FLYWHEEL_POWER;
+                vel = VELOCITY;
                 break;
 
             case 1:
 
-                power+=(FLYWHEEL_POWER_INCREMENT * powerDirection);
-                power = MathUtil.clamp(power,-1,1);
+                vel +=(VELOCITY_INCREMENT * velDirection);
+                vel = MathUtil.clamp(vel, 0, MAX_VELOCITY);
 
-                if (power == 1 || power == -1) powerDirection*=-1;
+                if (vel == 0 || vel == MAX_VELOCITY) velDirection *=-1;
                 break;
         }
 
-        leftFlywheel.setPower(power);
-        rightFlywheel.setPower(power);
+        flywheel.setVelocity(vel, STAGE == 0);
 
-        encoder.runVelocityCalculation(velocityEstimate/*, telemetry*/);
+        flywheel.updateKvBasedOnVoltage();
+        flywheel.update();
 
-        telemetry.addData("estimated velocity", velocityEstimate);
-        telemetry.addData("real velocity", encoder.getRealVelocity());
+        telemetry.addData("estimated velocity", flywheel.getCurrentVelocityEstimate());
+        telemetry.addData("real velocity", flywheel.getEncoder().getRealVelocity());
 
-        telemetry.addData("instanceDt", instanceDt);
-        telemetry.addData("calculatedAvgDt", calculatedAvgDt);
+        telemetry.addData("dt", dt);
         telemetry.update();
 
         sleep(LOOP_TIME);

@@ -49,6 +49,22 @@ public class Goal {
         }
     }
 
+    public enum GoalCoordinatesForDistance {
+
+        RED(new GoalCoordinate(60, -60)),
+        BLUE(new GoalCoordinate(60, 60));
+
+        private GoalCoordinate coord;
+
+        GoalCoordinatesForDistance(GoalCoordinate coord) {
+            this.coord = coord;
+        }
+
+        public GoalCoordinate getCoordinate() {
+            return coord;
+        }
+    }
+
     /// The angle in degrees that is required for any system to look in to be pointing at the goal.
     /// <p>
     /// x is forward-backward and y is left-right.

@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
@@ -14,22 +13,15 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import javax.annotation.Nullable;
 
-@Peak
 /// USES EXTERNAL ENCODER
-/// <p>|<p>
-/// PIDFVAS measured by external encoder.
-/// <p>P: Proportional
-/// <p>I: Integral
-/// <p>D: Derivative
-/// <p>F: Holding Feedforward
-/// <p>V: Velocity Feedforward
-/// <p>A: Acceleration Feedforward
-/// <p>S: Static Friction
-public final strictfp class ExtremePrecisionFlywheel {
-
-    public final double FLYWHEEL_VELOCITY_DIVISOR = 13.37;
+@Peak
+public final class ExtremePrecisionFlywheel {
 
     private final Encoder encoder;
+
+    public Encoder getEncoder() {
+        return encoder;
+    }
 
     private final DcMotorEx leftFlywheel; //has encoder
     private final DcMotorEx rightFlywheel; //follows leftFlywheel
@@ -69,6 +61,7 @@ public final strictfp class ExtremePrecisionFlywheel {
     private double kISwitchTargetVelocity;
     public double kd;
     public double kf;
+    public double unscaledKv;
     public double kv;
     public double ka;
     public double ks;
@@ -141,7 +134,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     public double filteredVoltage;
 
-    private double voltageFilterAlpha;
+    private double voltageFilterAlpha = 1;
 
     public void setVoltageFilterAlpha(double voltageFilterAlpha) {
         this.voltageFilterAlpha = voltageFilterAlpha;
@@ -151,7 +144,7 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltageSensor.getVoltage(), voltageFilterAlpha);
 
-        kv = ShooterInformation.Regressions.getFlywheelKvFromRegression(filteredVoltage);
+        kv = ShooterInformation.Models.getScaledFlywheelKv(unscaledKv, filteredVoltage);
     }
 
 
@@ -165,7 +158,6 @@ public final strictfp class ExtremePrecisionFlywheel {
     /// @param kiFar Integral
     /// @param kiClose Integral
     /// <p>
-    /// <p>
     /// @param kd Derivative
     /// <p>
     /// @param kf Holding Feedforward
@@ -177,6 +169,7 @@ public final strictfp class ExtremePrecisionFlywheel {
     /// @param ks Static Friction
     /// <p>
     /// @param kPIDFUnitsPerVolt delta PIDF / delta volts
+    /// <p>
     /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
     public void setVelocityPIDFVASCoefficients(double kp, double kiFar, double kiClose, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
@@ -185,7 +178,7 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.kiClose = kiClose;
         this.kd = kd;
         this.kf = kf;
-        this.kv = kv;
+        this.kv = unscaledKv = kv;
         this.ka = ka;
         this.ks = ks;
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
@@ -228,8 +221,11 @@ public final strictfp class ExtremePrecisionFlywheel {
     private double velocityEstimate = 0;
 
     private boolean firstTick = true;
+    private double startTime;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private double seconds() {
+        return System.nanoTime() * 1e-9;
+    }
 
     private double power = 0;
 
@@ -238,12 +234,12 @@ public final strictfp class ExtremePrecisionFlywheel {
         //setting start time
         if (firstTick) {
 
-            timer.reset();
+            startTime = seconds();
             firstTick = false;
         }
 
         prevTime = currentTime;
-        currentTime = timer.seconds();
+        currentTime = seconds() - startTime;
         double dt = currentTime - prevTime;
 
         burstVelocity = Math.max(0, burstVelocity - (BURST_DECELERATION_RATE * dt));
@@ -254,10 +250,10 @@ public final strictfp class ExtremePrecisionFlywheel {
         currentPosition = encoder.getCurrentPosition();
 
         velocityEstimate = (currentPosition - lastPosition) / dt;
-        //velocityEstimate /= FLYWHEEL_VELOCITY_DIVISOR;
+
         encoder.runVelocityCalculation(velocityEstimate);
-        //currentFilteredVelocity = encoder.getRealVelocity();
-        currentFilteredVelocity = velocityEstimate;
+        currentFilteredVelocity = encoder.getRealVelocity();
+        //currentFilteredVelocity = velocityEstimate;
 
         //telemetry.addData("current vel", currentVelocity);
 
@@ -323,10 +319,6 @@ public final strictfp class ExtremePrecisionFlywheel {
             leftFlywheel.setPower(power);
             rightFlywheel.setPower(power);
         }
-//        else {
-//            leftFlywheel.setPower(0);
-//            rightFlywheel.setPower(0);
-//        }
 
         prevError = error;
     }

@@ -24,7 +24,7 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
     public enum TUNING_STAGES {
 
-        PIDFVAS /*1st*/, KV_REG/*2nd*/, kPIDFUnitsPerVolt /*3rd*/, BURST_VELOCITY /*4th*/, STABILITY /*5th*/
+        PIDFVAS /*1st*/, kPIDFUnitsPerVolt/*2nd*/, KV_SCALED /*3rd*/, BURST_VELOCITY /*4th*/, STABILITY /*5th*/
     }
 
     public static TUNING_STAGES TUNING_STAGE = TUNING_STAGES.PIDFVAS;
@@ -53,8 +53,8 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
     public static double MASS_IN_GRAMS = ShooterInformation.ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT;
     public static double SHAFT_DIAMETER = ShooterInformation.ShooterConstants.SHAFT_DIAMETER;
-    public static double MOTOR_CORE_VOLTAGE = ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE;
-    public static double MOTOR_RPM = ShooterInformation.ShooterConstants.MOTOR_RPM;
+    public static double MOTOR_CORE_VOLTAGE = ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE;
+    public static double MOTOR_RPM = ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM;
     public static double BURST_DECELERATION_RATE = Constants.FLYWHEEL_BURST_DECELERATION_RATE;
 
     private ExtremePrecisionFlywheel flywheel;
@@ -100,7 +100,7 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
 
             filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, currentVoltage, FLYWHEEL_VOLTAGE_FILTER_ALPHA);
 
-            double kv = TUNING_STAGE == TUNING_STAGES.KV_REG ? ShooterInformation.Regressions.getFlywheelKvFromRegression(filteredVoltage) : KV;
+            double kv = TUNING_STAGE == TUNING_STAGES.KV_SCALED ? ShooterInformation.Models.getScaledFlywheelKv(KV, filteredVoltage) : KV;
 
             flywheel.setIConstraints(I_MIN, I_MAX);
             flywheel.setPConstraints(P_MIN, P_MAX);

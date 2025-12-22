@@ -54,8 +54,6 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
             flywheel.updateKvBasedOnVoltage();
             flywheel.update();
 
-            //background action processes
-
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 

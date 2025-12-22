@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -18,11 +19,6 @@ import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
 
 @Config
 public class Constants {
-
-    public static class DriveConstants {
-
-
-    }
 
     public static class IMUConstants {
 
@@ -60,6 +56,9 @@ public class Constants {
 
         public static LynxModule.BulkCachingMode bulkCachingMode = LynxModule.BulkCachingMode.MANUAL;
 
+        public static String controlHubDeviceName = "Control Hub";
+        public static String expansionHubDeviceName = "Expansion Hub";
+
         public static String rev9AxisIMUDeviceName = "rev9axisimu";
         public static String internalIMUDeviceName = "imu";
 
@@ -84,6 +83,8 @@ public class Constants {
         public static String turretBaseRightServoDeviceName = "right_turret_base";
 
         public static String intakeMotorDeviceName = "intake";
+        public static String liftPTOServoDeviceName = "lift_pto";
+
         public static String transferMotorDeviceName = "transfer";
 
         public static String[] transferBeambreakSensorNames = {"transfer_beambreak_power", "transfer_beambreak_receiver"};
@@ -101,7 +102,7 @@ public class Constants {
     /// name of the obelisk xml file
     public static String OBELISK_XML_FILE_NAME = "obelisk";
     /// the key used when saving and loading data to the obelisk xml file
-    public static String OBELISK_XML_DATA_KEY = "id";
+    public static String OBELISK_XML_DATA_KEY = "motif";
     /// defaults to INVALID
     public static int OBELISK_XML_DEFAULT_KEY = Obelisk.OBELISK.INVALID.getAprilTagNumber();
 
@@ -111,21 +112,6 @@ public class Constants {
     public static int OBELISK_SELECTION_KEYBIND_TIME = 2250;
 
     public static double CONTROL_HUB_HZ = 80;
-
-    public enum HUB_TYPE {
-
-        CONTROL_HUB("Control Hub"), EXPANSION_HUB("Expansion Hub");
-
-        private String hubName;
-
-        HUB_TYPE(String hubName) {
-            this.hubName = hubName;
-        }
-
-        public String getGivenName() {
-            return hubName;
-        }
-    }
 
     /// Height of goal in inches
     public static double HEIGHT_OF_GOAL = 53.996063;
@@ -151,12 +137,14 @@ public class Constants {
             /*right motor*/ Servo.Direction.FORWARD
     };
 
+    public static Servo.Direction LIFT_PTO_SERVO_DIRECTION = Servo.Direction.REVERSE;
+
     public static double HOOD_ANGLER_INITIAL_RESETTING_POSITION = 0;
 
     //intake and transfer
     public static double INTAKE_POWER = 1;
 
-    public static double REVERSE_INTAKE_POWER = -0.5;
+    public static double REVERSE_INTAKE_POWER = -0.8;
 
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
@@ -185,17 +173,17 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.000125, 0.0000005, 0, 0.00003, 0.0, 0.00000173, 0.0, 0.00013, 0.9, 0.1, 7200 //0.000001, 0.000001, 0.0000004, 0.0000001, 0.0, 0.00000173, 0.0, 0.00008, 0.9, 0.1, 7200
+            0.00001, 0.00000042, 0.00000195, 0.0000002, 0.0, 0.0000014, 0.0, 0.00013, 0.9, 0.85, 7200
     };
 
-    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {0.92, 20, 17, 2.5};
+    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {625, 4000, 85, 2};
 
     public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 25;
 
-    public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.05;
+    public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.5;
     public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 1;
 
-    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.04;
+    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.06;
     public static double FLYWHEEL_MAX_PROPORTIONAL_LIMIT = 1;
 
     public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
@@ -203,12 +191,29 @@ public class Constants {
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
 
-    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.02;
+    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
 
     //turret
     public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0};
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
+
+    //lift
+    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1, 0.1, 0.85, 0.9, 195.0};
+
+    public static double LIFT_MIN_INTEGRAL_LIMIT = -8;
+    public static double LIFT_MAX_INTEGRAL_LIMIT = 8;
+
+    /// This method is only to be used for when the lift hits the ground.
+    /// @return kf from exponential regression.
+    public static double getLiftKfFromRegression(double targetPosition) {
+        return 0.100076 * FastMath.pow(0.99536, targetPosition);
+    }
+
+    public static double LIFT_POSITION = 550;
+
+    public static double LIFT_PTO_ENGAGE_POSITION = 0.48;
+    public static double LIFT_PTO_DISENGAGE_POSITION = 0.55;
 
 }

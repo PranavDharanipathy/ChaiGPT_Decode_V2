@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @TeleOp (name = "V2TeleOp TEST")
@@ -39,7 +40,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
         //initialize subsystems here
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-        intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
+        intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, customDrive, rev9AxisImu, controller1, controller2);
 
@@ -48,6 +49,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
         if (isStopRequested()) return;
         waitForStart();
+        CommandScheduler.start();
 
         shooter.start(Goal.GoalCoordinates.BLUE);
 
@@ -70,6 +72,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             robotCentricDrive.update();
 
             //background action processes
+            CommandScheduler.update();
 
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
@@ -91,6 +94,9 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
 
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
+
+            telemetry.addData("Lift Engaged", intake.getLiftEngaged());
+            telemetry.addData("Lift Position", intake.getLiftPosition());
             telemetry.update();
 
         }
