@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,11 +20,7 @@ import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
 @Peak
-@Config
 public class Shooter implements SubsystemInternal {
-
-    public static boolean MANUAL_HOOD_POSITION_FROM_DASH = false;
-    public static double HOOD_ANGLER_POSITION = 0;
 
     private BetterGamepad controller1, controller2;
 
@@ -58,6 +53,12 @@ public class Shooter implements SubsystemInternal {
 
     }
 
+    enum ZONE {
+        CLOSE, FAR
+    }
+
+    private ZONE flywheelTargetVelocityZone;
+
     private double turretStartPosition;
 
     private Goal.GoalCoordinates goalCoordinates;
@@ -72,7 +73,7 @@ public class Shooter implements SubsystemInternal {
         else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
 
         turretStartPosition = turret.getCurrentPosition();
-        turretPosition = 0;
+        turretPosition = turretStartPosition;
 
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BLUE_FAR_START_POSITION);
         else relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.RED_FAR_START_POSITION);
@@ -82,24 +83,7 @@ public class Shooter implements SubsystemInternal {
 
     private boolean shooterToggle = false;
 
-    public enum FLYWHEEL_VELOCITY {
-
-        FAR_SIDE(ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY), CLOSE_SIDE(ShooterInformation.ShooterConstants.CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY);
-
-        private double velocity;
-
-        FLYWHEEL_VELOCITY(double velocity) {
-            this.velocity = velocity;
-        }
-
-        public double getVelocity() {
-            return velocity;
-        }
-    }
-
-    private FLYWHEEL_VELOCITY launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
-
-    private double hoodPosition;
+    private double hoodPosition = 0.4;
 
     private double turretPosition;
 
@@ -108,74 +92,18 @@ public class Shooter implements SubsystemInternal {
 
     public Pose2d robotPose;
 
+    private boolean automaticHoodToggle = true;
+    private double distanceToGoal;
+
     public void update() {
 
-        //flywheel
-        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
-
-        //incrementing the hood positions
-        if (controller2.yHasJustBeenPressed) { //close
-            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-            manualUpdateHoodPositions();
-        }
-        else if (controller2.xHasJustBeenPressed) {
-            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-            manualUpdateHoodPositions();
-        }
-
-        if (controller2.bHasJustBeenPressed) { //far
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-            manualUpdateHoodPositions();
-        }
-        else if (controller2.aHasJustBeenPressed) {
-            ShooterInformation.ShooterConstants.HOOD_FAR_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-            manualUpdateHoodPositions();
-        }
-
-        // setting hood and flywheel modes (close or far)
-        if (controller1.yHasJustBeenPressed) {
-
-            launchZoneVelocity = FLYWHEEL_VELOCITY.CLOSE_SIDE;
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
-
-            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
-        }
-        else if (controller1.bHasJustBeenPressed) {
-
-            launchZoneVelocity = FLYWHEEL_VELOCITY.FAR_SIDE;
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
-
-            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
-        }
-
-        if (MANUAL_HOOD_POSITION_FROM_DASH) hoodPosition = HOOD_ANGLER_POSITION;
-
-        hoodAngler.setPosition(MathUtil.clamp(hoodPosition, ShooterInformation.ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION));
-
-        if (shooterToggle) {
-            flywheel.setVelocity(launchZoneVelocity.getVelocity(), true);
-        }
-        else {
-            flywheel.setVelocity(0, true);
-        }
-
-        if (turret.getPositionError() < ShooterInformation.ShooterConstants.TURRET_TARGET_POSITION_ERROR_MARGIN) {
-            controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
-        }
-        else {
-            controller1.stopRumble();
-        }
-
-        //turret
-        turretPosition = turret.getCurrentPosition();
-
+        //getting robot pose
+        if (controller2.main_buttonHasJustBeenPressed) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
         robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
-
         customDrive.updatePoseEstimate();
 
-        if (controller2.main_buttonHasJustBeenPressed) {
-            relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
-        }
+        //turret
+        double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
         if (controller2.dpad_leftHasJustBeenPressed) {
             turretStartPosition+=ShooterInformation.ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
@@ -185,10 +113,11 @@ public class Shooter implements SubsystemInternal {
         }
 
         robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
-        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretPosition, turretStartPosition);
+        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretCurrentPosition, turretStartPosition);
 
         Goal.GoalCoordinate goalCoordinate;
 
+        //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (robotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
             goalCoordinate = goalCoordinates.getCloseCoordinate();
         }
@@ -206,6 +135,59 @@ public class Shooter implements SubsystemInternal {
         if (controller2.left_trigger(Constants.TRIGGER_THRESHOLD)) turret.setPosition(turretStartPosition);
         else turret.setPosition(targetPosition);
 
+        //flywheel
+        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
+
+        // setting flywheel velocity
+        if (controller1.yHasJustBeenPressed) { //close
+
+            flywheelTargetVelocityZone = ZONE.CLOSE;
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+        }
+        else if (controller1.bHasJustBeenPressed) { //far
+
+            flywheelTargetVelocityZone = ZONE.FAR;
+            controller2.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+        }
+
+        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocity(), true);
+        else flywheel.setVelocity(0, true);
+
+        if (controller2.right_trigger(Constants.TRIGGER_THRESHOLD)) {
+            if (flywheel.getMotorEnabled()) flywheel.runMotor(ExtremePrecisionFlywheel.RunningMotor.DISABLE);
+            flywheel.setPower(1);
+        }
+        else if (!flywheel.getMotorEnabled()) {
+            flywheel.runMotor(ExtremePrecisionFlywheel.RunningMotor.ENABLE);
+        }
+
+        if (turret.getPositionError() < ShooterInformation.ShooterConstants.TURRET_TARGET_POSITION_ERROR_MARGIN) {
+            controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
+        }
+        else {
+            controller1.stopRumble();
+        }
+
+        //hood
+        if (controller2.shareHasJustBeenPressed) automaticHoodToggle = !automaticHoodToggle;
+
+        if (automaticHoodToggle) {
+
+            Goal.GoalCoordinatesForDistance goalCoordinatesForDistance =
+                    goalCoordinates == Goal.GoalCoordinates.BLUE
+                    ? Goal.GoalCoordinatesForDistance.BLUE
+                    : Goal.GoalCoordinatesForDistance.RED;
+
+            Vector2d turretVector = turretPose.position;
+
+            distanceToGoal = Goal.getDistanceFromGoal(turretVector.x, turretVector.y, goalCoordinatesForDistance.getCoordinate());
+
+            hoodPosition = ShooterInformation.Models.getCloseHoodPositionFromRegression(distanceToGoal);
+        }
+        else noAutomaticHood();
+
+        hoodAngler.setPosition(MathUtil.clamp(hoodPosition, ShooterInformation.ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION));
+
         //updating
         turret.update();
         flywheel.updateKvBasedOnVoltage();
@@ -218,12 +200,51 @@ public class Shooter implements SubsystemInternal {
 
     }
 
+    private double getFlywheelTargetVelocity() {
+
+        double flywheelTargetVelocity;
+
+        if (flywheelTargetVelocityZone == ZONE.FAR) {
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+        }
+        else if (distanceToGoal < ShooterInformation.ShooterConstants.CLOSE_SIDE_SWITCH || !automaticHoodToggle) { //uses this close velocity if automatic hood isn't being used
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+        }
+        else {
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+        }
+        return flywheelTargetVelocity;
+    }
+
+    private void noAutomaticHood() {
+
+        if (!(controller2.yHasJustBeenPressed || controller2.xHasJustBeenPressed || controller2.bHasJustBeenPressed || controller2.aHasJustBeenPressed)) {
+            return;
+        }
+
+        if (controller2.yHasJustBeenPressed) { //close
+            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+        }
+        else if (controller2.xHasJustBeenPressed) {
+            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+        }
+
+        if (controller2.bHasJustBeenPressed) { //far
+            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+        }
+        else if (controller2.aHasJustBeenPressed) {
+            ShooterInformation.ShooterConstants.HOOD_FAR_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
+        }
+
+        manualUpdateHoodPositions();
+    }
+
     private void manualUpdateHoodPositions() {
 
-        if (launchZoneVelocity == FLYWHEEL_VELOCITY.CLOSE_SIDE) {
+        if (flywheelTargetVelocityZone == ZONE.CLOSE) {
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
         }
-        else if (launchZoneVelocity == FLYWHEEL_VELOCITY.FAR_SIDE) {
+        else if (flywheelTargetVelocityZone == ZONE.FAR) {
             hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
         }
     }

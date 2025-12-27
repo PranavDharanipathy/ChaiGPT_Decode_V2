@@ -26,7 +26,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
     public volatile BetterGamepad controller1;
     public volatile BetterGamepad controller2;
 
-    public volatile BasicVeloMotor intake;
+    public volatile DcMotorEx intake;
     public volatile BasicVeloMotor transfer;
     public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
@@ -49,7 +49,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
+        intake = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.intakeMotorDeviceName);
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
@@ -74,13 +74,6 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         intake.setDirection(DcMotor.Direction.REVERSE);
         transfer.setDirection(DcMotor.Direction.REVERSE);
 
-        intake.setVelocityPIDFCoefficients(
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
-        );
-
         transfer.setVelocityPIDFCoefficients(
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[0],
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[1],
@@ -91,8 +84,8 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         flywheel.setInternalParameters(
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
-                ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE,
-                ShooterInformation.ShooterConstants.MOTOR_RPM,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM,
                 ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
         );
         flywheel.setVelocityPIDFVASCoefficients(

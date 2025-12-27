@@ -18,9 +18,6 @@ public class AdafruitBeambreakSensor {
         receiver.setMode(DigitalChannel.Mode.INPUT);
     }
 
-    /// 'true' when connected
-    /// <p>
-    /// 'false' when obstructed
     public enum BEAM_STATE {
 
         CONNECTED(true), BROKEN(false);
@@ -31,12 +28,15 @@ public class AdafruitBeambreakSensor {
             this.beamState = beamState;
         }
 
+        /// 'true' when connected
+        /// <p>
+        /// 'false' when obstructed
         public boolean getBoolean() {
             return beamState;
         }
     }
 
-    public BEAM_STATE isBeamBroken() {
+    public BEAM_STATE getBeamState() {
 
         BEAM_STATE state;
 

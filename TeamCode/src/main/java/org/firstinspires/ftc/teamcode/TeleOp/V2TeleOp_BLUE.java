@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-@Config
 @TeleOp (name = "V2TeleOp BLUE", group = "AAAA_MatchPurpose")
 public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
@@ -40,7 +40,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
         //initialize subsystems here
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-        intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
+        intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, customDrive, rev9AxisImu, controller1, controller2);
 
@@ -51,7 +51,9 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
         if (isStopRequested()) return;
         waitForStart();
+        CommandScheduler.start();
 
+        //all subsystem starting methods
         shooter.start(Goal.GoalCoordinates.BLUE);
 
         //run robot reset
@@ -73,13 +75,15 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             robotCentricDrive.update();
 
             //background action processes
+            CommandScheduler.update();
 
             telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
             telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 
             telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
-            telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("flywheel velocity estimate", "%.0f", shooter.flywheel.getCurrentVelocityEstimate());
+            telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getFrontendCalculatedVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
             telemetry.addData("p", shooter.flywheel.p);
@@ -93,6 +97,10 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
 
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
+
+            telemetry.addData("Intake mode", intake.mode);
+            telemetry.addData("Lift Engaged", intake.getLiftEngaged());
+            telemetry.addData("Lift Position", intake.getLiftPosition());
             telemetry.update();
 
         }

@@ -63,11 +63,20 @@ public strictfp class MathUtil {
     }
 
     public static double getDistance2d(double x1, double x2, double y1, double y2) {
-        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2));
+
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+
+        return FastMath.sqrt((deltaX * deltaX) + (deltaY * deltaY));
     }
 
     public static double getDistance3d(double x1, double x2, double y1, double y2, double z1, double z2) {
-        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2) + FastMath.pow(z2 - z1, 2));
+
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+        double deltaZ = z2 - z1;
+
+        return FastMath.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
     }
 
     public static double metersToInches(double meters) {
@@ -83,6 +92,10 @@ public strictfp class MathUtil {
         double deltaValue = targetValue - currentValue;
 
         return Math.abs(deltaValue) < deadbandValue ? currentValue : targetValue;
+    }
+
+    public static double truncate(double value, double truncateFactor) {
+        return Math.round(value * truncateFactor) / truncateFactor;
     }
 
     public static boolean valueWithinRange(double value, double minRange, double maxRange) {

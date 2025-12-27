@@ -37,7 +37,6 @@ public class StateMachine {
 
     public void setState(Object state) {
 
-        // uses stream pipeline, works directly with non-Object types as well
         if (Arrays.stream(states).noneMatch(states -> states.equals(state))) throw new IllegalArgumentException();
 
         currentState = state;
