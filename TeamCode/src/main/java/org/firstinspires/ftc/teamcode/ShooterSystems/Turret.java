@@ -1,19 +1,11 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
-import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.roadrunner.ThreeDeadWheelLocalizer;
-
-import java.util.Vector;
 
 public class Turret {
 
@@ -43,6 +35,8 @@ public class Turret {
     double targetY;
 
     Servo turret;
+
+
     public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
         this.targetX = targetX;
         this.targetY = targetY;
