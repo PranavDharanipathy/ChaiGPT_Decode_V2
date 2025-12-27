@@ -110,44 +110,5 @@ public class Turret {
         else {gamepad1.stopRumble(); }
 
 
-
-
-
-
-
-            //Old terrible code heheheh
-
-            /*localizer.update();
-            Pose2d currentPose = localizer.getPose();
-
-            // TARGET COORDINATE
-            double targetX = 48;
-            double targetY = 72;
-
-            // Difference from current pos to target
-            double dx = targetX - currentPose.position.x;
-            double dy = targetY - currentPose.position.y;
-
-
-
-            // Field angle
-            double desiredFieldAngle = Math.toDegrees(Math.atan2(dy, dx));
-
-            // RObot heading
-            double robotHeading = Math.toDegrees(currentPose.heading.toDouble());
-
-            // Turret target aNgle (relative to robot)
-            double turretTarget = AngleUnit.normalizeDegrees(desiredFieldAngle - robotHeading);*/
-
-
-
-
-
-
-
-
-
-
-
     }
 }
