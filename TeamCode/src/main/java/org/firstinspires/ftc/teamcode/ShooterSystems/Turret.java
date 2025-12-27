@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.ThreeDeadWheelLocalizer;
 
 public class Turret {
@@ -36,10 +37,16 @@ public class Turret {
 
     Servo turret;
 
+    double turretCurrPos;
 
-    public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
+    BetterGamepad gamepad1;
+
+
+    public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
         this.targetX = targetX;
         this.targetY = targetY;
+
+        this.gamepad1 = gamepad1;
 
         this.initialPose = initialPose;
 
@@ -92,6 +99,16 @@ public class Turret {
 
         //set turret to desired location
         turret.setPosition(turretTargetTicks);
+
+
+        //Extra features: rumbling(like shooting)
+
+        turretCurrPos = turret.getPosition();
+
+
+        if (turretCurrPos == turretTargetTicks) { gamepad1.rumble(7000); }
+        else {gamepad1.stopRumble(); }
+
 
 
 

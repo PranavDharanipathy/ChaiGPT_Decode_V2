@@ -19,7 +19,7 @@ public class TurretAimTest extends OpMode {
 
 
     DcMotor left_front, left_back, right_front, right_back;
-    BetterGamepad controller1;
+    BetterGamepad gamepad1;
 
 
 
@@ -29,15 +29,9 @@ public class TurretAimTest extends OpMode {
 
          initialPose=  new Pose2d(0, 0, -45);
 
-        turret = new Turret(hardwareMap, initialPose, 0, 120);
+        turret = new Turret(hardwareMap, initialPose, 0, 120, gamepad1);
 
-        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-
-
-
-
-
-
+        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
 
 
     }
