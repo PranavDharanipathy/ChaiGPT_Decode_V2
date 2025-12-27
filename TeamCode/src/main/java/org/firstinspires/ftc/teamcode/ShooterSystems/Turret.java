@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import static com.sun.tools.doclint.Entity.aacute;
+import static com.sun.tools.doclint.Entity.lambda;
+import static org.apache.commons.math3.util.FastMath.toDegrees;
+
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.ThreeDeadWheelLocalizer;
@@ -40,6 +46,8 @@ public class Turret {
     double turretCurrPos;
 
     BetterGamepad gamepad1;
+
+    double turretCurrDeg;
 
 
     public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
@@ -80,11 +88,9 @@ public class Turret {
 
         //atan2 returns radians --> Angle of slope between distance
 
-        desiredFieldAngleRad = Math.atan2(dY, dX);
+        //convert desiredFieldAngle to degrees with toDegrees()
 
-        //convert desiredFieldAngle to degrees
-
-        desiredFieldAngleDeg = AngleUnit.normalizeDegrees(desiredFieldAngleRad);
+        desiredFieldAngleDeg = toDegrees(FastMath.atan2(dY, dX));
 
         //in degrees?
 
@@ -105,9 +111,18 @@ public class Turret {
 
         turretCurrPos = turret.getPosition();
 
+        turretCurrDeg = toDegrees(turretCurrPos);
+
 
         if (turretCurrPos == turretTargetTicks) { gamepad1.rumble(7000); }
         else {gamepad1.stopRumble(); }
+
+
+
+        //If turret is out of bounds
+        if (turretCurrDeg > 176 || turretCurrDeg < -170) {
+            turret.setPosition(0);
+        }
 
 
     }
