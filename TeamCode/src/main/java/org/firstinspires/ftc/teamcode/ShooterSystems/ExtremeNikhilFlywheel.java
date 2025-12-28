@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -36,8 +37,12 @@ public class ExtremeNikhilFlywheel {
         left_flywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
         right_flywheel.setDirection(Constants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
 
-        left_flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        right_flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left_flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        right_flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        left_flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        right_flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
 
 
 
@@ -53,10 +58,17 @@ public class ExtremeNikhilFlywheel {
         left_flywheel.setVelocity(velocity);
 
         right_flywheel.setVelocity(velocity);
-
-
-
     }
+
+    public void stop() {
+
+        left_flywheel.setPower(0);
+        right_flywheel.setPower(0);
+    }
+
+
+
+
 
 
 
