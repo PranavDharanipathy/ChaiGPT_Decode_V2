@@ -6,13 +6,17 @@ import static org.apache.commons.math3.util.FastMath.toDegrees;
 
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.pedropathing.ftc.drivetrains.Mecanum;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class Turret {
 
@@ -31,7 +35,7 @@ public class Turret {
        double turretTargetTicks;
 
 
-    ThreeDeadWheelLocalizer localizer;
+    MecanumDrive localizer;
 
     Pose2d initialPose;
 
@@ -41,7 +45,11 @@ public class Turret {
 
     double targetY;
 
-    Servo turret;
+    CRServo left_turret;
+
+    CRServo right_turret;
+
+    Encoder encoder;
 
     double turretCurrPos;
 
@@ -58,14 +66,19 @@ public class Turret {
 
         this.initialPose = initialPose;
 
-        turret = hardwareMap.get(Servo.class, "turret");
+        left_turret = hardwareMap.get(CRServo.class, "left_turret");
+
+        right_turret = hardwareMap.get(CRServo.class, "right_turret");
+        encoder = new Encoder(left_turret);
+
+
 
 
         //Initializing Devices(Pose and Localizer to be used in loop();
 
         //initialPose = new Pose2d(-11, 23.5, 0);
 
-        localizer = new ThreeDeadWheelLocalizer(hardwareMap, 0.0020446994, initialPose);
+        localizer = new MecanumDrive(hardwareMap, initialPose);
 
     }
 
@@ -111,7 +124,7 @@ public class Turret {
 
         turretCurrPos = turret.getPosition();
 
-        turretCurrDeg = toDegrees(turretCurrPos);
+        turretCurrDeg = turretCurrPos/73.5179487179;
 
 
         if (turretCurrPos == turretTargetTicks) { gamepad1.rumble(7000); }
