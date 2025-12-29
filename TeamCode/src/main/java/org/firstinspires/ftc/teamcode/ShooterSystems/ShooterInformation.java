@@ -12,6 +12,7 @@ import java.util.List;
 public strictfp class ShooterInformation {
 
     /// All Limelight3A camera constants
+    @DeprecatedSystem(notes = "We no longer use the Limelight3A to aim our turret but Odometry instead")
     public static class CameraConstants {
 
         /// Camera angle in degrees

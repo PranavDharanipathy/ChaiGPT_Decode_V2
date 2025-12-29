@@ -57,7 +57,7 @@ public class Shooter implements SubsystemInternal {
         CLOSE, FAR
     }
 
-    private ZONE flywheelTargetVelocityZone;
+    private ZONE flywheelTargetVelocityZone = ZONE.FAR;
 
     private double turretStartPosition;
 
@@ -72,7 +72,7 @@ public class Shooter implements SubsystemInternal {
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
         else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
 
-        turretStartPosition = turret.getCurrentPosition();
+        turretStartPosition = turret.startPosition; //turret.getCurrentPosition();
         turretPosition = turretStartPosition;
 
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BLUE_FAR_START_POSITION);
@@ -161,6 +161,7 @@ public class Shooter implements SubsystemInternal {
             flywheel.runMotor(ExtremePrecisionFlywheel.RunningMotor.ENABLE);
         }
 
+        // if turret is within an acceptable amount of error, the controller is rumbled.
         if (turret.getPositionError() < ShooterInformation.ShooterConstants.TURRET_TARGET_POSITION_ERROR_MARGIN) {
             controller1.rumble(ShooterInformation.ShooterConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
@@ -171,7 +172,8 @@ public class Shooter implements SubsystemInternal {
         //hood
         if (controller2.shareHasJustBeenPressed) automaticHoodToggle = !automaticHoodToggle;
 
-        if (automaticHoodToggle) {
+        if (flywheelTargetVelocityZone == ZONE.FAR) hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
+        else if (automaticHoodToggle) {
 
             Goal.GoalCoordinatesForDistance goalCoordinatesForDistance =
                     goalCoordinates == Goal.GoalCoordinates.BLUE

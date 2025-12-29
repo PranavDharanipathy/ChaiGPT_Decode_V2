@@ -79,7 +79,7 @@ public class TurretBase {
         this.lanyardEquilibrium = lanyardEquilibrium;
     }
 
-    private double startPosition;
+    public double startPosition;
     private double lastTargetPosition;
     private double targetPosition;
 
