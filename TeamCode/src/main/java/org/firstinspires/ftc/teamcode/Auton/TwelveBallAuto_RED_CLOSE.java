@@ -131,7 +131,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
 
         public InstantAction intake() {
-            return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
+            return new InstantAction(() -> intake.setVelocity(Constants.INTAKE_POWER));
         }
 
         public InstantAction fact1() {
