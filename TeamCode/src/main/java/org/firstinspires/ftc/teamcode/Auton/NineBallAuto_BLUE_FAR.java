@@ -116,12 +116,12 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
         }
         //intake
         public InstantAction reverseIntake() {
-            return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY));
+            return new InstantAction(() -> intake.setVelocity(Constants.REVERSE_INTAKE_POWER));
         }
 
 
         public InstantAction intake() {
-            return new InstantAction(() -> intake.setVelocity(Constants.BASE_INTAKE_VELOCITY));
+            return new InstantAction(() -> intake.setVelocity(Constants.INTAKE_POWER));
         }
 
 

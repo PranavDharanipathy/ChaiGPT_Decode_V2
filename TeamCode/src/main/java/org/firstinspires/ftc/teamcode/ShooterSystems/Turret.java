@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import static com.sun.tools.doclint.Entity.aacute;
 import static com.sun.tools.doclint.Entity.lambda;
+import static com.sun.tools.javac.jvm.ByteCodes.error;
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.pedropathing.ftc.drivetrains.Mecanum;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -35,7 +38,7 @@ public class Turret {
        double turretTargetTicks;
 
 
-    MecanumDrive localizer;
+    MecanumDrive MecanumDrive;
 
     Pose2d initialPose;
 
@@ -57,7 +60,6 @@ public class Turret {
 
     double turretCurrDeg;
 
-
     public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
         this.targetX = targetX;
         this.targetY = targetY;
@@ -66,19 +68,27 @@ public class Turret {
 
         this.initialPose = initialPose;
 
-        left_turret = hardwareMap.get(CRServo.class, "left_turret");
+        left_turret = hardwareMap.get( CRServo.class, "left_turret");
 
         right_turret = hardwareMap.get(CRServo.class, "right_turret");
         encoder = new Encoder(left_turret);
 
+        MecanumDrive = new MecanumDrive(hardwareMap, initialPose);
+
+    }
+
+    public void setPosition(double target){
+        double p = 0.017;
 
 
 
-        //Initializing Devices(Pose and Localizer to be used in loop();
+        double error = target - turretCurrPos;
 
-        //initialPose = new Pose2d(-11, 23.5, 0);
+        double power = p * error;
 
-        localizer = new MecanumDrive(hardwareMap, initialPose);
+        left_turret.setPower(power);
+        right_turret.setPower(power);
+
 
     }
 
@@ -86,9 +96,10 @@ public class Turret {
 
     public void update() {
 
-        localizer.update();
 
-        currentPose = localizer.getPose();
+        MecanumDrive.localizer.update();
+
+        currentPose = MecanumDrive.localizer.getPose();
 
         currX = currentPose.position.x;
 
@@ -97,6 +108,9 @@ public class Turret {
         dX = targetX - currX;
 
         dY = targetY - currY;
+
+
+
 
 
         //atan2 returns radians --> Angle of slope between distance
@@ -117,12 +131,18 @@ public class Turret {
 
 
         //set turret to desired location
-        turret.setPosition(turretTargetTicks);
+        //left_turret.setPosition(turretTargetTicks);
+
+
+        setPosition(turretTargetTicks);
+
+
+        //right_turret.setPosition(turretTargetTicksc);
 
 
         //Extra features: rumbling(like shooting)
 
-        turretCurrPos = turret.getPosition();
+        turretCurrPos = encoder.getCurrentPosition();
 
         turretCurrDeg = turretCurrPos/73.5179487179;
 
@@ -134,7 +154,8 @@ public class Turret {
 
         //If turret is out of bounds
         if (turretCurrDeg > 176 || turretCurrDeg < -170) {
-            turret.setPosition(0);
+            left_turret.setPower(0);
+            right_turret.setPower(0);
         }
 
 
