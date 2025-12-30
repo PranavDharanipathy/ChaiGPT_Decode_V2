@@ -1,24 +1,14 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import static com.sun.tools.doclint.Entity.aacute;
-import static com.sun.tools.doclint.Entity.lambda;
-import static com.sun.tools.javac.jvm.ByteCodes.error;
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.pedropathing.ftc.drivetrains.Mecanum;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.apache.commons.math3.util.FastMath;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class Turret {
@@ -54,7 +44,7 @@ public class Turret {
 
     Encoder encoder;
 
-    double turretCurrPos;
+    double turretCurrPosTicks;
 
     BetterGamepad gamepad1;
 
@@ -82,13 +72,12 @@ public class Turret {
 
 
 
-        double error = target - turretCurrPos;
+        double error = target - turretCurrPosTicks;
 
         double power = p * error;
 
         left_turret.setPower(power);
         right_turret.setPower(power);
-
 
     }
 
@@ -142,14 +131,13 @@ public class Turret {
 
         //Extra features: rumbling(like shooting)
 
-        turretCurrPos = encoder.getCurrentPosition();
+        turretCurrPosTicks = encoder.getCurrentPosition();
 
-        turretCurrDeg = turretCurrPos/73.5179487179;
+        turretCurrDeg = turretCurrPosTicks / 73.5179487179;
 
 
-        if (turretCurrPos == turretTargetTicks) { gamepad1.rumble(7000); }
+        if (turretCurrPosTicks == turretTargetTicks) { gamepad1.rumble(7000); }
         else {gamepad1.stopRumble(); }
-
 
 
         //If turret is out of bounds
