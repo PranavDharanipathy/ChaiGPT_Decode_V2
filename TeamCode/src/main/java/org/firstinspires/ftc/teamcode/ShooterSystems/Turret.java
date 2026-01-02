@@ -54,11 +54,11 @@ public class Turret {
 
     double turretCurrDeg;
 
-    Gamepad controller1;
+    Gamepad controller1 = new Gamepad();
 
     Gamepad controller2;
 
-    public Turret( HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
+    public Turret( HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
         this.targetX = targetX;
         this.targetY = targetY;
 
