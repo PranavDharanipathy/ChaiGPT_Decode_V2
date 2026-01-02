@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -21,20 +21,20 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
 
     public AutonomousBaseOpMode() {}
 
-    public volatile Telemetry telemetry;
+    public Telemetry telemetry;
 
-    public volatile BetterGamepad controller1;
-    public volatile BetterGamepad controller2;
+    public BetterGamepad controller1;
+    public BetterGamepad controller2;
 
-    public volatile DcMotorEx intake;
-    public volatile BasicVeloMotor transfer;
-    public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
+    public DcMotorEx intake;
+    public BasicVeloMotor transfer;
+    public AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
-    public volatile TurretBase turret;
+    public TurretBase turret;
 
-    public volatile HoodAngler hoodAngler;
+    public HoodAngler hoodAngler;
 
-    public volatile ExtremePrecisionFlywheel flywheel;
+    public ExtremePrecisionFlywheel flywheel;
 
     public void fullInit() {
 
@@ -104,7 +104,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
 
-        turret.setPIDFCoefficients(
+        turret.setPIDFSCoefficients(
                 Constants.TURRET_PIDFS_COEFFICIENTS[0],
                 Constants.TURRET_PIDFS_COEFFICIENTS[1],
                 Constants.TURRET_PIDFS_COEFFICIENTS[2],
@@ -113,7 +113,8 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDFS_COEFFICIENTS[5],
                 Constants.TURRET_PIDFS_COEFFICIENTS[6],
                 Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+                Constants.TURRET_PIDFS_COEFFICIENTS[8],
+                Constants.TURRET_PIDFS_COEFFICIENTS[9]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
         turret.reverse();

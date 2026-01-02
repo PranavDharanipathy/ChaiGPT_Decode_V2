@@ -34,8 +34,6 @@ public class Shooter implements SubsystemInternal {
 
     private Rev9AxisImuWrapped rev9AxisImuWrapped;
 
-    private ElapsedTime timer = new ElapsedTime();
-
     public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, CustomMecanumDrive customDrive, Rev9AxisImu rev9AxisImu, BetterGamepad controller1, BetterGamepad controller2) {
 
         rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);

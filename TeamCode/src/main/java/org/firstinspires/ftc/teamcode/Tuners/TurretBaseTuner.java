@@ -33,6 +33,8 @@ public class TurretBaseTuner extends OpMode {
 
     public static double LANYARD_EQUILIBRIUM = Constants.TURRET_PIDFS_COEFFICIENTS[8];
 
+    public static double KF_DAMPEN = Constants.TURRET_PIDFS_COEFFICIENTS[9];
+
     public static double MIN_I = Constants.TURRET_MIN_INTEGRAL_LIMIT, MAX_I = Constants.TURRET_MAX_INTEGRAL_LIMIT;
     public static double TARGET_POSITION;
 
@@ -44,7 +46,7 @@ public class TurretBaseTuner extends OpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         turret = new TurretBase(hardwareMap);
-        turret.setPIDFCoefficients(KP, KI, KD, KF, KS, KI_SMASH, KD_FILTER, KPOWER_FILTER, LANYARD_EQUILIBRIUM);
+        turret.setPIDFSCoefficients(KP, KI, KD, KF, KS, KI_SMASH, KD_FILTER, KPOWER_FILTER, LANYARD_EQUILIBRIUM, KF_DAMPEN);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class TurretBaseTuner extends OpMode {
 
         turret.setPosition(TARGET_POSITION);
         turret.setIConstraints(MIN_I, MAX_I);
-        turret.updateCoefficients(KP, KI, KD, KF, KS, KI_SMASH, KD_FILTER, KPOWER_FILTER, LANYARD_EQUILIBRIUM);
+        turret.updateCoefficients(KP, KI, KD, KF, KS, KI_SMASH, KD_FILTER, KPOWER_FILTER, LANYARD_EQUILIBRIUM, KF_DAMPEN);
         turret.update();
 
         sleep(LOOP_TIME);
@@ -65,7 +67,7 @@ public class TurretBaseTuner extends OpMode {
         telemetry.addData("position error", turret.getRawPositionError());
         telemetry.addData("current position", turret.getCurrentPosition());
         telemetry.addData("target position", turret.getTargetPosition());
-        telemetry.addData("total power", turret.p + turret.i + turret.d + turret.f + turret.s);
+        telemetry.addData("total power", turret.getServoPowers()[0]);
         telemetry.update();
 
     }

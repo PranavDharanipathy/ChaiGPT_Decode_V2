@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -24,11 +23,11 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 //@Config
-@Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
-public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
+@Autonomous (name = "ThreeBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
+public class ThreeBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
-    public static double TURRET_POSITION = 1200;
+    public static double TURRET_POSITION = -1300;
 
 
     public class RobotElements {
@@ -57,7 +56,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
                 telemetry.addData("turret current position", turret.getCurrentPosition());
 
                 telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
-                telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
+                telemetry.addData("flywheel current velocity", flywheel.getRealVelocity());
                 telemetry.update();
 
                 if (opModeIsActive()) {
@@ -76,7 +75,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
         }
         public InstantAction setFlywheelToFarSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(370_000, true));
+            return new InstantAction(() -> flywheel.setVelocity(380_000, true));
         }
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
@@ -116,7 +115,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() >= minimumVelocity);
+                return !(timer.seconds() >= minimumTime && flywheel.getRealVelocity() >= minimumVelocity);
             }
         }
 
@@ -129,28 +128,23 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
             return new SequentialAction(
 
                     new SleepAction(3.5),
-                    waitTilFlywheelAtVelocity(1, 369_000),
+                    waitTilFlywheelAtVelocity(1, 379_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.85, 369_000),
+                    waitTilFlywheelAtVelocity(1.85, 379_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.85, 369_000),
+                    waitTilFlywheelAtVelocity(1.85, 379_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     new InstantAction(() -> flywheel.setVelocity(420_000, false)),
-                    antiTransfer(),
-
-                    new InstantAction(() -> flywheel.setVelocity(0, true)),
-                    new InstantAction(() -> turret.setPosition(turretStartPosition)),
                     new InstantAction(() -> transfer.setVelocity(0))
             );
         }
-
 
     }
     public double turretStartPosition;
@@ -188,12 +182,13 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-6, 6, Math.toRadians(-36)), 0)
+                                .splineToLinearHeading(new Pose2d(-17, -6.5, Math.toRadians(36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
+
                                 //movement rp
-                                .splineToLinearHeading(new Pose2d(-22, 0, Math.toRadians(0)), Math.toRadians(-36))
+                                .splineToLinearHeading(new Pose2d(-22, -10, Math.toRadians(0)), Math.toRadians(36))
                                 .build());
 
 
@@ -201,7 +196,6 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
 
-        //using starting position as home position
         turretStartPosition = turret.getCurrentPosition();
 
         waitForStart();

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-@TeleOp (name = "V2TeleOp RED", group = "AAAA_MatchPurpose")
+@TeleOp (name = "V2TeleOp_RED", group = "AAAA_MatchPurpose")
 public class V2TeleOp_RED extends TeleOpBaseOpMode {
 
     public static PIPELINES PIPELINE = PIPELINES.RED_PIPELINE;
@@ -82,7 +81,7 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
             telemetry.addData("hood position", shooter.hoodAngler.getPosition());
 
             telemetry.addData("flywheel velocity estimate", "%.0f", shooter.flywheel.getCurrentVelocityEstimate());
-            telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getRealVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
             telemetry.addData("p", shooter.flywheel.p);

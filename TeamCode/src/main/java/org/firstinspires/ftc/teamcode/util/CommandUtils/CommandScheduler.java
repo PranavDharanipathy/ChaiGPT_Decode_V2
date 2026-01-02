@@ -11,6 +11,7 @@ public class CommandScheduler {
     private static ArrayList<Command> tasks = new ArrayList<>();
     private static ArrayList<T> times = new ArrayList<>();
 
+    /// Schedules command which is automatically run at the appropriate time as long as update() is run.
     public static void schedule(T t, Command task) {
 
         if (!tasks.contains(task)) {
@@ -19,6 +20,17 @@ public class CommandScheduler {
 
             T time = new T(MathUtil.truncate(t.getTime() + getElapsedTime(), 100));
             times.add(time);
+        }
+    }
+
+    /// Schedules command which is automatically run at the appropriate time as long as update() is run.
+    public static void schedule(Command task) {
+
+        if (!tasks.contains(task)) {
+
+            tasks.add(task);
+
+            times.add(new T(0));
         }
     }
 
@@ -51,6 +63,7 @@ public class CommandScheduler {
 
     }
 
+    /// Instantly cancels the inputted task.
     public static void cancel(Command task) {
 
         int index = tasks.indexOf(task);

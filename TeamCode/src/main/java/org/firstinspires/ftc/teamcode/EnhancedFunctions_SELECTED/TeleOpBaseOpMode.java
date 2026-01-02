@@ -24,31 +24,31 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public TeleOpBaseOpMode() {}
 
-    public volatile BetterGamepad controller1;
-    public volatile BetterGamepad controller2;
+    public BetterGamepad controller1;
+    public BetterGamepad controller2;
 
-    public volatile DcMotor left_front, right_front, left_back, right_back;
+    public DcMotor left_front, right_front, left_back, right_back;
 
-    public volatile Rev9AxisImu rev9AxisImu;
+    public Rev9AxisImu rev9AxisImu;
 
-    public volatile IntakeMotor intake;
-    public volatile LiftPTO liftPTO;
+    public IntakeMotor intake;
+    public LiftPTO liftPTO;
 
-    public volatile BasicVeloMotor transfer;
+    public BasicVeloMotor transfer;
 
-    public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
+    public AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
-    public volatile Limelight3A unstartedLimelight;
+    public Limelight3A unstartedLimelight;
 
-    public volatile CustomMecanumDrive customDrive;
+    public CustomMecanumDrive customDrive;
 
-    public volatile TurretBase turret;
+    public TurretBase turret;
 
-    public volatile HoodAngler hoodAngler;
+    public HoodAngler hoodAngler;
 
-    public volatile ExtremePrecisionFlywheel flywheel;
+    public ExtremePrecisionFlywheel flywheel;
 
-    private volatile List<LynxModule> robotHubs;
+    private List<LynxModule> robotHubs;
 
     /// initializes/creates LynxModule
     public void setUpLynxModule() {
@@ -170,7 +170,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
 
-        turret.setPIDFCoefficients(
+        turret.setPIDFSCoefficients(
                 Constants.TURRET_PIDFS_COEFFICIENTS[0],
                 Constants.TURRET_PIDFS_COEFFICIENTS[1],
                 Constants.TURRET_PIDFS_COEFFICIENTS[2],
@@ -179,7 +179,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TURRET_PIDFS_COEFFICIENTS[5],
                 Constants.TURRET_PIDFS_COEFFICIENTS[6],
                 Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+                Constants.TURRET_PIDFS_COEFFICIENTS[8],
+                Constants.TURRET_PIDFS_COEFFICIENTS[9]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
         turret.reverse();

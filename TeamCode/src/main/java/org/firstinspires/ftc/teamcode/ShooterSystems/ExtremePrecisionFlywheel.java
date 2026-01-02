@@ -134,6 +134,7 @@ public final class ExtremePrecisionFlywheel {
 
     public double filteredVoltage;
 
+    /// The alpha that determines the filtering done by the Low Pass filter. Default is 1 (no filtering)
     private double voltageFilterAlpha = 1;
 
     public void setVoltageFilterAlpha(double voltageFilterAlpha) {
@@ -170,6 +171,8 @@ public final class ExtremePrecisionFlywheel {
     /// <p>
     /// @param kPIDFUnitsPerVolt delta PIDF / delta volts
     /// <p>
+    /// @param kISmash Multiplies I to decrease I when error switches
+    /// <p>
     /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
     public void setVelocityPIDFVASCoefficients(double kp, double kiFar, double kiClose, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
@@ -194,6 +197,7 @@ public final class ExtremePrecisionFlywheel {
     public void setVelocity(double velocity, boolean allowIntegralReset) {
 
         if (allowIntegralReset && targetVelocity != velocity) {
+
             i = 0; //resetting integral when target velocity changes to prevent integral windup
         }
 
@@ -296,7 +300,7 @@ public final class ExtremePrecisionFlywheel {
         //velocity feedforward
         v = kv * targetVelocity;
 
-        targetAcceleration = targetVelocity / dt;
+        targetAcceleration = -targetVelocity / dt;
         a = ka * targetAcceleration;
 
         //static friction
@@ -365,7 +369,7 @@ public final class ExtremePrecisionFlywheel {
     ///Gets past encoder overflow, if you're using a high resolution encoder like the REV Through-Bore, it's prone to these problems.
     /// <p>
     /// Uses Kalman Filter
-    public double getFrontendCalculatedVelocity() {
+    public double getRealVelocity() {
         return currentFilteredVelocity;
     }
 
@@ -374,7 +378,7 @@ public final class ExtremePrecisionFlywheel {
         return velocityEstimate;
     }
 
-    public double getLastFrontendCalculatedVelocity() {
+    public double getLastRealVelocity() {
         return lastCurrentFilteredVelocity;
     }
 

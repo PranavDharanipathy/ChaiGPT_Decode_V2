@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -25,11 +24,11 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 //@Config
-@Autonomous (name = "NineBallAuto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
-public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
+@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
+public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
-    public static double[] TURRET_POSITIONS = {-1300, 1400, -1400};
+    public static double[] TURRET_POSITIONS = {1200, -2100, 1120};
 
 
     public class RobotElements {
@@ -58,7 +57,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                 telemetry.addData("turret current position", turret.getCurrentPosition());
 
                 telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
-                telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
+                telemetry.addData("flywheel current velocity", flywheel.getRealVelocity());
                 telemetry.update();
 
                 if (opModeIsActive()) {
@@ -117,7 +116,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() >= minimumVelocity);
+                return !(timer.seconds() >= minimumTime && flywheel.getRealVelocity() >= minimumVelocity);
             }
         }
 
@@ -155,7 +154,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
             return new SequentialAction(
 
-                    waitTilFlywheelAtVelocity(0.5, 419_000),
+                    waitTilFlywheelAtVelocity(0.25, 419_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
@@ -179,7 +178,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
             return new SequentialAction(
 
-                    waitTilFlywheelAtVelocity(0.5, 419_000),
+                    waitTilFlywheelAtVelocity(0.25, 419_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
@@ -232,21 +231,21 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
                                 //preload
-                                .splineToLinearHeading(new Pose2d(-17, -6.5, Math.toRadians(36)), 0)
+                                .splineToLinearHeading(new Pose2d(-6, 6, Math.toRadians(-36)), 0)
 
                                 .stopAndAdd(robot.firstShootSequence())
 
                                 //first intake
-                                .splineTo(new Vector2d(-21, -61), -Math.PI / 2)
 
-
-
+                                .splineToLinearHeading(new Pose2d(-33, 7.5, Math.PI / 2), Math.toRadians(-36))
+                                .waitSeconds(0.1)
+                                .splineToConstantHeading(new Vector2d(-33, 45), Math.PI / 2)
 
                                 //GO TO SMALL TRIANGLE
                                 .setReversed(true)
 
 
-                                .splineToSplineHeading(new Pose2d(-12, -4, 0), -Math.PI / 2)
+                                .splineToSplineHeading(new Pose2d(-13, 7, 0), Math.PI / 2)
 
 
                                 .stopAndAdd(robot.secondShootSequence())
@@ -262,17 +261,17 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                                 //SECOND INTAKE
 
 
-                                .splineToSplineHeading(new Pose2d(-42, -8, -Math.PI / 2), 0)
+                                .splineToLinearHeading(new Pose2d(-56, 4, Math.PI / 2), 0)
                                 .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-42, -61), -Math.PI / 2)
+                                .splineToConstantHeading(new Vector2d(-56, 35), -Math.PI / 2)
 
 
                                 //GO TO SMALL TRIANGLE
 
 
                                 .setReversed(true)
-                                .splineToConstantHeading(new Vector2d(-38, -30), -Math.PI / 2)
-                                .splineToSplineHeading(new Pose2d(-18, -6, Math.toRadians(36)), -Math.PI / 2)
+                                .splineToConstantHeading(new Vector2d(-38, 30), Math.PI / 2)
+                                .splineToSplineHeading(new Pose2d(-7, 7, Math.toRadians(-36)), Math.PI / 2)
 
                                 .stopAndAdd(
                                         new SequentialAction(
@@ -284,7 +283,7 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
                                 )
 
                                 //movement rp
-                                .splineToLinearHeading(new Pose2d(-20, -12, Math.toRadians(0)), Math.toRadians(36))
+                                .splineToLinearHeading(new Pose2d(-20, 12, Math.toRadians(0)), Math.toRadians(-36))
                                 .build());
 
 
@@ -292,10 +291,8 @@ public class NineBallAuto_BLUE_FAR extends AutonomousBaseOpMode {
 
 
 
+        //using starting position as home position
         turretStartPosition = turret.getCurrentPosition();
-        telemetry.addData("turret current position", turretStartPosition);
-        telemetry.update();
-
 
         waitForStart();
 

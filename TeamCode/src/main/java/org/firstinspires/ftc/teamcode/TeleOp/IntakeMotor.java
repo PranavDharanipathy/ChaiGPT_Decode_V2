@@ -7,11 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 import org.firstinspires.ftc.teamcode.util.VMotor;
 
 @Peak
-public class IntakeMotor extends VMotor implements SubsystemInternal {
+public class IntakeMotor extends VMotor {
 
     public enum Function {
         INTAKE, LIFT, UNKNOWN
@@ -24,9 +23,7 @@ public class IntakeMotor extends VMotor implements SubsystemInternal {
         //'this.function' is the current Function
         //'function' is the Function that its being changed to
 
-        if (this.function == Function.LIFT && function == Function.INTAKE) {
-            resetPIDFS(true, true, true, true, true, true);
-        }
+        if (this.function == Function.LIFT && function == Function.INTAKE) resetPIDFS();
 
         if (this.function == Function.INTAKE && function == Function.LIFT) {
 
@@ -165,26 +162,16 @@ public class IntakeMotor extends VMotor implements SubsystemInternal {
         }
     }
 
-    /// @param pTrigger being true sets p to 0 false will leave it unchanged
-    /// @param iTrigger being true sets i to 0 false will leave it unchanged
-    /// @param dTrigger being true sets d to 0 false will leave it unchanged
-    /// @param fTrigger being true sets f to 0 false will leave it unchanged
-    /// @param sTrigger being true sets s to 0 false will leave it unchanged
-    /// @param filteredVoltsTrigger being true sets s to 0 false will leave it unchanged
-    public void resetPIDFS(boolean pTrigger, boolean iTrigger, boolean dTrigger, boolean fTrigger, boolean sTrigger, boolean filteredVoltsTrigger) {
+    public void resetPIDFS() {
 
-        if (pTrigger && p != 0) p = 0;
-        if (iTrigger && i != 0) {
-            errorSum = 0;
-            i = 0;
-        }
-        if (dTrigger && d != 0) {
-            filteredDerivative = 0;
-            d = 0;
-        }
-        if (fTrigger && f != 0) f = 0;
-        if (sTrigger && s != 0) s = 0;
-        if (filteredVoltsTrigger && filteredVolts != 0) filteredVolts = 0;
+        p = 0;
+        errorSum = 0;
+        i = 0;
+        filteredDerivative = 0;
+        d = 0;
+        f = 0;
+        s = 0;
+        filteredVolts = 0;
     }
 
     public double getPositionalError() {

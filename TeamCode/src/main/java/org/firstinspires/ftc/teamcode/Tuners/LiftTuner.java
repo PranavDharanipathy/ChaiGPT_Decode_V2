@@ -78,6 +78,7 @@ public class LiftTuner extends OpMode {
         telemetry.addData("d", motor.d);
         telemetry.addData("f", motor.f);
         telemetry.addData("s", motor.s);
+        telemetry.addData("real kf", motor.getRealKf());
         telemetry.addData("power", motor.getPower());
 
         telemetry.addData("lift pto state", liftPTO.getState());

@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -10,7 +9,6 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,11 +23,11 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Constants;
 
 //@Config
-@Autonomous (name = "NineBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
-public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
+@Autonomous (name = "ThreeBallAuto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
+public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
-    public static double[] TURRET_POSITIONS = {1200, -2100, 1120};
+    public static double TURRET_POSITION = 1200;
 
 
     public class RobotElements {
@@ -58,7 +56,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
                 telemetry.addData("turret current position", turret.getCurrentPosition());
 
                 telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
-                telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
+                telemetry.addData("flywheel current velocity", flywheel.getRealVelocity());
                 telemetry.update();
 
                 if (opModeIsActive()) {
@@ -77,7 +75,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
         }
         public InstantAction setFlywheelToFarSideVelocity() {
 
-            return new InstantAction(() -> flywheel.setVelocity(380_000, true));
+            return new InstantAction(() -> flywheel.setVelocity(370_000, true));
         }
         public InstantAction stopFlywheel() {
             return new InstantAction(() -> flywheel.setVelocity(0, true));
@@ -117,7 +115,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() >= minimumVelocity);
+                return !(timer.seconds() >= minimumTime && flywheel.getRealVelocity() >= minimumVelocity);
             }
         }
 
@@ -130,71 +128,28 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
             return new SequentialAction(
 
                     new SleepAction(3.5),
-                    waitTilFlywheelAtVelocity(1, 379_000),
+                    waitTilFlywheelAtVelocity(1, 369_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.85, 379_000),
+                    waitTilFlywheelAtVelocity(1.85, 369_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     antiTransfer(),
 
-                    waitTilFlywheelAtVelocity(1.85, 379_000),
+                    waitTilFlywheelAtVelocity(1.85, 369_000),
                     transferArtifact(),
                     new SleepAction(0.4),
                     new InstantAction(() -> flywheel.setVelocity(420_000, false)),
                     antiTransfer(),
 
-                    //setup for second
-                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[1]))
-            );
-        }
-
-        public Action secondShootSequence() {
-
-            return new SequentialAction(
-
-                    waitTilFlywheelAtVelocity(0.25, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(2, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(2, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    //setup for third
-                    new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[2]))
-            );
-        }
-
-        public Action thirdShootSequence() {
-
-            return new SequentialAction(
-
-                    waitTilFlywheelAtVelocity(0.25, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(2, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
-                    antiTransfer(),
-
-                    waitTilFlywheelAtVelocity(2, 419_000),
-                    transferArtifact(),
-                    new SleepAction(0.4),
+                    new InstantAction(() -> flywheel.setVelocity(0, true)),
+                    new InstantAction(() -> turret.setPosition(turretStartPosition)),
                     new InstantAction(() -> transfer.setVelocity(0))
             );
         }
+
 
     }
     public double turretStartPosition;
@@ -226,7 +181,7 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
 
                         robot.intake(),
-                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITIONS[0])),
+                        new InstantAction(() -> turret.setPosition(turretStartPosition + TURRET_POSITION)),
 
                         drive.actionBuilder(initialPose)
 
@@ -236,55 +191,8 @@ public class NineBallAuto_RED_FAR extends AutonomousBaseOpMode {
 
                                 .stopAndAdd(robot.firstShootSequence())
 
-                                //first intake
-
-                                .splineToLinearHeading(new Pose2d(-33, 7.5, Math.PI / 2), Math.toRadians(-36))
-                                .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-33, 45), Math.PI / 2)
-
-                                //GO TO SMALL TRIANGLE
-                                .setReversed(true)
-
-
-                                .splineToSplineHeading(new Pose2d(-13, 7, 0), Math.PI / 2)
-
-
-                                .stopAndAdd(robot.secondShootSequence())
-
-
-                                .setReversed(false)
-
-
-                                ///.splineToSplineHeading(new Pose2d(-44, 0, -Math.PI / 2), 0,
-                                //new TranslationalVelConstraint(70), new ProfileAccelConstraint(-50, 50))
-
-
-                                //SECOND INTAKE
-
-
-                                .splineToLinearHeading(new Pose2d(-56, 4, Math.PI / 2), 0)
-                                .waitSeconds(0.1)
-                                .splineToConstantHeading(new Vector2d(-56, 35), -Math.PI / 2)
-
-
-                                //GO TO SMALL TRIANGLE
-
-
-                                .setReversed(true)
-                                .splineToConstantHeading(new Vector2d(-38, 30), Math.PI / 2)
-                                .splineToSplineHeading(new Pose2d(-7, 7, Math.toRadians(-36)), Math.PI / 2)
-
-                                .stopAndAdd(
-                                        new SequentialAction(
-
-                                                robot.thirdShootSequence(),
-                                                new InstantAction(() -> turret.setPosition(turretStartPosition)),
-                                                robot.stopFlywheel()
-                                        )
-                                )
-
                                 //movement rp
-                                .splineToLinearHeading(new Pose2d(-20, 12, Math.toRadians(0)), Math.toRadians(-36))
+                                .splineToLinearHeading(new Pose2d(-22, 0, Math.toRadians(0)), Math.toRadians(-36))
                                 .build());
 
 

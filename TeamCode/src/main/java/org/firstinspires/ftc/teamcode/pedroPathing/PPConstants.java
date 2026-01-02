@@ -22,33 +22,31 @@ public class PPConstants {
 
             .mass(13.19954)
 
-            .forwardZeroPowerAcceleration(-30.260691682448705)
-            .lateralZeroPowerAcceleration(-67.06771722288579)
+            .forwardZeroPowerAcceleration(66.62530181163879)
+            .lateralZeroPowerAcceleration(-51.82186721441313)
 
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
-            .useSecondaryDrivePIDF(true)
+            .useSecondaryDrivePIDF(false)
 
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.08, 0, 0.018, 0.175))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.13, 0, 0.018, 0.175))
 
-            .headingPIDFCoefficients(new PIDFCoefficients(0.85,0,0.055,0.1))
+            .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.055,0.1))
 
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.027,0,0.000015,0.6,0.1))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01,0,0.002,0.8,0.1))
 
             .translationalPIDFSwitch(3)
             .headingPIDFSwitch(0.17453299)
             .drivePIDFSwitch(20)
 
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.05,0,0.003,0.035))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.003,0.035))
 
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.5,0.0005,0,0.025))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.1,0.0005,0,0.025))
 
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.0185,0,0.0000075,0.7,0.07))
-
-            .centripetalScaling(0.0012)
+            .centripetalScaling(0.00062)
             ;
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.994, 50, 1.5, 1.5);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -61,8 +59,8 @@ public class PPConstants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
 
-            .xVelocity(-34.43354803006264)
-            .yVelocity(-60.49884031422858);
+            .xVelocity(-41.2745147944275)
+            .yVelocity(-61.15854729822397);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(3.75)

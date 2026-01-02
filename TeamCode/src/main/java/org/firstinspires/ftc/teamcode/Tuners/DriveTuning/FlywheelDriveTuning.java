@@ -4,14 +4,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
-import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
@@ -74,7 +70,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
             flywheel.update();
 
             telemetry.addData("Target Velocity", flywheel.getTargetVelocity());
-            telemetry.addData("Real Velocity", flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("Real Velocity", flywheel.getRealVelocity());
             telemetry.addData("p", "%.5f", flywheel.p);
             telemetry.addData("i", "%.5f", flywheel.i);
             telemetry.addData("d", "%.5f", flywheel.d);

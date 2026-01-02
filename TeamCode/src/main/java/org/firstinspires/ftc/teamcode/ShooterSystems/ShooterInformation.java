@@ -79,9 +79,9 @@ public strictfp class ShooterInformation {
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
-        public static double TURRET_DEADBAND_TICKS = 0.2 * TURRET_TICKS_PER_DEGREE;
+        public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
 
-        public static double TURRET_HOLD_OVERRIDE = 65;
+        public static double TURRET_HOLD_OVERRIDE = 40;
 
         public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
         public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002415, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.00000315);
