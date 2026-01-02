@@ -64,7 +64,7 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
             telemetry.addData("d", flywheel.d);
             telemetry.addData("v", flywheel.v);
 
-            telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
+            telemetry.addData("flywheel current velocity", flywheel.getRealVelocity());
             telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
 
             telemetry.addData("turret current position", turret.getCurrentPosition());

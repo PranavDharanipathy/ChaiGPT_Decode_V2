@@ -119,23 +119,14 @@ public class Intake extends Subsystem {
         if (liftFirstInstance) {
 
             CommandScheduler.schedule(
-                    new T(250),
+                    new T(200),
                     new InstantCommand(() -> intake.setPosition(Constants.LIFT_POSITION))
             );
 
             liftFirstInstance = false;
         }
     }
-//    private ElapsedTime liftTimer = new ElapsedTime();
-//
-//    private void lift() {
-//
-//        if (liftFirstInstance) liftTimer.reset();
-//
-//        if (liftTimer.milliseconds() >= 250) intake.setPosition(Constants.LIFT_POSITION);
-//
-//        liftFirstInstance = false;
-//    }
+
 
     public boolean getLiftEngaged() {
         return liftPTO.getState() == LiftPTO.PTOState.ENGAGE;

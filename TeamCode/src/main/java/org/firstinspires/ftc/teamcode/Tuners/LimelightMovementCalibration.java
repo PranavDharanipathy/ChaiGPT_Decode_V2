@@ -46,7 +46,7 @@ public class LimelightMovementCalibration extends OpMode {
         limelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
 
         turret = new TurretBase(hardwareMap);
-        turret.setPIDFCoefficients(
+        turret.setPIDFSCoefficients(
                 Constants.TURRET_PIDFS_COEFFICIENTS[0],
                 Constants.TURRET_PIDFS_COEFFICIENTS[1],
                 Constants.TURRET_PIDFS_COEFFICIENTS[2],
@@ -55,7 +55,8 @@ public class LimelightMovementCalibration extends OpMode {
                 Constants.TURRET_PIDFS_COEFFICIENTS[5],
                 Constants.TURRET_PIDFS_COEFFICIENTS[6],
                 Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+                Constants.TURRET_PIDFS_COEFFICIENTS[8],
+                Constants.TURRET_PIDFS_COEFFICIENTS[9]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 

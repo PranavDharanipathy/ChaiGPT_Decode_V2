@@ -4,10 +4,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
 
 /// Uses an Axon Max Servo
-public class LiftPTO implements SubsystemInternal {
+public class LiftPTO {
 
     private Servo ptoServo;
 
@@ -46,6 +45,9 @@ public class LiftPTO implements SubsystemInternal {
     }
 
     public void setState(PTOState state) {
+
+        if (state == PTOState.NULL) throw new IllegalArgumentException("Not allowed to set servo to state NULL");
+
         ptoServo.setPosition(state.getPosition());
     }
 

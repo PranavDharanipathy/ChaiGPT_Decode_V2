@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
-import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 public class ForAutonomousRobotReset extends RobotResetter {

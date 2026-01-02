@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.Auton;
+package org.firstinspires.ftc.teamcode.RRAuto;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -57,7 +56,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
                 telemetry.addData("turret current position", turret.getCurrentPosition());
 
                 telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
-                telemetry.addData("flywheel current velocity", flywheel.getFrontendCalculatedVelocity());
+                telemetry.addData("flywheel current velocity", flywheel.getRealVelocity());
                 telemetry.update();
 
                 if (opModeIsActive()) {
@@ -116,7 +115,7 @@ public class ThreeBallAuto_RED_FAR extends AutonomousBaseOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() >= minimumVelocity);
+                return !(timer.seconds() >= minimumTime && flywheel.getRealVelocity() >= minimumVelocity);
             }
         }
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -28,12 +30,12 @@ public class Constants {
         public static Rev9AxisImuOrientationOnRobot REV_9_AXIS_IMU_ORIENTATION_IMU_PARAMETER =
                 new Rev9AxisImuOrientationOnRobot(Rev9AxisImuOrientationOnRobot.LogoFacingDirection.UP, Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.BACKWARD);
 
-        public static Orientation getInternalIMUOrientationStats(IMU internalIMU) {
+        public static Orientation getInternalIMUOrientationStats(@NonNull IMU internalIMU) {
 
             return internalIMU.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         }
 
-        public static Orientation getRev9AxisIMUOrientationStats(Rev9AxisImu rev9AxisIMU) {
+        public static Orientation getRev9AxisIMUOrientationStats(@NonNull Rev9AxisImu rev9AxisIMU) {
 
             return rev9AxisIMU.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         }
@@ -139,7 +141,7 @@ public class Constants {
 
     public static Servo.Direction LIFT_PTO_SERVO_DIRECTION = Servo.Direction.REVERSE;
 
-    public static double HOOD_ANGLER_INITIAL_RESETTING_POSITION = 0;
+    //public static double HOOD_ANGLER_INITIAL_RESETTING_POSITION = 0;
 
     //intake and transfer
     public static double INTAKE_POWER = 1;
@@ -149,18 +151,18 @@ public class Constants {
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1200;
+    public static double TRANSFER_VELOCITY = 1500;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
-    public static double ANTI_TRANSFER_VELOCITY = -250;
+    public static double ANTI_TRANSFER_VELOCITY = -300;
 
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 
-    @DeprecatedSystem(notes = "Not using PID anymore as it's unnecessary.")
+    @DeprecatedSystem(notes = "Not using PID in intake mode anymore as it's unnecessary.")
     public static double[] INTAKE_PIDF_DEFAULT_COEFFICIENTS = {20, 2.5, 0, 10};
-    @DeprecatedSystem(notes = "Not using PID anymore as it's unnecessary.")
+    @DeprecatedSystem(notes = "Not using PID in intake mode anymore as it's unnecessary.")
     public static double[] INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER = {20, 0, 0, 10}; //integral is not being utilized
 
     //flywheel
@@ -194,13 +196,13 @@ public class Constants {
     public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
 
     //turret
-    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0};
+    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0, 0.1};
 
     public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
     public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
 
     //lift
-    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1, 0.1, 0.85, 0.9, 195.0};
+    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1.1, 0.1, 0.85, 0.9, 195.0};
 
     public static double LIFT_MIN_INTEGRAL_LIMIT = -8;
     public static double LIFT_MAX_INTEGRAL_LIMIT = 8;

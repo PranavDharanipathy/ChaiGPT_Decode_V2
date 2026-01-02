@@ -79,7 +79,7 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
         customDrive = new CustomMecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
         turret = new TurretBase(hardwareMap);
-        turret.setPIDFCoefficients(
+        turret.setPIDFSCoefficients(
                 Constants.TURRET_PIDFS_COEFFICIENTS[0],
                 Constants.TURRET_PIDFS_COEFFICIENTS[1],
                 Constants.TURRET_PIDFS_COEFFICIENTS[2],
@@ -88,7 +88,8 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
                 Constants.TURRET_PIDFS_COEFFICIENTS[5],
                 Constants.TURRET_PIDFS_COEFFICIENTS[6],
                 Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8]
+                Constants.TURRET_PIDFS_COEFFICIENTS[8],
+                Constants.TURRET_PIDFS_COEFFICIENTS[9]
         );
         turret.reverse();
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);

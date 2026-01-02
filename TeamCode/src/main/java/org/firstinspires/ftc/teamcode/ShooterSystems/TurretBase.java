@@ -27,6 +27,7 @@ public class TurretBase {
     private double kp, ki, kd, ks, kISmash, kDFilter, kPowerFilter;
     private Double kf;
     private double realKf;
+    private double kFDampen;
 
     public double getRealKf() { return realKf; }
 
@@ -63,7 +64,7 @@ public class TurretBase {
         rightTurretBase.setDirection(direction);
     }
 
-    public void setPIDFCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium) {
+    public void setPIDFSCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium, Double kFDampen) {
 
         this.kp = kp;
         this.ki = ki;
@@ -77,9 +78,11 @@ public class TurretBase {
         this.kPowerFilter = kPowerFilter;
 
         this.lanyardEquilibrium = lanyardEquilibrium;
+
+        this.kFDampen = kFDampen;
     }
 
-    private double startPosition;
+    public double startPosition;
     private double lastTargetPosition;
     private double targetPosition;
 
@@ -146,12 +149,15 @@ public class TurretBase {
         if (currentPosition >= targetPosition) movementDirection = 1;
         else movementDirection = -1;
 
-        // if the turret moves a certain amount beyond it's target position, the feedforward is shut off until it moves back within a range after which the feedforward is enabled again.
-        boolean feedforwardOverride = movementDirection == 1
+        // if the turret moves a certain amount beyond it's target position, the feedforward is dampened until it moves back within a range.
+        boolean dampFeedforward = movementDirection == 1
                 ? error <= -ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE
                 : error >= ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE;
 
-        setUsingFeedforwardState(!feedforwardOverride);
+        double fDampeningMultiplier;
+
+        if (dampFeedforward) fDampeningMultiplier = kFDampen;
+        else fDampeningMultiplier = 1; //no damp
 
         if (kf != null) {
             realKf = kf;
@@ -166,7 +172,7 @@ public class TurretBase {
             realKf = TURRET_KFS.get(TURRET_KFS.size() - 1);
         }
 
-        f = usingFeedforward ? realKf * (reZeroedTargetPosition - lanyardEquilibrium) : 0;
+        f = fDampeningMultiplier * realKf * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
         s = ks * Math.signum(error);
@@ -195,16 +201,6 @@ public class TurretBase {
         powerOverride = power;
     }
 
-    private boolean usingFeedforward = true;
-
-    public boolean isUsingFeedforward() {
-        return usingFeedforward;
-    }
-
-    public void setUsingFeedforwardState(boolean usingFeedforward) {
-        this.usingFeedforward = usingFeedforward;
-    }
-
     public double getPositionError() {
         return Math.abs(error);
     }
@@ -224,7 +220,7 @@ public class TurretBase {
     }
 
     /// used for tuning
-    public void updateCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium) {
+    public void updateCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium, Double kFDampen) {
 
         this.kp = kp;
         this.ki = ki;
@@ -238,6 +234,8 @@ public class TurretBase {
         this.kPowerFilter = kPowerFilter;
 
         this.lanyardEquilibrium = lanyardEquilibrium;
+
+        this.kFDampen = kFDampen;
     }
     private double getKfFromInterpolation(double reZeroedTargetPosition) {
 
