@@ -45,9 +45,9 @@ public class TurretAimTest extends LinearOpMode {
 
     DcMotorEx left_flywheel, right_flywheel;
 
-    Gamepad controller1;
+    Gamepad controller1 = new Gamepad();
 
-    Gamepad controller2;
+    Gamepad controller2 = new Gamepad();
 
 
 
@@ -67,15 +67,13 @@ public class TurretAimTest extends LinearOpMode {
         this.gamepad1 = new BetterGamepad(controller1);
         this.gamepad2 = new BetterGamepad(controller2);
 
-        left_flywheel = hardwareMap.get(DcMotorEx.class, "left_flywheel");
 
-        right_flywheel = hardwareMap.get(DcMotorEx.class, "right_flywheel");
         initialPose = new Pose2d(62, 9, Math.toRadians(90));
 
         turret = new Turret(hardwareMap, initialPose, 0, 120);
         robotCentricDrive = new RobotCentricDrive();
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
-        flywheel = new ExtremeNikhilFlywheel(hardwareMap, left_flywheel, right_flywheel, initialPose);
+        flywheel = new ExtremeNikhilFlywheel(hardwareMap, initialPose);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {

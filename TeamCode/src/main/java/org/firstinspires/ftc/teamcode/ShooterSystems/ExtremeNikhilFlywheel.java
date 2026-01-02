@@ -37,14 +37,16 @@ public final class ExtremeNikhilFlywheel {
 
     PinpointLocalizer localizer;
 
-    public ExtremeNikhilFlywheel(HardwareMap hardwareMap, DcMotorEx left_flywheel, DcMotorEx right_flywheel, Pose2d initialPose) {
+    public ExtremeNikhilFlywheel(HardwareMap hardwareMap, Pose2d initialPose) {
 
-        this.left_flywheel = left_flywheel;
-        this.right_flywheel = right_flywheel;
 
         this.initialPose = initialPose;
 
         localizer = new PinpointLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick, initialPose);
+
+        left_flywheel = hardwareMap.get(DcMotorEx.class, "left_flywheel");
+
+        right_flywheel = hardwareMap.get(DcMotorEx.class, "right_flywheel");
 
         //encoder is only on left_flywheel
 

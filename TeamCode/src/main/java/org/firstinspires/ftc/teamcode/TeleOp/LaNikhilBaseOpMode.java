@@ -51,10 +51,10 @@ public class LaNikhilBaseOpMode extends LinearOpMode {
 
         initialPose =  new Pose2d(-60, 0, 0);
 
-        turret = new Turret(hardwareMap, initialPose, 0, 120, gamepad1);
+        turret = new Turret(hardwareMap, initialPose, 0, 120);
         robotCentricDrive = new RobotCentricDrive();
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
-        flywheel = new ExtremeNikhilFlywheel(hardwareMap, left_flywheel, right_flywheel, initialPose, encoder);
+        flywheel = new ExtremeNikhilFlywheel(hardwareMap, initialPose);
 
 
     }
