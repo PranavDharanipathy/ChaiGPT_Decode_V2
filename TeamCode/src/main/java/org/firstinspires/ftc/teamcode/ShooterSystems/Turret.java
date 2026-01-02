@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
@@ -50,18 +54,29 @@ public class Turret {
 
     double turretCurrDeg;
 
-    public Turret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
+    Gamepad controller1;
+
+    Gamepad controller2;
+
+    public Turret( HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, BetterGamepad gamepad1) {
         this.targetX = targetX;
         this.targetY = targetY;
 
-        this.gamepad1 = gamepad1;
+        this.gamepad1 = new BetterGamepad(controller1);
+
+
 
         this.initialPose = initialPose;
 
         left_turret = hardwareMap.get( CRServo.class, "left_turret");
 
         right_turret = hardwareMap.get(CRServo.class, "right_turret");
-        encoder = new Encoder(left_turret);
+        DcMotorEx rb = hardwareMap.get(DcMotorEx.class, "right_back");
+        encoder = new Encoder(rb);
+
+        encoder.setDirection(Encoder.Direction.REVERSE);
+
+
 
         MecanumDrive = new MecanumDrive(hardwareMap, initialPose);
 

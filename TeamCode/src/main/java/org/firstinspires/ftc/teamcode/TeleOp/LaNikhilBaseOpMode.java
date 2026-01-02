@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremeNikhilFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Turret;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class LaNikhilBaseOpMode extends LinearOpMode {
 
@@ -37,8 +38,11 @@ public class LaNikhilBaseOpMode extends LinearOpMode {
     Pose2d currentPose;
 
 
+    Encoder encoder;
 
-    public void initializeNikhilDevices() {
+
+
+    public void initializeNikhilDevices(DcMotor left_front, DcMotor right_front, DcMotor left_back, DcMotor right_back) {
 
         left_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftFrontMotorDeviceName);
         right_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightFrontMotorDeviceName);
@@ -50,7 +54,7 @@ public class LaNikhilBaseOpMode extends LinearOpMode {
         turret = new Turret(hardwareMap, initialPose, 0, 120, gamepad1);
         robotCentricDrive = new RobotCentricDrive();
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
-        flywheel = new ExtremeNikhilFlywheel(left_flywheel, right_flywheel, initialPose);
+        flywheel = new ExtremeNikhilFlywheel(hardwareMap, left_flywheel, right_flywheel, initialPose, encoder);
 
 
     }

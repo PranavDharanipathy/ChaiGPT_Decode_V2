@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import android.graphics.LinearGradient;
+
 import com.acmerobotics.roadrunner.Pose2d;
+import org.firstinspires.ftc.teamcode.util.Encoder;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -14,7 +19,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 @TeleOp(name = "Learning Turret Aiming")
-public class TurretAimTest extends LaNikhilBaseOpMode {
+public class TurretAimTest extends LinearOpMode {
 
     //HardwareMap hardwareMap;
 
@@ -42,13 +47,42 @@ public class TurretAimTest extends LaNikhilBaseOpMode {
 
     Pose2d currentPose;
 
+
+    Encoder encoder;
+
+    Gamepad controller1;
+
+    Gamepad controller2;
+
+
+
+
+
+
     @Override
     public void runOpMode() {
 
 
-        initializeNikhilDevices();
+        left_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftFrontMotorDeviceName);
+        right_front = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightFrontMotorDeviceName);
+        left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
+        right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
 
 
+        this.gamepad1 = new BetterGamepad(controller1);
+        this.gamepad2 = new BetterGamepad(controller2);
+
+        left_flywheel = hardwareMap.get(DcMotorEx.class, "left_flywheel");
+
+        right_flywheel = hardwareMap.get(DcMotorEx.class, "right_flywheel");
+        initialPose = new Pose2d(62, 9, Math.toRadians(90));
+
+        turret = new Turret(hardwareMap, initialPose, 0, 120, gamepad1);
+        robotCentricDrive = new RobotCentricDrive();
+        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
+        flywheel = new ExtremeNikhilFlywheel(hardwareMap, left_flywheel, right_flywheel, initialPose, encoder);
+
+        waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
 
             turret.update();
@@ -57,10 +91,17 @@ public class TurretAimTest extends LaNikhilBaseOpMode {
 
         }
 
+        if (isStopRequested()) {
+            telemetry.addLine("ended");
+        }
 
     }
 
 
+    @Override
+    public void waitForStart() {
+        super.waitForStart();
+    }
 }
 
 
