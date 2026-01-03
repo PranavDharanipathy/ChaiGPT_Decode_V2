@@ -56,7 +56,10 @@ public class LimelightMovementCalibration extends OpMode {
                 Constants.TURRET_PIDFS_COEFFICIENTS[6],
                 Constants.TURRET_PIDFS_COEFFICIENTS[7],
                 Constants.TURRET_PIDFS_COEFFICIENTS[8],
-                Constants.TURRET_PIDFS_COEFFICIENTS[9]
+                Constants.TURRET_PIDFS_COEFFICIENTS[9],
+                Constants.TURRET_PIDFS_COEFFICIENTS[10],
+                Constants.TURRET_PIDFS_COEFFICIENTS[11],
+                Constants.TURRET_PIDFS_COEFFICIENTS[12]
         );
         turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
 

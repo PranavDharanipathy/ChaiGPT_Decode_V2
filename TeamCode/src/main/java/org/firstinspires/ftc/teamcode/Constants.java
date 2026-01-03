@@ -196,10 +196,10 @@ public class Constants {
     public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
 
     //turret
-    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0, 0.1};
+    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000016, 0.000000002, 0.0000005, 0.0002, null, 0.01, 0.8, 1000.0, 0.9, 0.97, -1750.0, 0.8, 0.03};
 
-    public static double TURRET_MIN_INTEGRAL_LIMIT = -1;
-    public static double TURRET_MAX_INTEGRAL_LIMIT = 1;
+    public static double TURRET_MIN_INTEGRAL_LIMIT = -0.4;
+    public static double TURRET_MAX_INTEGRAL_LIMIT = 0.4;
 
     //lift
     public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1.1, 0.1, 0.85, 0.9, 195.0};

@@ -81,14 +81,20 @@ public strictfp class ShooterInformation {
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
 
-        public static double TURRET_HOLD_OVERRIDE = 40;
+        /// Amount of ticks that the turret must go past the target position for the feedforward to be dampened.
+        public static double TURRET_HOLD_OVERRIDE_ERROR = 40;
+        /// Amount of ticks that the turret must go past the target position for the feedforward to be flipped.
+        public static double TURRET_FEEDFORWARD_FLIP_ERROR = 350;
 
-        public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList( -7000.0,   -6000.0,  -5000.0,  -4000.0,   -3000.0,   -2000.0,  -1000.0,    -50.0,      50.0,     1000.0,   2500.0,    4000.0,    5000.0,    6000.0,   7000.0);
-        public static List<Double> TURRET_KFS =                          Arrays.asList(0.00002415, 0.00001, 0.000009, 0.0000005, 0.00000125, 0.000002, 0.0000211, 0.000016, 0.00001613, 0.000014, 0.0000125, 0.0000092, 0.0000085, 0.000004, 0.00000315);
+        public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList(-11000.0,  -10000.0,    -9000.0,  -8000.0,   -7000.0,  -6000.0,    -5000.0,    -4000.0,  -3000.0,   -2000.0,    -1000.0,     0.0,     1000.0,    2000.0,    3000.0,    4000.0,    5000.0,    6000.0,     7000.0,    8000.0,   9000.0,   10000.0,    11000.0);
+        public static List<Double> TURRET_KFS =                          Arrays.asList(0.0000245,0.0000275,   0.0000275,  0.0000265, 0.000026, 0.0000265, 0.000028,  0.000029,  0.000031,  0.000036,   0.000034,  0.000042,  0.00015,   0.00018,  0.000035,  0.000035,  0.000041,   0.00004,   0.0000375, 0.000038, 0.000031, 0.0000285,   0.0005);
+        public static List<Double> TURRET_KF_VOLTAGES =                  Arrays.asList(  13.58,    13.31,      13.27,     12.98,     12.98,     13.07,      13.08,     12.92,     12.92,     13.00,      12.99,     12.5,     12.87,     12.80,     12.81,     12.76,     12.75,     12.67,      12.31,     12.5,    12.52,     12.51,     12.48);
+
+        public static double TURRET_VOLTAGE_SCALING_DEADBAND = 0.01;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 50;
 
-        public static double HOOD_POSITION_MANUAL_INCREMENT = 0.035;
+        public static double HOOD_POSITION_MANUAL_INCREMENT = 0.1;
 
         public static double HOOD_CLOSE_POSITION = 0.25;
         public static double HOOD_FAR_POSITION = 0.16;
@@ -173,6 +179,11 @@ public strictfp class ShooterInformation {
         @DeprecatedSystem(notes = "We are now using odometry to get the distance from the goal, not the limelight")
         public static double getDistanceFromRegression(double ty) {
             return (0.34197 * ty * ty) - (3.79725 * ty) + 53.01088;
+        }
+
+        public static double getScaledTurretFlippedFAdjuster(double error) {
+
+            return -0.001 * Math.abs(error) - 0.2;
         }
 
         public static double getScaledFlywheelKv(double unscaledKv, double currentVoltage) {
