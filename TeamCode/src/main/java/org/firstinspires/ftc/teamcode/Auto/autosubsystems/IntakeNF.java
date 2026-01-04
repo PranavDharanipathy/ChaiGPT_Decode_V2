@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto.autosubsystems;
 
 import com.chaigptrobotics.shenanigans.No_u;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -46,8 +45,8 @@ public class IntakeNF implements Subsystem {
         return new SetPower(intake, Constants.REVERSE_INTAKE_POWER);
     }
 
-    public Command stop() {
-        return new SetPower(intake, 0);
+    public void end() {
+        intake.setPower(0);
     }
 
     @Override

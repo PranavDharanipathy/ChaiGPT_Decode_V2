@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.FlywheelNF;
@@ -11,11 +13,15 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.HoodNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TransferNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TurretNF;
+import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
+import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -26,7 +32,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @Autonomous (name = "Sling Auto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
 
-    public static double TURRET_POSITION = -7700;
+    public static double[] TURRET_POSITIONS = {-8050, -8100, -8050, -8050};
 
     private Telemetry telemetry;
 
@@ -60,29 +66,44 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
 
-        auto().schedule();
+        //setup
+        FlywheelNF.INSTANCE.flywheel.setVelocity(456_000, true);
+        IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
+        HoodNF.INSTANCE.hood.setPosition(0.16);
+        TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
 
-        RobotNF.robot.setFlywheelVelAIR(455_000);
-        RobotNF.robot.intake();
-        RobotNF.robot.hoodTo(0.16);
-        RobotNF.robot.turretTo(TURRET_POSITION);
+        auto().schedule();
     }
 
     @Override
     public void onUpdate() {
 
+        telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
+
         telemetry.addData("flywheel target velocity", FlywheelNF.INSTANCE.flywheel.getTargetVelocity());
         telemetry.addData("flywheel current velocity", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
+        telemetry.addData("flywheel power", FlywheelNF.INSTANCE.flywheel.getMotorPowers()[0]);
+
+        telemetry.addData("flywheel p", FlywheelNF.INSTANCE.flywheel.p);
+        telemetry.addData("flywheel i", FlywheelNF.INSTANCE.flywheel.i);
+        telemetry.addData("flywheel d", FlywheelNF.INSTANCE.flywheel.d);
+        telemetry.addData("flywheel v", FlywheelNF.INSTANCE.flywheel.v);
 
         telemetry.addData("turret target position", TurretNF.INSTANCE.turret.getTargetPosition());
         telemetry.addData("turret current position", TurretNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret start position", TurretNF.INSTANCE.turret.startPosition);
+
+        telemetry.addData("hood position", HoodNF.INSTANCE.hood.getPosition());
+
+        telemetry.addData("brokeFollowing", brokeFollowing);
+        telemetry.addData("pedro busy?", PedroComponent.follower().isBusy());
 
         telemetry.update();
     }
 
     @Override
     public void onStop() {
-        RobotNF.robot.stop();
+        RobotNF.robot.end();
     }
 
     private Command auto() {
@@ -90,33 +111,62 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
         return new SequentialGroup(
 
                 //shooting preloads
-                RobotNF.robot.waitTilFlywheelAtVel(),
-                RobotNF.robot.transfer(0.4,0.2),
+                new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
+                RobotNF.robot.shootBalls(0.4,0.3),
 
                 //intaking balls already set at the the human player zone
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
                 new FollowPath(paths.setupForFirstIntake),
-                new FollowPath(paths.firstIntake),
-                new ParallelGroup(
-                        new FollowPath(paths.firstReturnn),
-                        //shooting balls
-                        RobotNF.robot.transfer(0.4,0.2, 2, paths.firstReturnn)
-                ),
+                followCancelable(paths.firstIntake, 4000),//new FollowPath(paths.firstIntake),
+                new FollowPath(paths.firstReturnn, true),
+                //shooting balls
+                RobotNF.robot.shootBalls(0.4,0.3),
 
                 //intaking balls at the human player zone
-                new FollowPath(paths.intake),
-                new ParallelGroup(
-                        new FollowPath(paths.returnn),
-                        //shooting balls
-                        RobotNF.robot.transfer(0.4,0.2, 2, paths.firstReturnn)
-                ),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
+                followCancelable(paths.intake, 6000),//new FollowPath(paths.intake),
+                new FollowPath(paths.returnn, true),
+                //shooting balls
+                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.returnn),
 
                 //intaking balls at the human player zone
-                new FollowPath(paths.intake),
-                new ParallelGroup(
-                        new FollowPath(paths.returnn),
-                        //shooting balls
-                        RobotNF.robot.transfer(0.4,0.2, 2, paths.firstReturnn)
-                )
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+                followCancelable(paths.intake, 6000),//new FollowPath(paths.intake),
+                new FollowPath(paths.returnn, true),
+                //shooting balls
+                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.returnn)
+        );
+    }
+
+    private boolean brokeFollowing = false;
+
+    private Command followCancelable(PathChain pathChain, double millisTilCancel) {
+
+        brokeFollowing = false;
+
+        return new SequentialGroup(
+
+                new InstantCommand(() -> PedroComponent.follower().followPath(pathChain)),
+                new Command() {
+
+                    private boolean firstTick = true;
+                    private double startTime;
+                    @Override
+                    public boolean isDone() {
+
+                        if (firstTick) {
+
+                            startTime = System.currentTimeMillis();
+                            firstTick = false;
+                        }
+
+                        return PedroComponent.follower().atParametricEnd() || System.currentTimeMillis() >= millisTilCancel + startTime;
+                    }
+                },
+                new InstantCommand(() -> {
+                    brokeFollowing = true;
+                    PedroComponent.follower().breakFollowing();
+                })
         );
     }
 

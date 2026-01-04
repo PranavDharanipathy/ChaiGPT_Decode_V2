@@ -120,6 +120,8 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
             telemetry.addData("Target Velocity", flywheel.getTargetVelocity());
             telemetry.addData("Real Velocity", flywheel.getRealVelocity());
             telemetry.addData("Velocity Estimate", flywheel.getCurrentVelocityEstimate());
+            telemetry.addData("Real ki", flywheel.getRealKi());
+            telemetry.addData("KISwitchTargetVelocity", flywheel.getKISwitchTargetVelocity());
             telemetry.addData("p", flywheel.getPIDFVAS()[0]);
             telemetry.addData("i", flywheel.getPIDFVAS()[1]);
             telemetry.addData("d", flywheel.getPIDFVAS()[2]);

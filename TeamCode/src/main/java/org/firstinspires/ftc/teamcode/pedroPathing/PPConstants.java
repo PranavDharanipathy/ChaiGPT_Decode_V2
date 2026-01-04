@@ -33,7 +33,7 @@ public class PPConstants {
 
             .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.055,0.1))
 
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01,0,0.002,0.8,0.1))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01,0,0.0018,0.85,0.1))
 
             .translationalPIDFSwitch(3)
             .headingPIDFSwitch(0.17453299)

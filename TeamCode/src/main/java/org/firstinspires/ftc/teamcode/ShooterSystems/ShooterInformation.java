@@ -76,7 +76,7 @@ public strictfp class ShooterInformation {
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
-        public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -140, MAX_TURRET_POSITION_IN_DEGREES = 140;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
@@ -87,7 +87,7 @@ public strictfp class ShooterInformation {
         public static double TURRET_FEEDFORWARD_FLIP_ERROR = 350;
 
         public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList(-11000.0,  -10000.0,    -9000.0,  -8000.0,   -7000.0,  -6000.0,    -5000.0,    -4000.0,  -3000.0,   -2000.0,    -1000.0,     0.0,     1000.0,    2000.0,    3000.0,    4000.0,    5000.0,    6000.0,     7000.0,    8000.0,   9000.0,   10000.0,    11000.0);
-        public static List<Double> TURRET_KFS =                          Arrays.asList(0.0000245,0.0000275,   0.0000275,  0.0000265, 0.000026, 0.0000265, 0.000028,  0.000029,  0.000031,  0.000036,   0.000034,  0.000042,  0.00015,   0.00018,  0.000035,  0.000035,  0.000041,   0.00004,   0.0000375, 0.000038, 0.000031, 0.0000285,   0.0005);
+        public static List<Double> TURRET_KFS =                          Arrays.asList(0.000024,  0.000027,   0.000027, 0.000024,   0.00002, 0.000025,    0.000028,  0.000029,  0.000031,  0.000036,   0.000034,  0.000042,  0.00015,   0.00018,  0.000035,  0.000035,  0.000041,   0.00004,   0.0000375, 0.000038, 0.000031, 0.0000285,   0.0005);
         public static List<Double> TURRET_KF_VOLTAGES =                  Arrays.asList(  13.58,    13.31,      13.27,     12.98,     12.98,     13.07,      13.08,     12.92,     12.92,     13.00,      12.99,     12.5,     12.87,     12.80,     12.81,     12.76,     12.75,     12.67,      12.31,     12.5,    12.52,     12.51,     12.48);
 
         public static double TURRET_VOLTAGE_SCALING_DEADBAND = 0.01;
