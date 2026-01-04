@@ -67,8 +67,6 @@ public class Turret {
 
         this.gamepad1 = new BetterGamepad(controller1);
 
-
-
         this.initialPose = initialPose;
 
         left_turret = hardwareMap.get( CRServo.class, "left_turret");
