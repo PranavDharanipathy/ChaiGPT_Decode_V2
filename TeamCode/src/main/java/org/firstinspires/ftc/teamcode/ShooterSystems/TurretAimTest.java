@@ -1,20 +1,14 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import android.graphics.LinearGradient;
-
 import com.acmerobotics.roadrunner.Pose2d;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
-import org.firstinspires.ftc.teamcode.TeleOp.LaNikhilBaseOpMode;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
@@ -42,9 +36,6 @@ public class TurretAimTest extends LinearOpMode {
     public Pose2d initialPose;
 
     public RobotCentricDrive robotCentricDrive;
-
-    DcMotorEx left_flywheel, right_flywheel;
-
     Gamepad controller1 = new Gamepad();
 
     Gamepad controller2 = new Gamepad();

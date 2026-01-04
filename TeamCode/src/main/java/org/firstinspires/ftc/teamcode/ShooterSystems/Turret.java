@@ -2,19 +2,15 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
@@ -24,9 +20,6 @@ public class Turret {
        double currY;
        double dX;
        double dY;
-
-       double desiredFieldAngleRad;
-
        double desiredFieldAngleDeg;
 
        double currentRobotHeading;
@@ -59,8 +52,6 @@ public class Turret {
 
     Gamepad controller1 = new Gamepad();
 
-    Gamepad controller2;
-
     public Turret( HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
         this.targetX = targetX;
         this.targetY = targetY;
@@ -69,29 +60,17 @@ public class Turret {
 
         this.initialPose = initialPose;
 
-        left_turret = hardwareMap.get( CRServo.class, "left_turret");
-
-        right_turret = hardwareMap.get(CRServo.class, "right_turret");
+        left_turret = hardwareMap.get( CRServo.class, "left_turret_base");
+        right_turret = hardwareMap.get(CRServo.class, "right_turret_base");
         DcMotorEx rb = hardwareMap.get(DcMotorEx.class, "right_back");
+
         //use right_back motor since encoder is plugged into that
         encoder = new Encoder(rb);
         //set encoder direction to the same direction as the right_back motor
         encoder.setDirection(Encoder.Direction.REVERSE);
-
         localizer = new PinpointLocalizer(hardwareMap, 73.5179487179, initialPose);
 
     }
-
-    public void setPosition(double target){
-        double p = 0.017;
-        double error = target - turretCurrPosTicks;
-
-        double power = p * error;
-        left_turret.setPower(power);
-        right_turret.setPower(power);
-
-    }
-
 
 
     public void update() {
@@ -121,24 +100,27 @@ public class Turret {
         //set turret to desired location
         //left_turret.setPosition(turretTargetTicks);
 
-        setPosition(turretTargetTicks);
-
-        //right_turret.setPosition(turretTargetTicksc);
-        //Extra features: rumbling(like shooting)
-
         turretCurrPosTicks = encoder.getCurrentPosition();
-        turretCurrDeg = turretCurrPosTicks / 73.5179487179;
+        double error = turretTargetTicks - turretCurrPosTicks;
+
+        double kp = 0.0015;
+        double power = kp * error;
 
 
-        if (turretCurrPosTicks == turretTargetTicks) { gamepad1.rumble(2000);  }
-        else {gamepad1.stopRumble(); }
+        left_turret.setPower(power);
+        right_turret.setPower(power);
 
-
-        //If turret is out of bounds
-        if (turretCurrDeg > 176 || turretCurrDeg < -170) {
+        if (Math.abs(error) < 10) {
             left_turret.setPower(0);
             right_turret.setPower(0);
         }
+
+
+
+        //right_turret.setPosition(turretTargetTicks);
+        //Extra features: rumbling(like shooting)
+
+        //If turret is out of bounds
 
 
     }
