@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -16,6 +17,9 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_TARGET_POSITIONS;
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KFS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KF_VOLTAGES;
+
+import java.util.Collections;
 
 /// USES EXTERNAL ENCODER
 @Peak
@@ -24,21 +28,39 @@ public class TurretBase {
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    private double kp, ki, kd, ks, kISmash, kDFilter, kPowerFilter;
+    private final VoltageSensor batteryVoltageSensor;
+
+    private double kp, kiOut, kiIn, kd, ks, kISmash, kDFilter, kPowerFilter;
+    private double realKi, kISwitchError, kISwitchTargetPosition;
     private Double kf;
     private double realKf;
+    private double fAdjuster;
     private double kFDampen;
+    private double kVoltageFilter;
+
+    public double getFAdjuster() { return fAdjuster; }
 
     public double getRealKf() { return realKf; }
 
+    public double getRealKi() { return realKi; }
+
     private double lanyardEquilibrium;
-    public double errorSum;
     public double p, i, d, f, s;
 
     public double filteredDerivative = 0;
     public double filteredPower = 0;
 
+    public double filteredVoltage;
+
+    public double kfScalingVoltage;
+
+    private void setKfScalingVoltage(double voltage) {
+        kfScalingVoltage = MathUtil.truncate(voltage, 100);
+    }
+
     public TurretBase(HardwareMap hardwareMap) {
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         leftTurretBase = hardwareMap.get(CRServoImplEx.class, Constants.MapSetterConstants.turretBaseLeftServoDeviceName);
         rightTurretBase = hardwareMap.get(CRServoImplEx.class, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
@@ -54,25 +76,39 @@ public class TurretBase {
 
         // first targetPosition is the position it starts at
         lastTargetPosition = targetPosition = startPosition = encoder.getCurrentPosition();
+
+        filteredVoltage = batteryVoltageSensor.getVoltage(); //setting start voltage
+        setKfScalingVoltage(filteredVoltage);
+        scaleKfs(kfScalingVoltage); //scale to starting voltage
     }
 
+    private int movementDirection = 1;
+
+    /// Call after setting PIDFS coefficients
     public void reverse() {
 
         DcMotorSimple.Direction direction = leftTurretBase.getDirection() == DcMotorSimple.Direction.FORWARD ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD;
 
         leftTurretBase.setDirection(direction);
         rightTurretBase.setDirection(direction);
+
+        movementDirection = -1;
+
+        lanyardEquilibrium *= -1;
     }
 
-    public void setPIDFSCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium, Double kFDampen) {
+    public void setPIDFSCoefficients(Double kp, Double kiOut, Double kiIn, Double kd, Double kf, Double ks, Double kISmash, Double kISwitchError, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium, Double kFDampen, Double kVoltageFilter) {
 
         this.kp = kp;
-        this.ki = ki;
+        this.kiOut = kiOut;
+        this.kiIn = kiIn;
         this.kd = kd;
         this.kf = kf;
         this.ks = ks;
 
         this.kISmash = kISmash;
+
+        this.kISwitchError = kISwitchError;
 
         this.kDFilter = kDFilter;
         this.kPowerFilter = kPowerFilter;
@@ -80,6 +116,8 @@ public class TurretBase {
         this.lanyardEquilibrium = lanyardEquilibrium;
 
         this.kFDampen = kFDampen;
+
+        this.kVoltageFilter = kVoltageFilter;
     }
 
     public double startPosition;
@@ -121,7 +159,21 @@ public class TurretBase {
 
     private ElapsedTime timer = new ElapsedTime();
 
+    private boolean firstTick = true;
+
     public void update() {
+
+        if (firstTick) {
+
+            if (movementDirection == 1) {
+
+                // if turret was not reversed (like in TurretBaseTuner), make the list
+                Collections.reverse(TURRET_KFS);
+                Collections.reverse(TURRET_KF_VOLTAGES);
+            }
+
+            firstTick = false;
+        }
 
         double currentPosition = getCurrentPosition();
 
@@ -134,8 +186,16 @@ public class TurretBase {
         p = kp * error;
 
         //integral
-        errorSum += error * dt;
-        if (Math.signum(prevError) != Math.signum(error)) errorSum *= kISmash;
+        if (kISwitchTargetPosition == targetPosition || Math.abs(error) < kISwitchError) {
+
+            kISwitchTargetPosition = targetPosition;
+
+            realKi = integralIn() ? kiIn : kiOut;
+        }
+        else realKi = 0;
+
+        i += realKi * error * dt;
+        if (error != 0 && Math.signum(prevError) != Math.signum(error)) i *= (Math.abs(error) < kISwitchError ? kISmash : 0);
 
         //derivative
         double rawDerivative = (error - prevError) / dt;
@@ -143,21 +203,25 @@ public class TurretBase {
         d = dt > 0 ? kd * filteredDerivative : 0;
 
         //feedforward
+
+        //voltage compensating the feedforward
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltageSensor.getVoltage(), kVoltageFilter);
+
+        if (MathUtil.deadband(filteredVoltage, kfScalingVoltage, ShooterInformation.ShooterConstants.TURRET_VOLTAGE_SCALING_DEADBAND) != kfScalingVoltage) {
+
+            setKfScalingVoltage(filteredVoltage);
+            scaleKfs(kfScalingVoltage);
+        }
+
         double reZeroedTargetPosition = targetPosition + startPosition;
 
-        int movementDirection;
-        if (currentPosition >= targetPosition) movementDirection = 1;
-        else movementDirection = -1;
-
         // if the turret moves a certain amount beyond it's target position, the feedforward is dampened until it moves back within a range.
-        boolean dampFeedforward = movementDirection == 1
-                ? error <= -ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE
-                : error >= ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE;
-
-        double fDampeningMultiplier;
-
-        if (dampFeedforward) fDampeningMultiplier = kFDampen;
-        else fDampeningMultiplier = 1; //no damp
+        if (flipFeedforward()) {
+            //fAdjuster = -1 * (Math.abs(error) / ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_FLIP_ERROR);
+            fAdjuster = ShooterInformation.Models.getScaledTurretFlippedFAdjuster(error);
+        }
+        else if (dampFeedforward()) fAdjuster = kFDampen;
+        else fAdjuster = 1; //no damp
 
         if (kf != null) {
             realKf = kf;
@@ -172,12 +236,12 @@ public class TurretBase {
             realKf = TURRET_KFS.get(TURRET_KFS.size() - 1);
         }
 
-        f = fDampeningMultiplier * realKf * (reZeroedTargetPosition - lanyardEquilibrium);
+        f = fAdjuster * realKf * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
         s = ks * Math.signum(error);
 
-        i = MathUtil.clamp(ki * errorSum, MIN_I, MAX_I);
+        i = MathUtil.clamp(i, MIN_I, MAX_I);
 
         double rawPower = p + i + d + f + s;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
@@ -219,24 +283,6 @@ public class TurretBase {
         rightTurretBase.setPower(0);
     }
 
-    /// used for tuning
-    public void updateCoefficients(Double kp, Double ki, Double kd, Double kf, Double ks, Double kISmash, Double kDFilter, Double kPowerFilter, Double lanyardEquilibrium, Double kFDampen) {
-
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-        this.kf = kf;
-        this.ks = ks;
-
-        this.kISmash = kISmash;
-
-        this.kDFilter = kDFilter;
-        this.kPowerFilter = kPowerFilter;
-
-        this.lanyardEquilibrium = lanyardEquilibrium;
-
-        this.kFDampen = kFDampen;
-    }
     private double getKfFromInterpolation(double reZeroedTargetPosition) {
 
         //converting list to array
@@ -262,6 +308,39 @@ public class TurretBase {
                 )
         );
 
+    }
+
+    private void scaleKfs(double currentVoltage) {
+
+        //converting lists to arrays
+        double[] turretFeedforwardCoefficients = TURRET_KFS.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] turretFeedforwardVoltages = TURRET_KF_VOLTAGES.stream().mapToDouble(Double::doubleValue).toArray();
+
+        for (int index = 0; index == TURRET_KFS.size() - 1; index++) {
+
+            TURRET_KFS.set(index, turretFeedforwardCoefficients[index] * (turretFeedforwardVoltages[index] / currentVoltage));
+        }
+    }
+
+    private boolean dampFeedforward() {
+
+        if (targetPosition >= 0 && error < -ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE_ERROR) return true;
+        else if (targetPosition < 0 && error > ShooterInformation.ShooterConstants.TURRET_HOLD_OVERRIDE_ERROR) return true;
+        else return false; //if currentPosition equals targetPosition that means zero error
+    }
+
+    private boolean flipFeedforward() {
+
+        if (targetPosition >= 0 && error < -ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_FLIP_ERROR) return true;
+        else if (targetPosition < 0 && error > ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_FLIP_ERROR) return true;
+        else return false; //if currentPosition equals targetPosition that means zero error
+    }
+
+    private boolean integralIn() {
+
+        if (targetPosition >= 0 && error < 0) return true;
+        else if (targetPosition < 0 && error > 0) return true;
+        else return false; //if currentPosition equals targetPosition that means zero error
     }
 
 }
