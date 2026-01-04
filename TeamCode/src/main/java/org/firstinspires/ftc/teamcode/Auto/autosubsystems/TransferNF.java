@@ -36,8 +36,8 @@ public class TransferNF implements Subsystem {
         return new InstantCommand(() -> transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY));
     }
 
-    public Command stop() {
-        return new InstantCommand(() -> transfer.setVelocity(0));
+    public void end() {
+        transfer.setVelocity(0);
     }
 
     @Override

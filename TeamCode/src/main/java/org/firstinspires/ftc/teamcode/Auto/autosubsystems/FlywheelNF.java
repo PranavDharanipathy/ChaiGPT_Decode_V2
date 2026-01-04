@@ -62,8 +62,8 @@ public class FlywheelNF implements Subsystem {
         return new InstantCommand(() -> flywheel.setVelocity(vel, allowIntegralReset));
     }
 
-    public Command stop() {
-        return new InstantCommand(() -> flywheel.setVelocity(0, true));
+    public void end() {
+        flywheel.setVelocity(0, true);
     }
 
     @Override

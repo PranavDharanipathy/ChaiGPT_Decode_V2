@@ -56,9 +56,16 @@ public final class ExtremePrecisionFlywheel {
 
     public double kp;
     public double kiFar, kiClose;
+    private double ki;
+    public double getRealKi() {
+        return ki;
+    }
     public double kISmash;
     private double kISwitchError;
     private double kISwitchTargetVelocity;
+    public double getKISwitchTargetVelocity() {
+        return kISwitchTargetVelocity;
+    }
     public double kd;
     public double kf;
     public double unscaledKv;
@@ -198,7 +205,7 @@ public final class ExtremePrecisionFlywheel {
 
         if (allowIntegralReset && targetVelocity != velocity) {
 
-            i = 0; //resetting integral when target velocity changes to prevent integral windup
+            resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
         }
 
         burstVelocity = 0;
@@ -211,7 +218,7 @@ public final class ExtremePrecisionFlywheel {
     public void setVelocityWithBurst(double velocity, @Nullable Double burst, boolean allowIntegralReset) {
 
         if (allowIntegralReset && targetVelocity != velocity) {
-            i = 0; //resetting integral when target velocity changes to prevent integral windup
+            resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
         }
 
         if (burst != null) burstVelocity = burst;
@@ -268,17 +275,17 @@ public final class ExtremePrecisionFlywheel {
         p = kp * error;
         p = MathUtil.clamp(p, p_min, p_max);
 
-        double ki;
+        //integral - is in fact reset when target velocity changes IF ALLOWED
         if (kISwitchTargetVelocity == targetVelocity || error < kISwitchError) {
 
             ki = kiClose;
+            resetIntegral();
             kISwitchTargetVelocity = targetVelocity;
         }
         else {
             ki = kiFar;
         }
 
-        //integral - is in fact reset when target velocity changes IF ALLOWED
         if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) errorSum += error * dt;
         else errorSum = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
         // i is prevented from getting too high or too low
@@ -438,7 +445,12 @@ public final class ExtremePrecisionFlywheel {
         currentPosition = 0;
 
         setVelocity(0, false); //allowIntegralReset is false to speed up computation because of how '||' works - probably negligible
-        i = 0; //integral reset
+        resetIntegral(); //integral reset
+    }
+
+    private void resetIntegral() {
+        errorSum = 0;
+        i = 0;
     }
 
     public double[] getMotorPowers() {
