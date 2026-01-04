@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.RRAuto.AutonomousBaseOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.NewMecanumDrive;
 
@@ -92,9 +93,9 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+                telemetry.addData("flywheel speed", flywheel.getRealVelocity());
                 telemetry.update();
-                return !(timer.seconds() >= minimumTime && flywheel.getFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY && flywheel.getLastFrontendCalculatedVelocity() > FLYWHEEL_VELOCITY);
+                return !(timer.seconds() >= minimumTime && flywheel.getRealVelocity() > FLYWHEEL_VELOCITY && flywheel.getLastRealVelocity() > FLYWHEEL_VELOCITY);
             }
 
 
@@ -418,7 +419,7 @@ public class TwelveBallAuto_RED_CLOSE extends AutonomousBaseOpMode {
                 )
         );
         //SHOOT!
-        telemetry.addData("flywheel speed", flywheel.getFrontendCalculatedVelocity());
+        telemetry.addData("flywheel speed", flywheel.getRealVelocity());
         telemetry.update();
 
 

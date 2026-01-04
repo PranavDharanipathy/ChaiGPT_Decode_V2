@@ -11,8 +11,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class Turret {
@@ -32,7 +35,7 @@ public class Turret {
        double turretTargetTicks;
 
 
-    MecanumDrive MecanumDrive;
+    PinpointLocalizer localizer;
 
     Pose2d initialPose;
 
@@ -72,25 +75,20 @@ public class Turret {
 
         right_turret = hardwareMap.get(CRServo.class, "right_turret");
         DcMotorEx rb = hardwareMap.get(DcMotorEx.class, "right_back");
+        //use right_back motor since encoder is plugged into that
         encoder = new Encoder(rb);
-
+        //set encoder direction to the same direction as the right_back motor
         encoder.setDirection(Encoder.Direction.REVERSE);
 
-
-
-        MecanumDrive = new MecanumDrive(hardwareMap, initialPose);
+        localizer = new PinpointLocalizer(hardwareMap, 73.5179487179, initialPose);
 
     }
 
     public void setPosition(double target){
         double p = 0.017;
-
-
-
         double error = target - turretCurrPosTicks;
 
         double power = p * error;
-
         left_turret.setPower(power);
         right_turret.setPower(power);
 
@@ -100,58 +98,41 @@ public class Turret {
 
     public void update() {
 
-
-        MecanumDrive.localizer.update();
-
-        currentPose = MecanumDrive.localizer.getPose();
+        localizer.update();
+        currentPose = localizer.getPose();
 
         currX = currentPose.position.x;
-
         currY = currentPose.position.y;
 
         dX = targetX - currX;
-
         dY = targetY - currY;
-
-
-
-
 
         //atan2 returns radians --> Angle of slope between distance
 
         //convert desiredFieldAngle to degrees with toDegrees()
 
         desiredFieldAngleDeg = toDegrees(FastMath.atan2(dY, dX));
-
         //in degrees?
-
         currentRobotHeading = currentPose.heading.toDouble();
-
         turretTargetDegrees = desiredFieldAngleDeg - currentRobotHeading;
 
         //convert degrees to ticks
-
         turretTargetTicks = turretTargetDegrees * 73.5179487179;
 
 
         //set turret to desired location
         //left_turret.setPosition(turretTargetTicks);
 
-
         setPosition(turretTargetTicks);
 
-
         //right_turret.setPosition(turretTargetTicksc);
-
-
         //Extra features: rumbling(like shooting)
 
         turretCurrPosTicks = encoder.getCurrentPosition();
-
         turretCurrDeg = turretCurrPosTicks / 73.5179487179;
 
 
-        if (turretCurrPosTicks == turretTargetTicks) { gamepad1.rumble(7000); }
+        if (turretCurrPosTicks == turretTargetTicks) { gamepad1.rumble(2000);  }
         else {gamepad1.stopRumble(); }
 
 
