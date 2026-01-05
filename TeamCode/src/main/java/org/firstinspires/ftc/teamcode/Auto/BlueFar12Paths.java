@@ -21,44 +21,73 @@ public class BlueFar12Paths {
 
         public PathChain ThirdReturn;
 
+        public PathChain Preload;
+
         public BlueFar12Paths(Follower follower) {
+
+            /* preload = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(64.976, 8.195),
+                                    new Pose(64.976, 16.585),
+                                    new Pose(59.317, 18.927)
+                            )
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();*/
 
             FirstIntake = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(65.108, 7.832),
-                                    new Pose(66.038, 40.572),
-                                    new Pose(8.929, 35.363)
+                                    new Pose(64.195, 14.829),
+                                    new Pose(59.049, 31.220),
+                                    new Pose(43.902, 31.829),
+                                    new Pose(14.415, 31.707)
                             )
                     )
                     .setTangentHeadingInterpolation()
                     .build();
+
+
+            /*FirstIntake = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(65.780, 11.537),
+                                    new Pose(42.146, 9.366),
+                                    new Pose(56.585, 25.683),
+                                    new Pose(42.537, 39.268),
+                                    new Pose(7.220, 36.683)
+                            )
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();*/
 
             FirstReturn = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
                                     new Pose(8.929, 35.363),
-                                    new Pose(53.760, 32.759),
-                                    new Pose(63.992, 10.622)
+                                    new Pose(50.760, 32.759),
+                                    new Pose(63.992, 15.622)
                             )
                     )
-                    .setTangentHeadingInterpolation()
+                    .setConstantHeadingInterpolation(Math.PI)
                     .build();
 
-           SecondIntake = follower
+            SecondIntake = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(63.992, 10.622),
-                                    new Pose(80.175, 64.941),
-                                    new Pose(43.157, 72.568),
-                                    new Pose(14.138, 45.594),
-                                    new Pose(12.463, 68.847)
+                                    new Pose(62.634, 14.244),
+                                    new Pose(55.220, 68.488),
+                                    new Pose(42.390, 55.537),
+                                    new Pose(16.659, 55.488)
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                    .setTangentHeadingInterpolation()
                     .build();
 
             SecondReturn = follower
@@ -70,7 +99,7 @@ public class BlueFar12Paths {
                                     new Pose(67.154, 11.924)
                             )
                     )
-                    .setTangentHeadingInterpolation()
+                    .setConstantHeadingInterpolation(Math.PI)
                     .build();
 
             IntakeExtra = follower
