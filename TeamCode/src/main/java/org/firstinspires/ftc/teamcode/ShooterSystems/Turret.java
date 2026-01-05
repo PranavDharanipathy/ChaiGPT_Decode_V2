@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import static org.apache.commons.math3.util.FastMath.abs;
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -11,18 +12,23 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
+
+import java.util.Objects;
+
 
 public class Turret {
 
 /*
 
-        f = fAdjuster * realKf * (reZeroedTargetPosition - lanyardEquilibrium);
+        //f = fAdjuster * realKf * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
         s = ks * Math.signum(error);
@@ -48,7 +54,8 @@ public class Turret {
 
    double currentRobotHeading;
 
-   double turretTargetDegrees, turretTargetTicks;
+   double turretTargetDegrees;
+   public double turretTargetTicks;
 
 
     PinpointLocalizer localizer;
@@ -61,7 +68,7 @@ public class Turret {
 
     Encoder encoder;
 
-    double turretCurrPosTicks;
+    public double turretCurrPosTicks;
 
     BetterGamepad gamepad1;
 
@@ -99,6 +106,65 @@ public class Turret {
         right_turret.setDirection(direction);
     }
 
+    private double startTime = 0;
+
+    public double getElapsed() {
+        return (System.nanoTime() * 1e-9) - startTime;
+    }
+
+    public double
+            kp = 0
+            , ki = 0
+            , kd = 0
+            , p = 0
+            , i = 0
+            , d = 0
+            , error = 0
+            , prevError = 0
+            , errorSum = 0
+            , prevTime
+            , currTime
+            , dt = 0
+            , imax, imin;
+
+    public void setPIDFCoefficients(double kp, double ki, double kd) {
+
+        this.kp = kp;
+        this.ki = ki;
+        this.kd = kd;
+
+    }
+
+    private boolean firstTick = true;
+
+    public void updatePID() {
+
+        if (firstTick) {
+
+            startTime = getElapsed();
+
+            firstTick = false;
+        }
+
+        dt = currTime - prevTime;
+
+        if (dt == 0) return;
+
+        prevError = error;
+        error = turretTargetTicks - encoder.getCurrentPosition();
+
+        //p
+        p = kp * error;
+
+        //i
+        errorSum += error * dt;
+        i = MathUtil.clamp(ki * errorSum, imin, imax);
+
+        //d
+        final double tempD = kd * (error - prevError) / dt;
+        d = !Double.isNaN(tempD) ? tempD : 0;
+
+    }
 
     public void update() {
 
@@ -121,26 +187,15 @@ public class Turret {
         turretTargetDegrees = desiredFieldAngleDeg - currentRobotHeading;
 
         //convert degrees to ticks
-        turretTargetTicks = (turretTargetDegrees * 73.5179487179) + turretStartPos;
+        turretTargetTicks = (turretTargetDegrees * 73.5179487179) + Math.abs( turretStartPos);
 
 
         //set turret to desired location
         //left_turret.setPosition(turretTargetTicks);
 
+
         turretCurrPosTicks = encoder.getCurrentPosition();
-        double error = turretTargetTicks - turretCurrPosTicks;
 
-        double kp = 0.00045;
-        double power = kp * error;
-
-
-        left_turret.setPower(power);
-        right_turret.setPower(power);
-
-        if (Math.abs(error) < 10) {
-            left_turret.setPower(0);
-            right_turret.setPower(0);
-        }
 
         //right_turret.setPosition(turretTargetTicks);
         //Extra features: rumbling(like shooting)
@@ -148,5 +203,9 @@ public class Turret {
         //If turret is out of bounds
 
 
+        updatePID();
     }
+
+
 }
+
