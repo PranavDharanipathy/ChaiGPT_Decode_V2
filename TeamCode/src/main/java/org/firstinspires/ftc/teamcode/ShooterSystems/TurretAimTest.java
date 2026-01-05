@@ -66,8 +66,10 @@ public class TurretAimTest extends LinearOpMode {
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, gamepad1);
         flywheel = new ExtremeNikhilFlywheel(hardwareMap, initialPose);
 
+        turret.reverse();
+
         waitForStart();
-        while (opModeIsActive() && !isStopRequested()) {
+        while (opModeIsActive()) {
 
             turret.update();
             robotCentricDrive.update();
