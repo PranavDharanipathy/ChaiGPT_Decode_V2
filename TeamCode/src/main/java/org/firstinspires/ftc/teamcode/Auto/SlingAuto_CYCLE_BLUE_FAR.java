@@ -28,16 +28,16 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Config
-@Autonomous (name = "Sling Auto RED FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
-public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
+@Autonomous (name = "Sling Auto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
+public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
 
-    public static double[] TURRET_POSITIONS = {-8300, -8300, -8300, -8300, -8400};
+    public static double[] TURRET_POSITIONS = {8300, 8300, 8300, 8300, 8400};
 
     private Telemetry telemetry;
 
-    private SlingAutoPaths_CYCLE_RED_FAR paths;
+    private SlingAutoPaths_CYCLE_BLUE_FAR paths;
 
-    public SlingAuto_CYCLE_RED_FAR() {
+    public SlingAuto_CYCLE_BLUE_FAR() {
         addComponents(
                 new SubsystemComponent(
                         RobotNF.robot,
@@ -57,7 +57,7 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        paths = new SlingAutoPaths_CYCLE_RED_FAR(PedroComponent.follower());
+        paths = new SlingAutoPaths_CYCLE_BLUE_FAR(PedroComponent.follower());
 
         PedroComponent.follower().setStartingPose(paths.startPose);
     }
@@ -137,8 +137,8 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
                 new ParallelGroup(
-                    followCancelable(paths.curvedIntake2, 4000),//new FollowPath(paths.intake),
-                    RobotNF.robot.intakeClearingSpecial(1.5)
+                        followCancelable(paths.curvedIntake2, 4000),//new FollowPath(paths.intake),
+                        RobotNF.robot.intakeClearingSpecial(1.5)
                 ),
                 new FollowPath(paths.curvedReturn2, true),
                 //shooting balls
@@ -147,8 +147,8 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[4]),
                 new ParallelGroup(
-                    followCancelable(paths.normalIntake, 4000),//new FollowPath(paths.intake),
-                    RobotNF.robot.intakeClearingSpecial(1.5)
+                        followCancelable(paths.normalIntake, 4000),//new FollowPath(paths.intake),
+                        RobotNF.robot.intakeClearingSpecial(1.5)
                 ),
                 new FollowPath(paths.normalReturn, true),
                 //shooting balls

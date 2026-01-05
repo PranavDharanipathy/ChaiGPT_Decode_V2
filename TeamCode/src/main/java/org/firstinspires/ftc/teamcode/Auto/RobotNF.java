@@ -103,6 +103,18 @@ public class RobotNF extends SubsystemGroup {
         return new InstantCommand(() -> HoodNF.INSTANCE.setPosition(position));
     }
 
+    //intake
+
+    /// Intakes first and then outtakes
+    public final Command intakeClearingSpecial(double outtakeTime) {
+
+        return new SequentialGroup(
+
+                IntakeNF.INSTANCE.fullReverse(),
+                new Delay(outtakeTime),
+                IntakeNF.INSTANCE.intake()
+        );
+    }
 
     public final void end() {
         IntakeNF.INSTANCE.end();

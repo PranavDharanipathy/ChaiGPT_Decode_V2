@@ -7,7 +7,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
-public class SlingAutoPaths_CYCLE_RED_FAR {
+public class SlingAutoPaths_CYCLE_BLUE_FAR {
 
     public Pose startPose;
 
@@ -21,22 +21,22 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
     public PathChain normalIntake;
     public PathChain normalReturn;
 
-    public SlingAutoPaths_CYCLE_RED_FAR(Follower f) {
+    public SlingAutoPaths_CYCLE_BLUE_FAR(Follower f) {
 
-        startPose = new Pose(97, 9.5, 0);
+        startPose = new Pose(97, 9.5, Math.PI);
 
         setupForFirstIntake = f
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(97.000, 9.500), new Pose(151, 42))
+                        new BezierLine(new Pose(97.000, 9.500).mirror(), new Pose(151, 42).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
+                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(-90))
                 .build();
 
         firstIntake = f
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(151, 42), new Pose(151, 33))
+                        new BezierLine(new Pose(151, 42).mirror(), new Pose(151, 33).mirror())
                 )
                 .setNoDeceleration()
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
@@ -46,54 +46,54 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(150, 26),
-                                new Pose(125, 33),
-                                new Pose(97, 11)
+                                new Pose(150, 26).mirror(),
+                                new Pose(125, 33).mirror(),
+                                new Pose(97, 11).mirror()
                         )
                 )
                 .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.PI)
                 .build();
 
         curvedIntake1 = f
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(97, 11),
-                                new Pose(115, 36),
-                                new Pose(136, 26))
+                                new Pose(97, 11).mirror(),
+                                new Pose(115, 36).mirror(),
+                                new Pose(136, 26).mirror())
                 )
                 .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-65))
+                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(-65))
                 .build();
 
         curvedReturn1 = f
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(136, 26),
-                                new Pose(115, 36),
-                                new Pose(97, 11)
+                                new Pose(136, 26).mirror(),
+                                new Pose(115, 36).mirror(),
+                                new Pose(97, 11).mirror()
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(-65), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(-65), Math.PI)
                 .build();
 
         curvedIntake2 = f
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(97, 11), new Pose(135, 14)))
+                        new BezierLine(new Pose(97, 11).mirror(), new Pose(135, 14).mirror()))
                 .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-35))
+                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(-35))
                 .build();
 
         curvedReturn2 = f
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(135, 14),
-                                new Pose(115, 19),
-                                new Pose(97, 11)
+                                new Pose(135, 14).mirror(),
+                                new Pose(115, 19).mirror(),
+                                new Pose(97, 11).mirror()
                         )
                 )
                 .setHeadingInterpolation(
@@ -101,12 +101,12 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
                                         0.5,
-                                        HeadingInterpolator.linear(Math.toRadians(-35), Math.toRadians(0))
+                                        HeadingInterpolator.linear(Math.toRadians(-35), Math.PI)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.5,
                                         1,
-                                        HeadingInterpolator.constant(Math.toRadians(0))
+                                        HeadingInterpolator.constant(Math.PI)
                                 )
                         )
                 )
@@ -115,7 +115,7 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
         normalIntake = f
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(97, 11), new Pose(136, 10.5))
+                        new BezierLine(new Pose(97, 11).mirror(), new Pose(136, 10.5).mirror())
                 )
                 .setNoDeceleration()
                 .setHeadingInterpolation(
@@ -123,12 +123,12 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
                                         0.7,
-                                        HeadingInterpolator.constant(Math.toRadians(0))
+                                        HeadingInterpolator.constant(Math.PI)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.7,
                                         1,
-                                        HeadingInterpolator.linear(Math.toRadians(0), Math.toRadians(-20))
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(-20))
                                 )
                         )
                 )
@@ -137,9 +137,9 @@ public class SlingAutoPaths_CYCLE_RED_FAR {
         normalReturn = f
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(136, 10.5), new Pose(97, 11))
+                        new BezierLine(new Pose(136, 10.5).mirror(), new Pose(97, 11).mirror())
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setConstantHeadingInterpolation(Math.PI)
                 .build();
     }
 }
