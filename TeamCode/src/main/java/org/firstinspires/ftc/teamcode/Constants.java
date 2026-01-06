@@ -178,7 +178,7 @@ public class Constants {
             0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000155, 0.0, 0.00013, 0.9, 0.85, 4000
     };
 
-    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {625, 4000, 85, 2};
+    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 3.65};
 
     public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 25;
 
