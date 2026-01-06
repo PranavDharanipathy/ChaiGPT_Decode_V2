@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 import static org.apache.commons.math3.util.FastMath.abs;
 import static org.apache.commons.math3.util.FastMath.toDegrees;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import java.util.Objects;
 
-
+@Config
 public class Turret {
 
 /*
@@ -48,7 +49,7 @@ public class Turret {
         p = kp * error;
  */
 
-   public double currX, currY;
+   public static double currX, currY;
    double dX, dY;
    double desiredFieldAngleDeg;
 
