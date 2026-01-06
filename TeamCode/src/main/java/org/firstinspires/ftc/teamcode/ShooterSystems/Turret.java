@@ -5,15 +5,11 @@ import static org.apache.commons.math3.util.FastMath.toDegrees;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.bylazar.telemetry.TelemetryManager;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.Constants;
@@ -21,8 +17,6 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-
-import java.util.Objects;
 
 @Config
 public class Turret {
@@ -56,7 +50,7 @@ public class Turret {
    double currentRobotHeading;
 
    double turretTargetDegrees;
-   public double turretTargetTicks;
+   public double turnDegrees;
 
 
     PinpointLocalizer localizer;
@@ -77,6 +71,8 @@ public class Turret {
     double turretStartPos;
 
     Gamepad controller1 = new Gamepad();
+
+    double turretTargetTicks;
 
     public Turret( HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
         this.targetX = targetX;
@@ -188,7 +184,11 @@ public class Turret {
         turretTargetDegrees = desiredFieldAngleDeg - currentRobotHeading;
 
         //convert degrees to ticks
-        turretTargetTicks = (turretTargetDegrees * 73.5179487179) + Math.abs( turretStartPos);
+        turnDegrees = (turretTargetDegrees * 73.5179487179);
+
+        turretTargetTicks = 180-turnDegrees;
+
+
 
 
         //set turret to desired location
