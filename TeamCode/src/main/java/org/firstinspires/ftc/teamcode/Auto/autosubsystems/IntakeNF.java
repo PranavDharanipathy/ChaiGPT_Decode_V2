@@ -45,6 +45,10 @@ public class IntakeNF implements Subsystem {
         return new SetPower(intake, Constants.REVERSE_INTAKE_POWER);
     }
 
+    public Command fullReverse() {
+        return new SetPower(intake, -1);
+    }
+
     public void end() {
         intake.setPower(0);
     }
