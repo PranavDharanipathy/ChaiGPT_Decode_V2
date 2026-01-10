@@ -44,7 +44,7 @@ public class BlueFar12Paths {
                                     new Pose(64.195, 14.829),
                                     new Pose(59.049, 31.220),
                                     new Pose(43.902, 31.829),
-                                    new Pose(14.415, 31.707)
+                                    new Pose(19.415, 31.707)
                             )
                     )
                     .setTangentHeadingInterpolation()
@@ -77,18 +77,35 @@ public class BlueFar12Paths {
                     .setConstantHeadingInterpolation(Math.PI)
                     .build();
 
-            SecondIntake = follower
-                    .pathBuilder()
-                    .addPath(
+
+            SecondIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(62.634, 14.244),
-                                    new Pose(55.220, 68.488),
-                                    new Pose(42.390, 55.537),
-                                    new Pose(16.659, 55.488)
+                                    new Pose(63.610, 16.000),
+                                    new Pose(56.561, 34.268),
+                                    new Pose(64.390, 67.732),
+                                    new Pose(49.707, 59.634),
+                                    new Pose(15.220, 64.171),
+                                    new Pose(14.732, 49.488),
+                                    new Pose(15.244, 64.561),
+                                    new Pose(8.390, 67.293)
+                            )
+                    ).setTangentHeadingInterpolation()
+
+                    .build();
+
+            /*SecondIntake = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    new Pose(63.610, 16.000),
+                                    new Pose(56.561, 34.268),
+                                    new Pose(64.390, 67.732),
+                                    new Pose(49.707, 59.634),
+                                    new Pose(19.390, 59.805)
                             )
                     )
                     .setTangentHeadingInterpolation()
-                    .build();
+
+                    .build();*/
+
 
             SecondReturn = follower
                     .pathBuilder()
