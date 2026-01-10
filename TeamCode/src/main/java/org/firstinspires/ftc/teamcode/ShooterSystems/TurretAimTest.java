@@ -71,9 +71,28 @@ public class TurretAimTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
+
+
             turret.update();
             robotCentricDrive.update();
             flywheel.update();
+
+            telemetry.addData("p: ", turret.p);
+            telemetry.addData("i: ", turret.i);
+            telemetry.addData("d: ", turret.d);
+            telemetry.addData("Turret Current Pos: ", turret.turretCurrPosTicks);
+
+            telemetry.addData("currX", turret.currX);
+            telemetry.addData("currY", turret.currY);
+            telemetry.addData("dX", turret.dX);
+            telemetry.addData("dY", turret.dY);
+
+            telemetry.addData("turn ticks", turret.turnticks);
+
+            telemetry.addData("bot pose", turret.currentPose);
+
+
+            telemetry.update();
 
         }
 
