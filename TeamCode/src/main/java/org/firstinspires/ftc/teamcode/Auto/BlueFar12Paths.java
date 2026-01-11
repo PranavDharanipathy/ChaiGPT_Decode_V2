@@ -87,7 +87,7 @@ public class BlueFar12Paths {
                                     new Pose(15.220, 64.171),
                                     new Pose(14.732, 49.488),
                                     new Pose(15.244, 64.561),
-                                    new Pose(8.390, 67.293)
+                                    new Pose(8.390, 67.29676767676767676767676767676767)
                             )
                     ).setTangentHeadingInterpolation()
 
