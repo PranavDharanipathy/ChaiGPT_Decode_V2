@@ -113,6 +113,8 @@ public class Turret {
 
     private double startTime = 0;
 
+
+
     public double getElapsed() {
         return (System.nanoTime() * 1e-9) - startTime;
     }
@@ -195,7 +197,7 @@ public class Turret {
         dt = currTime - prevTime;
         prevTime = currTime;
 
-   //     if (dt == 0) return;
+        if (dt == 0) return;
 
         prevError = error;
         error = turnticks - encoder.getCurrentPosition();
