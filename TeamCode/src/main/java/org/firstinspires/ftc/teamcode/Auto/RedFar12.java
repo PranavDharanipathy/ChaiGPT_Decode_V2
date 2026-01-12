@@ -37,7 +37,7 @@ public class RedFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {8800, 7750, 8650, 8750, 8600, 7000};
+    public static double[] TURRET_POSITIONS = {-8800, -7750, -8650, -8750, -8600, -7000};
 
 
     private RedFar12Paths paths;
