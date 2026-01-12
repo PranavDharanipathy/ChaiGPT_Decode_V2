@@ -32,21 +32,45 @@ public class NewTurret {
 
     private double kp, ki, kd;
 
-    private double p, i, d;
-        double currTime, prevTime, startTime, dT;
+    private double p = 0, i = 0, d = 0;
+        double currTime = 0, prevTime = 0, startTime = 0, dT = 0;
 
-        double i_MIN, i_MAX;
+        double i_MIN = 0, i_MAX = 0;
 
 
     double currError = 0, prevError = 0;
 
-    double errorRate = (currError-prevError) / dT;
+    double errorRate = 0;
 
     public boolean firstTick = true;
     ElapsedTime timer = new ElapsedTime();
 
+    DcMotorEx right_back;
 
-    public NewTurret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY, DcMotorEx right_back) {
+    double RobotHeading ;
+
+    double currX ;
+    double currY ;
+
+    double dX;
+    double dY;
+
+    double FieldAngle;
+
+    double turretCurrPos;
+    double robotTurn;
+    double turretOffset;
+
+    double turretTurnDegrees ;
+
+    double turnTicks ;
+
+    double power;
+
+
+    public NewTurret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
+
+        right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_turret = hardwareMap.get(CRServoImplEx.class, "left_turret_base");
         right_turret = hardwareMap.get(CRServoImplEx.class, "right_turret_base");
 
@@ -68,7 +92,7 @@ public class NewTurret {
 
     }
 
-    public void setPID() {
+    public void setPID(double kp, double ki, double kd) {
         this.kp = kp;
         this.kd = kd;
         this.ki = ki;
@@ -83,6 +107,8 @@ public class NewTurret {
 
     public void updatePID() {
 
+         errorRate = (currError-prevError) / dT;
+
         p = kp * currError;
 
         prevTime = currTime;
@@ -91,16 +117,18 @@ public class NewTurret {
 
         prevError = currError;
 
-        currError =
+        currError = turretCurrPos - turnTicks;
 
         i = MathUtil.clamp(ki, i_MIN, i_MAX);
 
         if (dT > 0) {
-            d = kd * errorRate
+            d = kd * errorRate;
         }
 
+        power = p + i + d;
 
-
+        left_turret.setPower(power);
+        right_turret.setPower(power);
 
 
 
@@ -114,23 +142,25 @@ public class NewTurret {
 
         currentPose = localizer.getPose();
 
-        double RobotHeading = currentPose.heading.toDouble();
+        RobotHeading = currentPose.heading.toDouble();
 
-        double currX = currentPose.position.x;
-        double currY = currentPose.position.y;
+        currX = currentPose.position.x;
+        currY = currentPose.position.y;
 
-        double dX = currX - targetX;
-        double dY = currY - targetY;
+        dX = currX - targetX;
+        dY = currY - targetY;
 
-        double FieldAngle = FastMath.atan2(dY, dX);
+        FieldAngle = FastMath.atan2(dY, dX);
 
-        double turretCurrPos = encoder.getCurrentPosition();
-        double robotTurn = FastMath.abs(FieldAngle - RobotHeading);
-        double turretOffset = encoder.getCurrentPosition();
+        turretCurrPos = encoder.getCurrentPosition();
+        robotTurn = FastMath.abs(FieldAngle - RobotHeading);
+        turretOffset = encoder.getCurrentPosition();
 
-        double turretTurnDegrees = (180- robotTurn) - turretOffset;
+        turretTurnDegrees = (180- robotTurn) - turretOffset;
 
-        double turnTicks = toTicks(turretTurnDegrees);
+        turnTicks = toTicks(turretTurnDegrees);
+
+        updatePID();
 
 
     }
