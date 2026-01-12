@@ -35,6 +35,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class RedFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
+    //page 123 of IEEE Std  2016 revision
     public Follower follower; // Pedro Pathing follower instance
 
     public static double[] TURRET_POSITIONS = {-8800, -7750, -8650, -8750, -8600, -7000};
