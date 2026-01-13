@@ -82,20 +82,26 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getRealVelocity());
             telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
-            telemetry.addData("p", shooter.flywheel.p);
-            telemetry.addData("i", shooter.flywheel.i);
-            telemetry.addData("d", shooter.flywheel.d);
-            telemetry.addData("v", shooter.flywheel.v);
-            telemetry.addData("power", shooter.flywheel.getMotorPowers()[0]);
-
             telemetry.addData("turret position error", shooter.turret.getRawPositionError());
 
             telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
-
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
 
             telemetry.addData("Lift Engaged", intake.getLiftEngaged());
             telemetry.addData("Lift Position", intake.getLiftPosition());
+
+            telemetry.addData("f p", shooter.flywheel.p);
+            telemetry.addData("f i", shooter.flywheel.i);
+            telemetry.addData("f d", shooter.flywheel.d);
+            telemetry.addData("f v", shooter.flywheel.v);
+            telemetry.addData("flywheel power", shooter.flywheel.getMotorPowers()[0]);
+
+            telemetry.addData("t p", shooter.turret.p);
+            telemetry.addData("t i", shooter.turret.i);
+            telemetry.addData("t d", shooter.turret.d);
+            telemetry.addData("t f", shooter.turret.f);
+            telemetry.addData("turret dActivation", shooter.turret.dActivation);
+            telemetry.addData("turret power", shooter.turret.getServoPowers()[0]);
             telemetry.update();
 
         }

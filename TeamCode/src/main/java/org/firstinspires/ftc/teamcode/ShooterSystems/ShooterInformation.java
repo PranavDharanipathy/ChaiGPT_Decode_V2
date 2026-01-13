@@ -6,7 +6,7 @@ import com.chaigptrobotics.systems.DeprecatedSystem;
 
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public strictfp class ShooterInformation {
@@ -81,16 +81,14 @@ public strictfp class ShooterInformation {
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
 
-        /// Amount of ticks that the turret must go past the target position for the feedforward to be dampened.
-        public static double TURRET_HOLD_OVERRIDE_ERROR = 40;
-        /// Amount of ticks that the turret must go past the target position for the feedforward to be flipped.
-        public static double TURRET_FEEDFORWARD_FLIP_ERROR = 350;
+        public static List<Double> TURRET_DERIVATIVE_POSITION_GAPS = new ArrayList<>(List.of(0.0,  2000.0, 4000.0,  5000.0, 6000.0, 7000.0, 8000.0, 9000.0, 10000.0,  11000.0, 12000.0, 13000.0));
+        public static List<Double> TURRET_KDS_LEFT =                 new ArrayList<>(List.of(0.01, 0.0045, 0.005,   0.0085, 0.0075,  0.01,  0.01,   0.01,     0.01,    0.013,   0.014,   0.02));
+        public static List<Double> TURRET_KDS_RIGHT =                new ArrayList<>(List.of(0.01, 0.0045, 0.01185,  0.01,   0.01,   0.01,  0.01,   0.008,    0.008,  0.00785,  0.007,   0.007));
 
-        public static List<Double> TURRET_FEEDFORWARD_TARGET_POSITIONS = Arrays.asList(-11000.0,  -10000.0,    -9000.0,  -8000.0,   -7000.0,  -6000.0,    -5000.0,    -4000.0,  -3000.0,   -2000.0,    -1000.0,     0.0,     1000.0,    2000.0,    3000.0,    4000.0,    5000.0,    6000.0,     7000.0,    8000.0,   9000.0,   10000.0,    11000.0);
-        public static List<Double> TURRET_KFS =                          Arrays.asList(0.000024,  0.000027,   0.000023,  0.00002,   0.00002,  0.000025,  0.000028,    0.000029,  0.000031,  0.000036,  0.000034,  0.000042,  0.00015,   0.00018,  0.000035,  0.000035,  0.000041,  0.0000385,  0.000035, 0.000033, 0.000027, 0.0000275,   0.0005);
-        public static List<Double> TURRET_KF_VOLTAGES =                  Arrays.asList(  13.58,    13.31,      13.27,     12.98,     12.98,    13.07,      13.08,      12.92,     12.92,     13.00,      12.99,     12.5,     12.87,     12.80,     12.81,     12.76,     12.75,     12.67,      12.31,     12.5,    12.52,     12.51,     12.48);
+        public static List<Double> TURRET_TARGET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0, -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,   -1000.0,    -200.0,     200.0,    500.0,    1000.0,   2000.0,    3000.0,    4000.0,     5000.0,   6000.0,   7000.0,  8000.0,    9000.0,   10000.0,   11000.0,  12000.0,  12500.0));
+        public static List<Double> TURRET_KFS =                          new ArrayList<>(List.of(0.000003, 0.000003, 0.000002, 0.000001, 0.0000011, 0.0000023, 0.00000135, 0.00000155, 0.0000013, 0.0000012, 0.0000005, 0.0000009, 0.0000012,  0.0000011, 0.0000011, 0.00001,  0.0000041, 0.000006,  0.000006, 0.0000065, 0.0000055, 0.000005, 0.000005, 0.000005, 0.000007, 0.0000027, 0.0000024, 0.000002, 0.0000033));
 
-        public static double TURRET_VOLTAGE_SCALING_DEADBAND = 0.01;
+        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2050;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 50;
 

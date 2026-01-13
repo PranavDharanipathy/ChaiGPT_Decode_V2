@@ -126,30 +126,33 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
                 IntakeNF.INSTANCE.reverse(),
-                new ParallelGroup(
-                        followCancelable(paths.curvedIntake2, 4000), //new FollowPath(paths.intake),
-                        RobotNF.robot.intakeClearingSpecial(1.5)
-                ),
+//                new ParallelGroup(
+//                        followCancelable(paths.curvedIntake2, 4000), //new FollowPath(paths.intake),
+//                        RobotNF.robot.intakeClearingSpecial(1.5)
+//                ),
+                followCancelable(paths.curvedIntake2, 4000),
                 new FollowPath(paths.curvedReturn2, true),
                 //shooting balls
                 RobotNF.robot.shootBalls(0.4,0.3),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
-                new ParallelGroup(
-                    followCancelable(paths.curvedIntake2, 4000),//new FollowPath(paths.intake),
-                    RobotNF.robot.intakeClearingSpecial(1.5)
-                ),
+//                new ParallelGroup(
+//                    followCancelable(paths.curvedIntake2, 4000),//new FollowPath(paths.intake),
+//                    RobotNF.robot.intakeClearingSpecial(1.5)
+//                ),
+                followCancelable(paths.curvedIntake2, 4000),
                 new FollowPath(paths.curvedReturn2, true),
                 //shooting balls
                 RobotNF.robot.shootBalls(0.4,0.3),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[4]),
-                new ParallelGroup(
-                    followCancelable(paths.normalIntake, 4000),//new FollowPath(paths.intake),
-                    RobotNF.robot.intakeClearingSpecial(1.5)
-                ),
+//                new ParallelGroup(
+//                    followCancelable(paths.normalIntake, 4000),//new FollowPath(paths.intake),
+//                    RobotNF.robot.intakeClearingSpecial(1.5)
+//                ),
+                followCancelable(paths.normalIntake, 4000),
                 new FollowPath(paths.normalReturn, true),
                 //shooting balls
                 RobotNF.robot.shootBalls(0.4,0.3)

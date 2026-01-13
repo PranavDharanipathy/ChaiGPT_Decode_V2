@@ -105,22 +105,7 @@ public abstract class AutonomousBaseOpMode extends LinearOpMode {
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
         flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
 
-        turret.setPIDFSCoefficients(
-                Constants.TURRET_PIDFS_COEFFICIENTS[0],
-                Constants.TURRET_PIDFS_COEFFICIENTS[1],
-                Constants.TURRET_PIDFS_COEFFICIENTS[2],
-                Constants.TURRET_PIDFS_COEFFICIENTS[3],
-                Constants.TURRET_PIDFS_COEFFICIENTS[4],
-                Constants.TURRET_PIDFS_COEFFICIENTS[5],
-                Constants.TURRET_PIDFS_COEFFICIENTS[6],
-                Constants.TURRET_PIDFS_COEFFICIENTS[7],
-                Constants.TURRET_PIDFS_COEFFICIENTS[8],
-                Constants.TURRET_PIDFS_COEFFICIENTS[9],
-                Constants.TURRET_PIDFS_COEFFICIENTS[10],
-                Constants.TURRET_PIDFS_COEFFICIENTS[11],
-                Constants.TURRET_PIDFS_COEFFICIENTS[12]
-        );
-        turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
+        turret.setPIDFSCoefficients(Constants.TURRET_PIDFS_COEFFICIENTS);
         turret.reverse();
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
