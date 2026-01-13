@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBasePIDFSCoefficients;
 import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
 
 @Config
@@ -175,7 +176,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000155, 0.0, 0.00013, 0.9, 0.85, 4000
+            0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000146, 0.0, 0.00013, 0.9, 0.85, 4000
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 3.65};
@@ -196,10 +197,24 @@ public class Constants {
     public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
 
     //turret
-    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.0000155, 0.000000002, 0.00000065, 0.0002, null, 0.01, 0.85, 2000.0, 0.9, 0.97, -1750.0, 0.75, 0.03};
-
-    public static double TURRET_MIN_INTEGRAL_LIMIT = -0.4;
-    public static double TURRET_MAX_INTEGRAL_LIMIT = 0.4;
+//    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0};
+    //public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000045, 0.00000002, 0.002, 0.000001, 0.014, 0.5, 0.95, 0.99, -6000.0};
+    public static TurretBasePIDFSCoefficients TURRET_PIDFS_COEFFICIENTS = new TurretBasePIDFSCoefficients(
+            new double[] {0.000071, 0.000071},
+            new double[] {0.0000000075, 0.0000000075},
+            new double[] {0.00000015, 0.00000015},
+            0.01,
+            null,
+            0.03,
+            new double[] {2000, 2000},
+            new double[] {0, 0},
+            new double[] {670, 670},
+            new double[] {0.85, 0.85},
+            0.99,
+            3,
+            -0.4,
+            0.4
+    );
 
     //lift
     public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1.1, 0.1, 0.85, 0.9, 195.0};
