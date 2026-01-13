@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
@@ -21,27 +22,26 @@ public class RedFar12Paths {
 
     public PathChain ThirdReturn;
 
-    public PathChain Preload;
+    public PathChain preload;
 
     public RedFar12Paths(Follower follower) {
 
-            /* preload = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(64.976, 8.195),
-                                    new Pose(64.976, 16.585),
-                                    new Pose(59.317, 18.927)
-                            )
-                    )
-                    .setTangentHeadingInterpolation()
-                    .build();*/
+        preload = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(64, 9.5).mirror(),
+                                new Pose(64, 14.829).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(0)
+                .build();
 
         FirstIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(64.195, 14.829).mirror(),
+                                new Pose(64, 14.829).mirror(),
                                 new Pose(59.049, 31.220).mirror(),
                                 new Pose(43.902, 31.829).mirror(),
                                 new Pose(19.415, 31.707).mirror()
@@ -74,37 +74,27 @@ public class RedFar12Paths {
                                 new Pose(63.992, 15.622).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.PI)
+                .setConstantHeadingInterpolation(0)
                 .build();
 
 
-        SecondIntake = follower.pathBuilder().addPath(
+
+        SecondIntake = follower.pathBuilder()
+                .addPath(
                         new BezierCurve(
                                 new Pose(63.610, 16.000).mirror(),
-                                new Pose(56.561, 34.268).mirror(),
-                                new Pose(64.390, 67.732).mirror(),
-                                new Pose(49.707, 59.634).mirror(),
-                                new Pose(15.220, 64.171).mirror(),
-                                new Pose(14.732, 49.488).mirror(),
-                                new Pose(15.244, 64.561).mirror(),
-                                new Pose(8.390, 67.293).mirror()
+                                //new Pose(56.561, 34.268),
+                                new Pose(54.390, 36.732).mirror(),
+                                //new Pose(49.707, 54.634),
+                                new Pose(47, 46).mirror(),
+                                new Pose(38.732, 51.488).mirror(), //y = 49
+                                new Pose(25.244, 51.561).mirror(),
+                                new Pose(13.390, 65.00000).mirror()
                         )
-                ).setTangentHeadingInterpolation()
-
+                )
+                .setTangentHeadingInterpolation()
+                .setNoDeceleration()
                 .build();
-
-            /*SecondIntake = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(63.610, 16.000),
-                                    new Pose(56.561, 34.268),
-                                    new Pose(64.390, 67.732),
-                                    new Pose(49.707, 59.634),
-                                    new Pose(19.390, 59.805)
-                            )
-                    )
-                    .setTangentHeadingInterpolation()
-
-                    .build();*/
 
 
         SecondReturn = follower
@@ -116,7 +106,7 @@ public class RedFar12Paths {
                                 new Pose(67.154, 11.924).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.PI)
+                .setConstantHeadingInterpolation(0)
                 .build();
 
         IntakeExtra = follower

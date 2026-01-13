@@ -4,7 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
 
@@ -21,33 +23,33 @@ public class BlueFar12Paths {
 
         public PathChain ThirdReturn;
 
-        public PathChain Preload;
+        public PathChain preload;
 
         public BlueFar12Paths(Follower follower) {
 
-            /* preload = follower
+             preload = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierCurve(
-                                    new Pose(64.976, 8.195),
-                                    new Pose(64.976, 16.585),
-                                    new Pose(59.317, 18.927)
+                            new BezierLine(
+                                    new Pose(64, 9.5),
+                                    new Pose(64, 14.829)
                             )
                     )
-                    .setTangentHeadingInterpolation()
-                    .build();*/
+                    .setConstantHeadingInterpolation(Math.PI)
+                    .build();
 
             FirstIntake = follower
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(64.195, 14.829),
-                                    new Pose(59.049, 31.220),
-                                    new Pose(43.902, 31.829),
-                                    new Pose(19.415, 31.707)
+                                    new Pose(64, 14.829),
+                                    new Pose(62, 18),
+                                    new Pose(59.049, 28.220),
+                                    new Pose(47.902, 36.829),
+                                    new Pose(19.415, 36.707)
                             )
                     )
-                    .setTangentHeadingInterpolation()
+                    .setConstantHeadingInterpolation(Math.PI)
                     .build();
 
 
@@ -78,33 +80,35 @@ public class BlueFar12Paths {
                     .build();
 
 
-            SecondIntake = follower.pathBuilder().addPath(
+            SecondIntake = follower.pathBuilder()
+                    .addPath(
                             new BezierCurve(
                                     new Pose(63.610, 16.000),
-                                    new Pose(56.561, 34.268),
-                                    new Pose(64.390, 67.732),
-                                    new Pose(49.707, 59.634),
-                                    new Pose(15.220, 64.171),
-                                    new Pose(14.732, 49.488),
-                                    new Pose(15.244, 64.561),
-                                    new Pose(8.390, 67.29676767676767676767676767676767)
-                            )
-                    ).setTangentHeadingInterpolation()
-
-                    .build();
-
-            /*SecondIntake = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(63.610, 16.000),
-                                    new Pose(56.561, 34.268),
-                                    new Pose(64.390, 67.732),
-                                    new Pose(49.707, 59.634),
-                                    new Pose(19.390, 59.805)
+                                    //new Pose(56.561, 34.268),
+                                    new Pose(54.390, 36.732),
+                                    //new Pose(49.707, 54.634),
+                                    new Pose(47, 55),
+                                    new Pose(38.732, 57.488), //y = 49
+                                    new Pose(25.244, 59.561),
+                                    new Pose(13.390, 60.00000)
                             )
                     )
-                    .setTangentHeadingInterpolation()
-
-                    .build();*/
+                    //.setConstantHeadingInterpolation(Math.PI)
+                    .setHeadingInterpolation(
+                            HeadingInterpolator.piecewise(
+                                    new HeadingInterpolator.PiecewiseNode(
+                                            0,
+                                            0.65,
+                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(110))
+                                    ),
+                                    new HeadingInterpolator.PiecewiseNode(
+                                            0.65,
+                                            1,
+                                            HeadingInterpolator.constant(Math.PI)
+                                    )
+                            )
+                    )
+                    .build();
 
 
             SecondReturn = follower

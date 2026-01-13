@@ -35,10 +35,9 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class RedFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
-    //page 123 of IEEE Std  2016 revision
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8800, -7750, -8650, -8750, -8600, -7000};
+    public static double[] TURRET_POSITIONS = {-8800, -8850, -8750, -8750, -8600, -7000};
 
 
     private RedFar12Paths paths;
@@ -61,11 +60,11 @@ public class RedFar12 extends NextFTCOpMode {
 
     public void onInit() {
 
-        telemetry = FtcDashboard.getInstance().getTelemetry();
+        telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
         follower = PPConstants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(64, 14.5, Math.toRadians(180)).mirror());
+        follower.setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
 
         paths = new RedFar12Paths(PedroComponent.follower());
     }
@@ -74,19 +73,21 @@ public class RedFar12 extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
 
-        telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
-        telemetry.update();
-
-
-
         //setup
-        FlywheelNF.INSTANCE.flywheel.setVelocity(436_000, true);
+        FlywheelNF.INSTANCE.flywheel.setVelocity(451_000, true);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(0.112);
-        TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
+        TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0] + TurretNF.INSTANCE.turret.startPosition);
 
         auto().schedule();
 
+    }
+
+    @Override
+    public void onUpdate() {
+        telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
+
+        telemetry.update();
     }
 
 
@@ -97,41 +98,39 @@ public class RedFar12 extends NextFTCOpMode {
                 //shooting preloads(Turret position is already set)
 
 
-                //new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                //preload shooting
 
-                //RobotNF.robot.shootBalls(0.4,0.3),
-
+                RobotNF.robot.shootBalls(0.4,0.3),
+                new FollowPath(paths.preload, true),
+                new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
                 //intaking balls already set at the the human player zone
                 //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
-                followCancelable(paths.FirstIntake, 7000), //new FollowPath(paths.firstIntake),
+
                 new FollowPath(paths.FirstIntake),
 
 
                 new FollowPath(paths.FirstReturn),
                 followCancelable(paths.FirstReturn, 7000),
 
-                //intaking balls at the human player zone
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
+                //intaking balls at the human  followCancelable(paths.FirstIntake, 7000), //new FollowPath(paths.firstInplayer zone
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1] + TurretNF.INSTANCE.turret.startPosition),
                 followCancelable(paths.FirstReturn, 6000),//new FollowPath(paths.intake),
                 new FollowPath(paths.FirstReturn, true),
                 //shooting balls
-                //RobotNF.robot.shootBalls(0.4,0.3, 1, paths.FirstReturn),
+                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.FirstReturn),
 
                 //intaking balls at the human player zone
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]+ TurretNF.INSTANCE.turret.startPosition),
                 followCancelable(paths.SecondIntake, 6000),//new FollowPath(paths.intake),
                 new FollowPath(paths.SecondIntake, false),
 
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[5]),
                 followCancelable(paths.SecondReturn, 6000),
                 new FollowPath(paths.SecondReturn, true),
 
                 //second intake shooting balls
-                //RobotNF.robot.shootBalls(0.4,0.3, 1, paths.SecondIntake),
+                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.SecondIntake),
 
 
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[4]),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]+ TurretNF.INSTANCE.turret.startPosition),
                 followCancelable(paths.IntakeExtra, 6000),
                 new FollowPath(paths.IntakeExtra),
 
@@ -140,9 +139,9 @@ public class RedFar12 extends NextFTCOpMode {
 
                 //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[5]),
                 followCancelable(paths.ThirdReturn, 6000),
-                new FollowPath(paths.ThirdReturn)
+                new FollowPath(paths.ThirdReturn),
 
-                //RobotNF.robot.shootBalls(0.4, 0.3, 1, paths.ThirdReturn)
+                RobotNF.robot.shootBalls(0.4, 0.3, 1, paths.ThirdReturn)
         );
     }
 
