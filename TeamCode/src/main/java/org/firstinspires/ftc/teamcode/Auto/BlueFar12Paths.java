@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import static java.lang.Math.log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -9,12 +11,16 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Configurable // Panels
 @Config
 public class BlueFar12Paths {
 
-        public PathChain FirstIntake;
+    private static final Logger log = LoggerFactory.getLogger(BlueFar12Paths.class);
+    public PathChain FirstIntake;
         public PathChain FirstReturn;
         public PathChain SecondIntake;
         public PathChain OpenGate;
@@ -87,10 +93,10 @@ public class BlueFar12Paths {
                                     //new Pose(56.561, 34.268),
                                     new Pose(54.390, 36.732),
                                     //new Pose(49.707, 54.634),
-                                    new Pose(47, 55),
-                                    new Pose(38.732, 57.488), //y = 49
-                                    new Pose(25.244, 59.561),
-                                    new Pose(13.390, 60.00000)
+                                    new Pose(47, 48),
+                                    new Pose(38.732, 57), //y = 49
+                                    new Pose(25.244, 57),
+                                    new Pose(13.390, 57)
                             )
                     )
                     //.setConstantHeadingInterpolation(Math.PI)
@@ -98,18 +104,22 @@ public class BlueFar12Paths {
                             HeadingInterpolator.piecewise(
                                     new HeadingInterpolator.PiecewiseNode(
                                             0,
-                                            0.65,
-                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(110))
+                                            0.37,
+                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(125))
                                     ),
                                     new HeadingInterpolator.PiecewiseNode(
-                                            0.65,
-                                            1,
+                                            0.37,
+                                            0.87,
                                             HeadingInterpolator.constant(Math.PI)
+                                    ),
+                                    new HeadingInterpolator.PiecewiseNode(
+                                            0.87,
+                                            1,
+                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
                                     )
                             )
                     )
                     .build();
-
 
             SecondReturn = follower
                     .pathBuilder()
@@ -127,12 +137,13 @@ public class BlueFar12Paths {
                     .pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(12.463, 68.847),
-                                    new Pose(3.162, 39.270),
-                                    new Pose(3.436, 0.390)
+                                    new Pose(67.463, 11.924),
+                                    new Pose(8.436, 11.924)
                             )
                     )
                     .setTangentHeadingInterpolation()
+
+                    .setGlobalDeceleration()
                     .build();
 
             ThirdReturn = follower
