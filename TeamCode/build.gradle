@@ -12,23 +12,8 @@
 // Custom definitions may go here
 
 // Include common definitions from above.
-
-//Sloth addition 11/27/25
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://repo.dairy.foundation/releases"
-        }
-    }
-    dependencies {
-        classpath "dev.frozenmilk:Load:0.2.4"
-    }
-}
-
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
-apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -44,13 +29,6 @@ repositories {
     }
 }
 
-//Sloth addition 11/27/25
-repositories {
-    maven {
-        url = "https://repo.dairy.foundation/releases"
-    }
-}
-
 dependencies {
 
     implementation project(':FtcRobotController')
@@ -60,17 +38,7 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:ftc:0.1.25"
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
-    implementation ("com.acmerobotics.dashboard:dashboard:0.5.0") {
-
-
-        exclude group: "com.acmerobotics.dashboard"
-
-    }
-
-
-    //Sloth addition 11/27/25
-    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
-    implementation("com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17")
+    implementation "com.acmerobotics.dashboard:dashboard:0.5.0"
 
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'org.ftclib.ftclib:core:2.1.1'
