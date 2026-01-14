@@ -76,7 +76,7 @@ public class BlueFar12 extends NextFTCOpMode {
         //setup
         FlywheelNF.INSTANCE.flywheel.setVelocity(448_000, true);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
-        HoodNF.INSTANCE.hood.setPosition(0.112);
+        HoodNF.INSTANCE.hood.setPosition(0.13);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
 
         auto().schedule();
