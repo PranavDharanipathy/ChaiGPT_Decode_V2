@@ -48,7 +48,7 @@ public class RedFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(64, 14.829).mirror(),
+                                new Pose(64, 9.5).mirror(), //y=14.829
                                 new Pose(62, 18).mirror(),
                                 new Pose(59.049, 28.220).mirror(),
                                 new Pose(47.902, 36.829).mirror(),
@@ -94,9 +94,10 @@ public class RedFar12Paths {
                                 new Pose(54.390, 36.732).mirror(),
                                 //new Pose(49.707, 54.634),
                                 new Pose(47, 48).mirror(),
-                                new Pose(38.732, 57).mirror(), //y = 49
-                                new Pose(25.244, 57).mirror(),
-                                new Pose(13.390, 57).mirror()
+                                new Pose(38.732, 50).mirror(), //y = 49
+                                new Pose(25.244, 50).mirror(),
+                                new Pose(13.390, 50).mirror(),
+                                new Pose(13, 51).mirror()
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -104,19 +105,20 @@ public class RedFar12Paths {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.37,
-                                        HeadingInterpolator.linear(0, Math.toRadians(64))
+                                        0.24,
+                                        HeadingInterpolator.linear(0, Math.toRadians(52))
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.37,
-                                        0.87,
-                                        HeadingInterpolator.constant(0)
-                                ),
-                                new HeadingInterpolator.PiecewiseNode(
-                                        0.87,
+                                        0.24,
+                                        1,
+                                        HeadingInterpolator.constant(Math.toRadians(25))
+                                )
+                               /* new HeadingInterpolator.PiecewiseNode(
+                                        0.65,
                                         1,
                                         HeadingInterpolator.linear(0, Math.toRadians(68))
-                                )
+
+                                _*/
                         )
                 )
                 .build();
@@ -125,12 +127,12 @@ public class RedFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(12.463, 68.847).mirror(),
-                                new Pose(54.876, 45.408).mirror(),
+                                new Pose(17.463, 51.847).mirror(),
+                                new Pose(54.876, 35.408).mirror(),
                                 new Pose(67.154, 11.924).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(0)
+                .setLinearHeadingInterpolation(Math.toRadians(25), 0)
                 .build();
 
         IntakeExtra = follower
@@ -139,10 +141,10 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(67.463, 11.924).mirror(),
                                 new Pose(32, 11.924).mirror(),
-                                new Pose(8.436, 11.924).mirror()
+                                new Pose(15.436, 11.924).mirror()
                         )
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(0)
 
                 .setGlobalDeceleration()
                 .build();

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -37,7 +38,7 @@ public class RedFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8800, -8850, -8750, -8750, -8600, -7000};
+    public static double[] TURRET_POSITIONS = {-9100, -9150, -9150, -9150, -8600, -7000};
 
 
     private RedFar12Paths paths;
@@ -74,9 +75,9 @@ public class RedFar12 extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         //setup
-        FlywheelNF.INSTANCE.flywheel.setVelocity(451_000, true);
+        FlywheelNF.INSTANCE.flywheel.setVelocity(453_000, true);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
-        HoodNF.INSTANCE.hood.setPosition(0.112);
+        HoodNF.INSTANCE.hood.setPosition(0.132);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0] + TurretNF.INSTANCE.turret.startPosition);
 
         auto().schedule();
@@ -86,7 +87,7 @@ public class RedFar12 extends NextFTCOpMode {
     @Override
     public void onUpdate() {
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
-
+        telemetry.addData("turret pos: ", TurretNF.INSTANCE.turret.getCurrentPosition());
         telemetry.update();
     }
 
@@ -99,11 +100,11 @@ public class RedFar12 extends NextFTCOpMode {
 
 
 
-                RobotNF.robot.shootBalls(0.4,0.3),
-                new FollowPath(paths.preload, true),
+
+                //new FollowPath(paths.preload, true),
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                //intaking balls already set at the the human player zone
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
+                RobotNF.robot.shootBalls(0.4,0.3),
+
 
                 new FollowPath(paths.FirstIntake),
 
@@ -121,7 +122,7 @@ public class RedFar12 extends NextFTCOpMode {
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]+ TurretNF.INSTANCE.turret.startPosition),
                 followCancelable(paths.SecondIntake, 6000),//new FollowPath(paths.intake),
-                new FollowPath(paths.SecondIntake, false),
+                new FollowPath(paths.SecondIntake, true),
 
                 followCancelable(paths.SecondReturn, 6000),
                 new FollowPath(paths.SecondReturn, true),

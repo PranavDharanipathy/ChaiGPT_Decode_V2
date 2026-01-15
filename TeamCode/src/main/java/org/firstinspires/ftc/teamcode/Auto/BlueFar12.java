@@ -100,7 +100,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
 
-                new FollowPath(paths.preload, true),
+                //new FollowPath(paths.preload, true),
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
                 //preload shooting
 
