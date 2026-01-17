@@ -37,7 +37,7 @@ public class BlueFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {8650, 8550, 8650, 8750, 8600, 7000};
+    public static double[] TURRET_POSITIONS = {8450, 8550, 8650, 8350, 8600, 7000};
 
 
     private BlueFar12Paths paths;
@@ -74,9 +74,9 @@ public class BlueFar12 extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         //setup
-        FlywheelNF.INSTANCE.flywheel.setVelocity(448_000, true);
+        FlywheelNF.INSTANCE.flywheel.setVelocity(451_000, true);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
-        HoodNF.INSTANCE.hood.setPosition(0.13);
+        HoodNF.INSTANCE.hood.setPosition(0.32);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
 
         auto().schedule();
@@ -104,7 +104,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
                 //preload shooting
 
-                RobotNF.robot.shootBalls(0.4,0.3),
+                RobotNF.robot.shootBalls(0.3,0.3),
 
                 //intaking balls already set at the the human player zone
                 //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
@@ -120,7 +120,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 followCancelable(paths.FirstReturn, 6000),//new FollowPath(paths.intake),
                 new FollowPath(paths.FirstReturn, true),
                 //shooting balls
-                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.FirstReturn),
+                RobotNF.robot.shootBalls(0.3,0.3, 1, paths.FirstReturn),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
@@ -131,7 +131,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 new FollowPath(paths.SecondReturn, true),
 
                 //second intake shooting balls
-                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.SecondIntake),
+                RobotNF.robot.shootBalls(0.3,0.3, 1, paths.SecondIntake),
 
 
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
@@ -142,7 +142,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 followCancelable(paths.ThirdReturn, 6000),
                 new FollowPath(paths.ThirdReturn),
 
-                RobotNF.robot.shootBalls(0.4, 0.3, 1, paths.ThirdReturn)
+                RobotNF.robot.shootBalls(0.3, 0.3, 1, paths.ThirdReturn)
         );
     }
 
