@@ -176,10 +176,10 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000146, 0.0, 0.00013, 0.9, 0.85, 4000
+            0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000141/*0.00000146*/, 0.0, 0.00013, 0.9, 0.85, 10_000
     };
 
-    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 3.65};
+    public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 5 /*3.65*/};
 
     public static int FLYWHEEL_PIDFVAS_LOOP_TIME = 25;
 
@@ -197,21 +197,19 @@ public class Constants {
     public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
 
     //turret
-//    public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000135, 0.0000001475, 0.00575, null, 0.014, 0.6, 0.85, 0.99, -2150.0};
-    //public static Double[] TURRET_PIDFS_COEFFICIENTS = {0.000045, 0.00000002, 0.002, 0.000001, 0.014, 0.5, 0.95, 0.99, -6000.0};
     public static TurretBasePIDFSCoefficients TURRET_PIDFS_COEFFICIENTS = new TurretBasePIDFSCoefficients(
-            new double[] {0.000071, 0.000071},
+            0.000071,
             new double[] {0.0000000075, 0.0000000075},
             new double[] {0.00000015, 0.00000015},
             0.01,
             null,
             0.03,
             new double[] {2000, 2000},
-            new double[] {0, 0},
-            new double[] {670, 670},
+            new double[] {0.85, 0.85},
+            new double[] {550, 550},
             new double[] {0.85, 0.85},
             0.99,
-            3,
+            2.8,
             -0.4,
             0.4
     );

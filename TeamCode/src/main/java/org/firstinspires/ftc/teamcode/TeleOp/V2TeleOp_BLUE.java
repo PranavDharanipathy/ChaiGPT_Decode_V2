@@ -87,8 +87,9 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
             telemetry.addData("turret position error", shooter.turret.getRawPositionError());
 
-            telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
+            telemetry.addData("current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.position.x, shooter.currentRobotPose.position.y, shooter.currentRobotPose.heading.toDouble());
             telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
+            telemetry.addData("future robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.futureRobotPose.position.x, shooter.futureRobotPose.position.y, shooter.futureRobotPose.heading.toDouble());
 
             telemetry.addData("Lift Engaged", intake.getLiftEngaged());
             telemetry.addData("Lift Position", intake.getLiftPosition());
@@ -98,6 +99,8 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("f d", shooter.flywheel.d);
             telemetry.addData("f v", shooter.flywheel.v);
             telemetry.addData("flywheel power", shooter.flywheel.getMotorPowers()[0]);
+
+            telemetry.addData("turret target position", shooter.turret.getTargetPosition());
 
             telemetry.addData("t p", shooter.turret.p);
             telemetry.addData("t i", shooter.turret.i);

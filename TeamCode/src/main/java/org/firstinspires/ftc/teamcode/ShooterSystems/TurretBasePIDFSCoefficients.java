@@ -1,22 +1,20 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS_LEFT;
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS_RIGHT;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KPS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS;
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KFS;
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_DERIVATIVE_POSITION_GAPS;
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_TARGET_FEEDFORWARD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_PD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_POSITIONS;
 
 import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.teamcode.util.InterpolationData;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
-import java.util.List;
-
 /// Easier usage of the coefficients for the left and right sides of the robot.
 public class TurretBasePIDFSCoefficients {
 
-    public double lkp, rkp;
+    public double kp;
     public double lkiFar, rkiFar;
     public double lkiClose, rkiClose;
     public double kd;
@@ -47,7 +45,7 @@ public class TurretBasePIDFSCoefficients {
     /// <p>
     /// Index 1: right
     public TurretBasePIDFSCoefficients(
-            double[] kp,
+            double kp,
             double[] kiFar,
             double[] kiClose,
             double kd,
@@ -63,8 +61,7 @@ public class TurretBasePIDFSCoefficients {
             double maxI
     ) {
 
-        lkp = kp[0];
-        rkp = kp[1];
+        this.kp = kp;
 
         lkiFar = kiFar[0];
         rkiFar = kiFar[1];
@@ -109,8 +106,22 @@ public class TurretBasePIDFSCoefficients {
         }
     }
 
-    public double kp(TurretSide side) {
-        return side == TurretSide.LEFT ? lkp : rkp;
+    public double kp(double targetPosition, double startPosition) {
+
+        if (tuning) return kp;
+
+        double reZeroedTargetPosition = targetPosition - startPosition;
+
+        if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_PD_POSITIONS.get(0), TURRET_PD_POSITIONS.get(TURRET_PD_POSITIONS.size() - 1))) {
+            return getKpFromInterpolation(reZeroedTargetPosition);
+        }
+
+        if (reZeroedTargetPosition < TURRET_PD_POSITIONS.get(0)) {
+            return TURRET_KPS.get(0);
+        }
+
+        //re-zeroed target position greater than the largest re-zeroed target position in the list
+        return TURRET_KPS.get(TURRET_KPS.size() - 1);
     }
 
     public double kiFar(TurretSide side) {
@@ -121,26 +132,22 @@ public class TurretBasePIDFSCoefficients {
         return side == TurretSide.LEFT ? lkiClose : rkiClose;
     }
 
-    public double kd(double targetPosition, double lastTargetPosition, double startPosition, boolean reversed) {
+    public double kd(double targetPosition, double startPosition) {
 
         if (tuning) return kd;
 
-        double gap = Math.abs(targetPosition - lastTargetPosition);
+        double reZeroedTargetPosition = targetPosition - startPosition;
 
-        TurretSide side = TurretSide.getSide(targetPosition, startPosition, reversed);
-
-        if (!kfReversalNeeded(targetPosition, lastTargetPosition, startPosition, reversed)) return kd;
-
-        if (MathUtil.valueWithinRangeIncludingPoles(gap, TURRET_DERIVATIVE_POSITION_GAPS.get(0), TURRET_DERIVATIVE_POSITION_GAPS.get(TURRET_DERIVATIVE_POSITION_GAPS.size() - 1))) {
-            return getKdFromInterpolation(gap, side);
+        if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_PD_POSITIONS.get(0), TURRET_PD_POSITIONS.get(TURRET_PD_POSITIONS.size() - 1))) {
+            return getKdFromInterpolation(reZeroedTargetPosition);
         }
 
-        if (gap < TURRET_DERIVATIVE_POSITION_GAPS.get(0)) {
-            return side == TurretSide.LEFT ? TURRET_KDS_LEFT.get(0) : TURRET_KDS_RIGHT.get(0);
+        if (reZeroedTargetPosition < TURRET_PD_POSITIONS.get(0)) {
+            return TURRET_KDS.get(0);
         }
 
         //re-zeroed target position greater than the largest re-zeroed target position in the list
-        return side == TurretSide.LEFT ? TURRET_KDS_LEFT.get(TURRET_KDS_LEFT.size() - 1) : TURRET_KDS_RIGHT.get(TURRET_KDS_RIGHT.size() - 1);
+        return TURRET_KDS.get(TURRET_KDS.size() - 1);
     }
 
     public double kf(double targetPosition, double lastTargetPosition, double startPosition, boolean reversed) {
@@ -153,11 +160,11 @@ public class TurretBasePIDFSCoefficients {
 
         if (kf != null) return kf;
 
-        if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_TARGET_FEEDFORWARD_POSITIONS.get(0), TURRET_TARGET_FEEDFORWARD_POSITIONS.get(TURRET_TARGET_FEEDFORWARD_POSITIONS.size() - 1))) {
+        if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_FEEDFORWARD_POSITIONS.get(0), TURRET_FEEDFORWARD_POSITIONS.get(TURRET_FEEDFORWARD_POSITIONS.size() - 1))) {
             return reversingValue * getKfFromInterpolation(reZeroedTargetPosition);
         }
 
-        if (reZeroedTargetPosition < TURRET_TARGET_FEEDFORWARD_POSITIONS.get(0)) {
+        if (reZeroedTargetPosition < TURRET_FEEDFORWARD_POSITIONS.get(0)) {
             return reversingValue * TURRET_KFS.get(0);
         }
 
@@ -216,7 +223,7 @@ public class TurretBasePIDFSCoefficients {
     private double getKfFromInterpolation(double reZeroedTargetPosition) {
 
         //converting list to array
-        double[] turretFeedforwardTargetPositions = TURRET_TARGET_FEEDFORWARD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] turretFeedforwardTargetPositions = TURRET_FEEDFORWARD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
 
         //getting bounds of the current target position
         double[] bounds = MathUtil.findBoundingValues(turretFeedforwardTargetPositions, reZeroedTargetPosition);
@@ -224,8 +231,8 @@ public class TurretBasePIDFSCoefficients {
         double targetPosition0 = bounds[0];
         double targetPosition1 = bounds[1];
 
-        double kf0 = TURRET_KFS.get(TURRET_TARGET_FEEDFORWARD_POSITIONS.indexOf(targetPosition0));
-        double kf1 = TURRET_KFS.get(TURRET_TARGET_FEEDFORWARD_POSITIONS.indexOf(targetPosition1));
+        double kf0 = TURRET_KFS.get(TURRET_FEEDFORWARD_POSITIONS.indexOf(targetPosition0));
+        double kf1 = TURRET_KFS.get(TURRET_FEEDFORWARD_POSITIONS.indexOf(targetPosition1));
 
         //returning kf
         return MathUtil.interpolateLinear(
@@ -240,32 +247,114 @@ public class TurretBasePIDFSCoefficients {
 
     }
 
-    private double getKdFromInterpolation(double gap, TurretSide side) {
+    private double getKpFromInterpolation(double reZeroedTargetPosition) {
 
-        //converting list to array
-        double[] turretDerivativePositionGaps = TURRET_DERIVATIVE_POSITION_GAPS.stream().mapToDouble(Double::doubleValue).toArray();
+        //converting list to array - same positions are used for p and d interpolations
+        double[] turretProportionalPositions = TURRET_PD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
 
         //getting bounds of the current target position
-        double[] bounds = MathUtil.findBoundingValues(turretDerivativePositionGaps, gap);
+        double[] bounds = MathUtil.findBoundingValues(turretProportionalPositions, reZeroedTargetPosition);
 
-        double gap0 = bounds[0];
-        double gap1 = bounds[1];
+        double targetPosition0 = bounds[0];
+        double targetPosition1 = bounds[1];
 
-        List<Double> turretKds = side == TurretSide.LEFT ? TURRET_KDS_LEFT : TURRET_KDS_RIGHT;
+        double kp0 = TURRET_KPS.get(TURRET_PD_POSITIONS.indexOf(targetPosition0));
+        double kp1 = TURRET_KPS.get(TURRET_PD_POSITIONS.indexOf(targetPosition1));
 
-        double kd0 = turretKds.get(TURRET_DERIVATIVE_POSITION_GAPS.indexOf(gap0));
-        double kd1 = turretKds.get(TURRET_DERIVATIVE_POSITION_GAPS.indexOf(gap1));
-
-        //returning kf
+        //returning kp
         return MathUtil.interpolateLinear(
 
-                gap,
+                reZeroedTargetPosition,
 
                 new InterpolationData(
-                        new double[] {gap0, kd0},
-                        new double[] {gap1, kd1}
+                        new double[] {targetPosition0, kp0},
+                        new double[] {targetPosition1, kp1}
                 )
         );
 
+    }
+
+    private double getKdFromInterpolation(double reZeroedTargetPosition) {
+
+        //converting list to array - same positions are used for p and d interpolations
+        double[] turretDerivativePositions = TURRET_PD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
+
+        //getting bounds of the current target position
+        double[] bounds = MathUtil.findBoundingValues(turretDerivativePositions, reZeroedTargetPosition);
+
+        double targetPosition0 = bounds[0];
+        double targetPosition1 = bounds[1];
+
+        double kd0 = TURRET_KDS.get(TURRET_PD_POSITIONS.indexOf(targetPosition0));
+        double kd1 = TURRET_KDS.get(TURRET_PD_POSITIONS.indexOf(targetPosition1));
+
+        //returning kd
+        return MathUtil.interpolateLinear(
+
+                reZeroedTargetPosition,
+
+                new InterpolationData(
+                        new double[] {targetPosition0, kd0},
+                        new double[] {targetPosition1, kd1}
+                )
+        );
+
+    }
+
+    private double[] getKpAndKdFromInterpolation(double reZeroedTargetPosition) {
+
+        //converting list to array - same positions are used for p and d interpolations
+        double[] turretPDPositions = TURRET_PD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
+
+        //getting bounds of the current target position
+        double[] bounds = MathUtil.findBoundingValues(turretPDPositions, reZeroedTargetPosition);
+
+        double targetPosition0 = bounds[0];
+        double targetPosition1 = bounds[1];
+
+        final InterpolationData pData = new InterpolationData(
+                new double[] {targetPosition0, TURRET_KPS.get(TURRET_PD_POSITIONS.indexOf(targetPosition0))},
+                new double[] {targetPosition1, TURRET_KPS.get(TURRET_PD_POSITIONS.indexOf(targetPosition1))}
+        );
+
+        final InterpolationData dData = new InterpolationData(
+                new double[] {targetPosition0, TURRET_KDS.get(TURRET_PD_POSITIONS.indexOf(targetPosition0))},
+                new double[] {targetPosition1, TURRET_KDS.get(TURRET_PD_POSITIONS.indexOf(targetPosition1))}
+        );
+
+        //returning kp and kd
+        return new double[] {
+
+                //p
+                MathUtil.interpolateLinear(reZeroedTargetPosition, pData),
+
+                //d
+                MathUtil.interpolateLinear(reZeroedTargetPosition, dData),
+        };
+    }
+
+    /// @return A double array with index 0 being kp and index 1 being kd
+    public double[] kpAndKd(double targetPosition, double startPosition) {
+
+        if (tuning) return new double[] {kp, kd};
+
+        double reZeroedTargetPosition = targetPosition - startPosition;
+
+        if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_PD_POSITIONS.get(0), TURRET_PD_POSITIONS.get(TURRET_PD_POSITIONS.size() - 1))) {
+            return getKpAndKdFromInterpolation(reZeroedTargetPosition);
+        }
+
+        if (reZeroedTargetPosition < TURRET_PD_POSITIONS.get(0)) {
+            return new double[] {
+                    TURRET_KPS.get(0),
+                    TURRET_KDS.get(0)
+            };
+        }
+
+        //re-zeroed target position greater than the largest re-zeroed target position in the list
+        return new double[] {
+                TURRET_KPS.get(TURRET_KPS.size() - 1),
+                TURRET_KDS.get(TURRET_KDS.size() - 1)
+        };
     }
 }

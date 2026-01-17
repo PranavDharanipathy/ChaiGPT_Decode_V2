@@ -51,7 +51,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/// Used Rev9AxisImu instead of internal imu
 @Config
 public final class CustomMecanumDrive {
     public static class Params {
