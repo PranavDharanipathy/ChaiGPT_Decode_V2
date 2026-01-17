@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 import org.firstinspires.ftc.teamcode.util.SubsystemInternal;
+
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY;
 
 @Peak
 public class Shooter implements SubsystemInternal {
@@ -88,7 +90,9 @@ public class Shooter implements SubsystemInternal {
     private double robotYawRad;
     public double tt;
 
-    public Pose2d robotPose;
+    /// For hysteresis control on the turret, this is the robot's position on the field at a point in time in the future.
+    public Pose2d futureRobotPose;
+    public Pose2d currentRobotPose;
 
     private boolean automaticHoodToggle = true;
     private double distanceToGoal;
@@ -97,8 +101,10 @@ public class Shooter implements SubsystemInternal {
 
         //getting robot pose
         if (controller2.main_buttonHasJustBeenPressed) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
+
         robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
-        customDrive.updatePoseEstimate();
+        PoseVelocity2d robotVelocity = customDrive.updatePoseEstimate();
+        double translationalVelocity = ShooterInformation.Calculator.getRobotTranslationalVelocity(robotVelocity.linearVel.x, robotVelocity.linearVel.y);
 
         //turret
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
@@ -110,13 +116,28 @@ public class Shooter implements SubsystemInternal {
                 turretStartPosition-=ShooterInformation.ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
         }
 
-        robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
-        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, turretCurrentPosition, turretStartPosition);
+        currentRobotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
+
+        //hysteresis control is only used if the robot is moving fast enough
+        if (translationalVelocity > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || robotVelocity.angVel > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1]) {
+            futureRobotPose = getFutureRobotPose(
+                    ShooterInformation.Calculator.getTurretFuturePosePredictionTime(
+                           translationalVelocity
+                    ),
+                    currentRobotPose,
+                    robotVelocity
+            );
+        }
+        else {
+            futureRobotPose = currentRobotPose;
+        }
+
+        Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(futureRobotPose.position, robotYawRad, turretCurrentPosition, turretStartPosition);
 
         Goal.GoalCoordinate goalCoordinate;
 
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
-        if (robotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+        if (currentRobotPose.position.x > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
             goalCoordinate = goalCoordinates.getCloseCoordinate();
         }
         else {
@@ -279,6 +300,19 @@ public class Shooter implements SubsystemInternal {
 
         customDrive.localizer.setPose(reZeroPose);
         rev9AxisImuWrapped.setYaw(heading);
+    }
+
+    private Pose2d getFutureRobotPose(double t, Pose2d currentRobotPose, PoseVelocity2d robotVelocity) {
+
+        double robotXVelocity = robotVelocity.linearVel.x;
+        double robotYVelocity = robotVelocity.linearVel.y;
+        double robotAngularVelocity = robotVelocity.angVel;
+
+        return new Pose2d(
+                currentRobotPose.position.x + (t * robotXVelocity),
+                currentRobotPose.position.y + (t * robotYVelocity),
+                currentRobotPose.heading.toDouble() + (t * robotAngularVelocity)
+        );
     }
 
     public double rev9AxisImuHeadingDeg() {
