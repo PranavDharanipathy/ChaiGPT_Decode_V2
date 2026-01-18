@@ -158,7 +158,7 @@ public class RedFar12Paths {
                                 new Pose(62.503, 8.762).mirror()
                         )
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(0)
                 .build();
 
 
