@@ -94,7 +94,7 @@ public class BlueFar12Paths {
                                     new Pose(54.390, 33.732),
                                     //new Pose(49.707, 54.634),
                                     new Pose(47, 46),
-                                    new Pose(41.732, 60), //y = 49
+                                    new Pose(41.73200, 60), //y = 49
                                     new Pose(31.244, 60),
                                     new Pose(23.390, 60),
                                     new Pose(15, 62)

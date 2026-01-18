@@ -124,7 +124,7 @@ public class RedFar12 extends NextFTCOpMode {
                 followCancelable(paths.FirstReturn, 8000),//new FollowPath(paths.intake),
                 new FollowPath(paths.FirstReturn, true),
                 //shooting balls
-                RobotNF.robot.shootBalls(0.54,0.08, 1, paths.FirstReturn),
+                RobotNF.robot.shootBalls(0.54,0.080, 1, paths.FirstReturn),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),

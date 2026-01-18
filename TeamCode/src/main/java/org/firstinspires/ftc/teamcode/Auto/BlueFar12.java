@@ -144,7 +144,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 followCancelable(paths.ThirdReturn, 8000),
                 new FollowPath(paths.ThirdReturn),
 
-                RobotNF.robot.shootBalls(0.52, 0.1, 1, paths.ThirdReturn)
+                RobotNF.robot.shootBalls(0.5200, 0.1, 1, paths.ThirdReturn)
         );
     }
 

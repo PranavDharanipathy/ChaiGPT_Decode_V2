@@ -141,7 +141,7 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(67.463, 11.924).mirror(),
                                 new Pose(32, 11.924).mirror(),
-                                new Pose(15.436, 11.924).mirror()
+                                new Pose(15.4360, 11.924).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(0)
