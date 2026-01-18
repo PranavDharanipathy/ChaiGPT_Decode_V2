@@ -2,14 +2,17 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.acmerobotics.roadrunner.Pose2d;
 
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.PinpointLocalizer;
+
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -18,9 +21,9 @@ public class NewTurret {
 
     CRServoImplEx left_turret, right_turret;
 
-    Pose2d initialPose;
+    Pose initialPose;
 
-    Pose2d currentPose;
+    Pose currentPose;
 
 
     PinpointLocalizer localizer;
@@ -68,7 +71,7 @@ public class NewTurret {
     double power;
 
 
-    public NewTurret(HardwareMap hardwareMap, Pose2d initialPose, double targetX, double targetY) {
+    public NewTurret(HardwareMap hardwareMap, Pose initialPose, double targetX, double targetY) {
 
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
         left_turret = hardwareMap.get(CRServoImplEx.class, "left_turret_base");
@@ -81,7 +84,7 @@ public class NewTurret {
         this.targetX = targetX;
         this.targetY = targetY;
 
-        localizer = new PinpointLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick, initialPose);
+        localizer = new PinpointLocalizer(hardwareMap, PPConstants.localizerConstants, initialPose);
 
         encoder = new Encoder(right_back);
 
@@ -140,25 +143,15 @@ public class NewTurret {
 
     public void update() {
 
-        currentPose = localizer.getPose();
+        currX = localizer.getPose().getX();
 
-        RobotHeading = currentPose.heading.toDouble();
+        currY = localizer.getPose().getY();
 
-        currX = currentPose.position.x;
-        currY = currentPose.position.y;
 
-        dX = currX - targetX;
-        dY = currY - targetY;
+        dX = targetX - currX;
+        dY = targetY - currY;
 
-        FieldAngle = FastMath.atan2(dY, dX);
 
-        turretCurrPos = encoder.getCurrentPosition();
-        robotTurn = FastMath.abs(FieldAngle - RobotHeading);
-        turretOffset = encoder.getCurrentPosition();
-
-        turretTurnDegrees = (180- robotTurn) - turretOffset;
-
-        turnTicks = toTicks(turretTurnDegrees);
 
         updatePID();
 

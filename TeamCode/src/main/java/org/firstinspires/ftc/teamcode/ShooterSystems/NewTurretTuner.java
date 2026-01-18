@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 
@@ -8,7 +9,7 @@ public class NewTurretTuner extends OpMode {
 
     NewTurret turret;
 
-    Pose2d initialPose;
+    Pose initialPose;
     public  static double kp, ki, kd;
 
 
@@ -16,8 +17,8 @@ public class NewTurretTuner extends OpMode {
 
     @Override
     public void init() {
-        initialPose = new Pose2d(0, 0, 0);
-        turret = new NewTurret(hardwareMap, initialPose, 50, 50);
+        initialPose = new Pose(72, 72, 0);
+        turret = new NewTurret(hardwareMap, initialPose, 25, 100);
     }
 
     @Override
