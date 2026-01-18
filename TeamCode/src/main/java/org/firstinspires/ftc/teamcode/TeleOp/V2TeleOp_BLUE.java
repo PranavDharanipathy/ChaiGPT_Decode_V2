@@ -99,12 +99,15 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
             telemetry.addData("f v", shooter.flywheel.v);
             telemetry.addData("flywheel power", shooter.flywheel.getMotorPowers()[0]);
 
-            telemetry.addData("t p", shooter.turret.p);
+            telemetry.addData("turret target pos", shooter.turret.getTargetPosition()) ;
+        telemetry.addData("t p", shooter.turret.p);
             telemetry.addData("t i", shooter.turret.i);
             telemetry.addData("t d", shooter.turret.d);
             telemetry.addData("t f", shooter.turret.f);
             telemetry.addData("turret dActivation", shooter.turret.dActivation);
             telemetry.addData("turret power", shooter.turret.getServoPowers()[0]);
+
+
             telemetry.update();
 
         }
