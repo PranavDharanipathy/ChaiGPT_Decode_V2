@@ -67,7 +67,7 @@ public strictfp class ShooterInformation {
         public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_000;
 
         public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
-        public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 375_000;
+        public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
         /** Distance to goal when shooting at close where flywheel velocity switches from farther close to closer close when
         bot is within this distance to the goal. */
         public static double CLOSE_SIDE_SWITCH = 64;
@@ -76,19 +76,19 @@ public strictfp class ShooterInformation {
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
-        public static double MIN_TURRET_POSITION_IN_DEGREES = -140, MAX_TURRET_POSITION_IN_DEGREES = 140;
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -173, MAX_TURRET_POSITION_IN_DEGREES = 173;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
 
-        public static List<Double> TURRET_DERIVATIVE_POSITION_GAPS = new ArrayList<>(List.of(0.0,  2000.0, 4000.0,  5000.0, 6000.0, 7000.0, 8000.0, 9000.0, 10000.0,  11000.0, 12000.0, 13000.0));
-        public static List<Double> TURRET_KDS_LEFT =                 new ArrayList<>(List.of(0.01, 0.0045, 0.005,   0.0085, 0.0075,  0.01,  0.01,   0.01,     0.01,    0.013,   0.014,   0.02));
-        public static List<Double> TURRET_KDS_RIGHT =                new ArrayList<>(List.of(0.01, 0.0045, 0.01185,  0.01,   0.01,   0.01,  0.01,   0.008,    0.008,  0.00785,  0.007,   0.007));
+        public static List<Double> TURRET_PD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0,   -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,    -1000.0,    0.0,     1000.0,    2000.0,    3000.0,    4000.0,     5000.0,   6000.0,      7000.0,    8000.0,    9000.0,     10000.0,    11000.0,    12500.0));
+        public static List<Double> TURRET_KPS =          new ArrayList<>(List.of(0.000165,  0.00015,  0.00015,  0.000075,  0.00008,   0.00008,   0.000082,   0.000075,   0.000073,   0.00007,    0.00006,   0.00006,   0.00006,  0.00006,  0.000045,  0.000045,  0.000045,  0.00007,    0.000078,  0.000075,  0.0000835, 0.0000835,  0.0000835,  0.0000765,   0.000074,  0.000073));
+        public static List<Double> TURRET_KDS =          new ArrayList<>(List.of(  0.0015,  0.0015,   0.0015,    0.005,     0.002,     0.004,    0.0015,     0.0085,     0.0085,     0.0095,      0.0008,   0.001,     0.00125,  0.00009,   0.005,    0.00285,    0.00285,   0.0095,    0.00235,   0.0014,      0.0002,    0.0043,    0.0043,     0.0024,      0.0022,    0.0015));
 
-        public static List<Double> TURRET_TARGET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0, -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,   -1000.0,    -200.0,     200.0,    500.0,    1000.0,   2000.0,    3000.0,    4000.0,     5000.0,   6000.0,   7000.0,  8000.0,    9000.0,   10000.0,   11000.0,  12000.0,  12500.0));
-        public static List<Double> TURRET_KFS =                          new ArrayList<>(List.of(0.000003, 0.000003, 0.000002, 0.000001, 0.0000011, 0.0000023, 0.00000135, 0.00000155, 0.0000013, 0.0000012, 0.0000005, 0.0000009, 0.0000012,  0.0000011, 0.0000011, 0.00001,  0.0000041, 0.000006,  0.000006, 0.0000065, 0.0000055, 0.000005, 0.000005, 0.000005, 0.000007, 0.0000027, 0.0000024, 0.000002, 0.0000033));
+        public static List<Double> TURRET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0, -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,   -1000.0,    -200.0,     200.0,    500.0,    1000.0,   2000.0,    3000.0,    4000.0,     5000.0,   6000.0,   7000.0,  8000.0,    9000.0,   10000.0,   11000.0,  12000.0,  12500.0));
+        public static List<Double> TURRET_KFS =                   new ArrayList<>(List.of(0.000003, 0.000003, 0.000002, 0.0000012, 0.0000011, 0.0000023, 0.00000135, 0.00000155, 0.0000013, 0.0000012, 0.0000005, 0.0000009, 0.0000012,  0.0000011, 0.0000011, 0.00001,  0.0000041, 0.000006,  0.000006, 0.0000065, 0.0000055, 0.000005, 0.000005, 0.000006, 0.000007, 0.0000027, 0.0000024, 0.000002, 0.0000033));
 
-        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2050;
+        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 1850;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 50;
 
@@ -106,6 +106,13 @@ public strictfp class ShooterInformation {
          */
         public static int BLUE_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
         public static int RED_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
+
+        /// The robot velocities must be greater than this for turret hysteresis control to be used.
+        /// <p>
+        /// Index 0 is translational, index 1 in angular (in radians).
+        /// <p>
+        /// Translational is in inches per second and angular is in radians per second.
+        public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {5, Math.toRadians(5)};
     }
 
     public static class Calculator {
@@ -138,6 +145,15 @@ public strictfp class ShooterInformation {
                     turretY,
                     turretHeading
             );
+        }
+
+        public static double getRobotTranslationalVelocity(double xVelocity, double yVelocity) {
+            return Math.hypot(xVelocity, yVelocity);
+        }
+
+        /// For turret hysteresis control.
+        public static double getTurretFuturePosePredictionTime(double translationalVelocity) {
+            return 0.6;
         }
 
     }
@@ -177,11 +193,6 @@ public strictfp class ShooterInformation {
         @DeprecatedSystem(notes = "We are now using odometry to get the distance from the goal, not the limelight")
         public static double getDistanceFromRegression(double ty) {
             return (0.34197 * ty * ty) - (3.79725 * ty) + 53.01088;
-        }
-
-        public static double getScaledTurretFlippedFAdjuster(double error) {
-
-            return -0.001 * Math.abs(error) - 0.2;
         }
 
         public static double getScaledFlywheelKv(double unscaledKv, double currentVoltage) {

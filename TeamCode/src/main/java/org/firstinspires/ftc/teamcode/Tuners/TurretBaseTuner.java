@@ -22,7 +22,7 @@ public class TurretBaseTuner extends OpMode {
 
     public static long LOOP_TIME = 70;
 
-    public static double[] KP = {TURRET_PIDFS_COEFFICIENTS.lkp, TURRET_PIDFS_COEFFICIENTS.rkp};
+    public static double KP =TURRET_PIDFS_COEFFICIENTS.kp;
     public static double[] KI_FAR = {TURRET_PIDFS_COEFFICIENTS.lkiFar, TURRET_PIDFS_COEFFICIENTS.rkiFar};
     public static double[] KI_CLOSE = {TURRET_PIDFS_COEFFICIENTS.lkiClose, TURRET_PIDFS_COEFFICIENTS.rkiClose};
     public static double KD = TURRET_PIDFS_COEFFICIENTS.kd;
@@ -42,6 +42,8 @@ public class TurretBaseTuner extends OpMode {
 
     public static double MIN_I = TURRET_PIDFS_COEFFICIENTS.minI, MAX_I = TURRET_PIDFS_COEFFICIENTS.maxI;
     public static double TARGET_POSITION;
+
+    public static String PD_MODE = "00";
 
     public enum FMODE {
         MANUAL, INTERPOLATION
@@ -77,6 +79,8 @@ public class TurretBaseTuner extends OpMode {
 
     @Override
     public void loop() {
+
+        turret.setPdInterpolationMode(TurretBase.PD_INTERPOLATION_MODE.fromString(PD_MODE));
 
         turret.setPosition(TARGET_POSITION);
         turret.setPIDFSCoefficients(new TurretBasePIDFSCoefficients(

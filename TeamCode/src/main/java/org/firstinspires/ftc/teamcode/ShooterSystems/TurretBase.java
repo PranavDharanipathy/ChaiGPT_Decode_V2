@@ -14,10 +14,11 @@ import org.firstinspires.ftc.teamcode.util.InterpolationData;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_DERIVATIVE_POSITION_GAPS;
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS_LEFT;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_PD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KPS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS;
 
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_TARGET_FEEDFORWARD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_POSITIONS;
 import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KFS;
 
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class TurretBase {
 
     public double dActivation = 0;
 
-    private double iSwitch;
+    private double iSwitch, iSwitchTargetPosition = 0;
 
     public double p, i, d, f, s;
 
@@ -75,13 +76,14 @@ public class TurretBase {
         leftTurretBase.setDirection(direction);
         rightTurretBase.setDirection(direction);
 
-        TURRET_DERIVATIVE_POSITION_GAPS.replaceAll(i -> -i);
-        TURRET_TARGET_FEEDFORWARD_POSITIONS.replaceAll(i -> -i);
+        TURRET_PD_POSITIONS.replaceAll(i -> -i);
+        TURRET_FEEDFORWARD_POSITIONS.replaceAll(i -> -i);
 
-        Collections.reverse(TURRET_DERIVATIVE_POSITION_GAPS);
-        Collections.reverse(TURRET_TARGET_FEEDFORWARD_POSITIONS);
+        Collections.reverse(TURRET_PD_POSITIONS);
+        Collections.reverse(TURRET_FEEDFORWARD_POSITIONS);
 
-        Collections.reverse(TURRET_KDS_LEFT);
+        Collections.reverse(TURRET_KPS);
+        Collections.reverse(TURRET_KDS);
         Collections.reverse(TURRET_KFS);
 
         reversed = true;
@@ -115,13 +117,74 @@ public class TurretBase {
         catch (Exception ignore) {}
     }
 
-    /// Setting variables that do change
+    public enum PD_INTERPOLATION_MODE {
+
+        NONE, P, D, BOTH;
+
+        /**
+         * <p>"00" - Indicates NONE
+         * <p>"10" - Indicates P
+         * <p>"01" - Indicates D
+         * <p>"11" - Indicates BOTH
+         * @throws IllegalArgumentException If an invalid mode is inputted
+         */
+        public static PD_INTERPOLATION_MODE fromString(String mode) {
+
+            switch (mode) {
+
+                case "00":
+                    return NONE;
+
+                case "10":
+                    return P;
+
+                case "01":
+                    return D;
+
+                case "11":
+                    return BOTH;
+
+                default:
+                    throw new IllegalArgumentException(mode + " is an invalid mode string!");
+            }
+        }
+    }
+
+    public PD_INTERPOLATION_MODE pdInterpolationMode = PD_INTERPOLATION_MODE.BOTH;
+
+    /// To be able to set from FTC Dashboard
+    public void setPdInterpolationMode(PD_INTERPOLATION_MODE mode) {
+        pdInterpolationMode = mode;
+    }
+
+    /// Setting variables that do in fact change
     private void chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide side) {
 
-        kp = coefficients.kp(side);
+        if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.BOTH)) {
+
+            double[] kpAndKd = coefficients.kpAndKd(targetPosition, startPosition);
+            kp = kpAndKd[0];
+            kd = kpAndKd[1];
+        }
+        else if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.P)) {
+
+            kp = coefficients.kp(targetPosition, startPosition);
+            kd = coefficients.kd;
+        }
+        else if(pdInterpolationMode.equals(PD_INTERPOLATION_MODE.D)) {
+
+            kp = coefficients.kp;
+            kd = coefficients.kd(targetPosition, startPosition);
+        }
+        else { //if pdInterpolationMode equals PD_INTERPOLATION_MODE.NONE
+
+            kp = coefficients.kp;
+            kd = coefficients.kd;
+        }
+
+
         kiFar = coefficients.kiFar(side);
         kiClose = coefficients.kiClose(side);
-        kd = coefficients.kd(targetPosition, lastTargetPosition, startPosition, reversed);
         kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, reversed);
 
         kDFilter = coefficients.kDFilter(side);
@@ -178,7 +241,14 @@ public class TurretBase {
         p = kp * error;
 
         //integral
-        ki = Math.abs(error) <= iSwitch ? kiClose : kiFar;
+        if (targetPosition == iSwitchTargetPosition || Math.abs(error) <= iSwitch) {
+
+            iSwitchTargetPosition = targetPosition;
+            ki = kiClose;
+        }
+        else {
+            ki = kiFar;
+        }
         if (dt != 0) i += ki * error * dt;
         if (Math.signum(error) != Math.signum(prevError) && error != 0) i *= kISmash;
         i = MathUtil.clamp(i, minI, maxI);
@@ -233,33 +303,6 @@ public class TurretBase {
     public void stopTurret() {
         leftTurretBase.setPower(0);
         rightTurretBase.setPower(0);
-    }
-
-    private double getKfFromInterpolation(double reZeroedTargetPosition) {
-
-        //converting list to array
-        double[] turretFeedforwardTargetPositions = TURRET_TARGET_FEEDFORWARD_POSITIONS.stream().mapToDouble(Double::doubleValue).toArray();
-
-        //getting bounds of the current target position
-        double[] bounds = MathUtil.findBoundingValues(turretFeedforwardTargetPositions, reZeroedTargetPosition);
-
-        double targetPosition0 = bounds[0];
-        double targetPosition1 = bounds[1];
-
-        double kf0 = TURRET_KFS.get(TURRET_TARGET_FEEDFORWARD_POSITIONS.indexOf(targetPosition0));
-        double kf1 = TURRET_KFS.get(TURRET_TARGET_FEEDFORWARD_POSITIONS.indexOf(targetPosition1));
-
-        //returning kf
-        return MathUtil.interpolateLinear(
-
-                reZeroedTargetPosition,
-
-                new InterpolationData(
-                        new double[] {targetPosition0, kf0},
-                        new double[] {targetPosition1, kf1}
-                )
-        );
-
     }
 
 }
