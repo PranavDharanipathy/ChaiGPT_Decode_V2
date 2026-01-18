@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 @TeleOp (name = "V2TeleOp_RED", group = "AAAA_MatchPurpose")
 public class V2TeleOp_RED extends TeleOpBaseOpMode {
 
-    public static PIPELINES PIPELINE = PIPELINES.RED_PIPELINE;
-
     private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
 
     private final Intake intake = new Intake();
@@ -26,18 +24,19 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
 
     private final Shooter shooter = new Shooter();
 
-    private ElapsedTime universalTimer = new ElapsedTime();
+    private final TelemetrySubsystem telemetry = new TelemetrySubsystem();
+
+    //private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-
-        telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initializeDevices();
 
         applyComponentTraits();
 
         //initialize subsystems here
+        telemetry.provideComponents(super.telemetry, true, controller2);
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
         intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
@@ -75,40 +74,7 @@ public class V2TeleOp_RED extends TeleOpBaseOpMode {
             //background action processes
             CommandScheduler.update();
 
-            telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
-            telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
-
-            telemetry.addData("hood position", shooter.hoodAngler.getPosition());
-
-            telemetry.addData("flywheel velocity estimate", "%.0f", shooter.flywheel.getCurrentVelocityEstimate());
-            telemetry.addData("flywheel real velocity", "%.0f", shooter.flywheel.getRealVelocity());
-            telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
-
-            telemetry.addData("turret position error", shooter.turret.getRawPositionError());
-
-            telemetry.addData("current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.position.x, shooter.currentRobotPose.position.y, shooter.currentRobotPose.heading.toDouble());
-            telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
-            telemetry.addData("future robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.futureRobotPose.position.x, shooter.futureRobotPose.position.y, shooter.futureRobotPose.heading.toDouble());
-
-            telemetry.addData("Lift Engaged", intake.getLiftEngaged());
-            telemetry.addData("Lift Position", intake.getLiftPosition());
-
-            telemetry.addData("f p", shooter.flywheel.p);
-            telemetry.addData("f i", shooter.flywheel.i);
-            telemetry.addData("f d", shooter.flywheel.d);
-            telemetry.addData("f v", shooter.flywheel.v);
-            telemetry.addData("flywheel power", shooter.flywheel.getMotorPowers()[0]);
-
-            telemetry.addData("turret target position", shooter.turret.getTargetPosition());
-
-            telemetry.addData("t p", shooter.turret.p);
-            telemetry.addData("t i", shooter.turret.i);
-            telemetry.addData("t d", shooter.turret.d);
-            telemetry.addData("t f", shooter.turret.f);
-            telemetry.addData("turret dActivation", shooter.turret.dActivation);
-            telemetry.addData("turret power", shooter.turret.getServoPowers()[0]);
-            telemetry.update();
-
+            telemetry.runInstance(shooter, intake);
         }
 
         //end
