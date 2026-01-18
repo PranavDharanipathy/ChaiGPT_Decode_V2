@@ -103,9 +103,9 @@ public class Shooter implements SubsystemInternal {
         if (controller2.main_buttonHasJustBeenPressed) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
 
         robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
-        PoseVelocity2d robotVelocity = customDrive.updatePoseEstimate();
+        PoseVelocity2d rawRobotVelocity = customDrive.updatePoseEstimate();
+        PoseVelocity2d robotVelocity = new PoseVelocity2d(rawRobotVelocity.linearVel, robotYawRad);
         double translationalVelocity = ShooterInformation.Calculator.getRobotTranslationalVelocity(robotVelocity.linearVel.x, robotVelocity.linearVel.y);
-
         //turret
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
@@ -205,7 +205,7 @@ public class Shooter implements SubsystemInternal {
 
             hoodPosition = ShooterInformation.Models.getCloseHoodPositionFromRegression(distanceToGoal);
         }
-        else noAutomaticHood();
+        else staticHood();
 
         hoodAngler.setPosition(MathUtil.clamp(hoodPosition, ShooterInformation.ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION));
 
@@ -237,7 +237,7 @@ public class Shooter implements SubsystemInternal {
         return flywheelTargetVelocity;
     }
 
-    private void noAutomaticHood() {
+    private void staticHood() {
 
         if (!(controller2.yHasJustBeenPressed || controller2.xHasJustBeenPressed || controller2.bHasJustBeenPressed || controller2.aHasJustBeenPressed)) {
             return;
@@ -317,6 +317,11 @@ public class Shooter implements SubsystemInternal {
 
     public double rev9AxisImuHeadingDeg() {
         return Math.toDegrees(robotYawRad);
+    }
+
+    /// @return 'true' if using automatic hood and 'false' if using static hood
+    public boolean usingAutomaticHood() {
+        return automaticHoodToggle;
     }
 
 }
