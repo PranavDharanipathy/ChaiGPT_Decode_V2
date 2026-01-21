@@ -31,14 +31,16 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "AUTO RED FAR 12", group = "Autonomous")
+@Autonomous(name = "AUTO RED FAR 12", group = "AAA_MatchPurpose")
 @Config
 public class RedFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8300, -8450, -8450, -8650};
+    public static double[] TURRET_POSITIONS = {-8600, -8650, -8650, -8550};
+
+    public static double flywheel_target = 462_000;
 
 
     private RedFar12Paths paths;
@@ -66,7 +68,6 @@ public class RedFar12 extends NextFTCOpMode {
 
         follower = PPConstants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
-
         paths = new RedFar12Paths(PedroComponent.follower());
     }
 
@@ -75,7 +76,7 @@ public class RedFar12 extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         //setup
-        FlywheelNF.INSTANCE.flywheel.setVelocity(452_000, true);
+        FlywheelNF.INSTANCE.flywheel.setVelocity(flywheel_target, true);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(0.132);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0] + TurretNF.INSTANCE.turret.startPosition);
@@ -101,14 +102,13 @@ public class RedFar12 extends NextFTCOpMode {
 
 //shooting preloads(Turret position is already set)
 
-
-
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
 
                 //new FollowPath(paths.preload, true),
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
                 //preload shooting
 
-                RobotNF.robot.shootBalls(0.53,0.1),
+                RobotNF.robot.shootBalls(0.59,0.1),
 
                 //intaking balls already set at the the human player zone
                 //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
@@ -120,11 +120,11 @@ public class RedFar12 extends NextFTCOpMode {
                 followCancelable(paths.FirstReturn, 8000),
 
                 //intaking balls at the human  followCancelable(paths.FirstIntake, 7000), //new FollowPath(paths.firstInplayer zone
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
-                followCancelable(paths.FirstReturn, 8000),//new FollowPath(paths.intake),
+                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),                followCancelable(paths.FirstReturn, 8000),//new FollowPath(paths.intake),
                 new FollowPath(paths.FirstReturn, true),
                 //shooting balls
-                RobotNF.robot.shootBalls(0.54,0.080, 1, paths.FirstReturn),
+                RobotNF.robot.shootBalls(0.45,0.080, 1, paths.FirstReturn),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
@@ -135,10 +135,10 @@ public class RedFar12 extends NextFTCOpMode {
                 new FollowPath(paths.SecondReturn, true),
 
                 //second intake shooting balls
-                RobotNF.robot.shootBalls(0.51,0.1, 1, paths.SecondReturn),
+                RobotNF.robot.shootBalls(0.45,0.4, 1, paths.SecondReturn),
 
 
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3] + TurretNF.INSTANCE.turret.startPosition),
                 followCancelable(paths.IntakeExtra, 8000),
                 new FollowPath(paths.IntakeExtra),
 
@@ -146,7 +146,8 @@ public class RedFar12 extends NextFTCOpMode {
                 followCancelable(paths.ThirdReturn, 8000),
                 new FollowPath(paths.ThirdReturn),
 
-                RobotNF.robot.shootBalls(0.52, 0.1, 1, paths.ThirdReturn)
+                RobotNF.robot.shootBalls(0.45, 0.4, 1, paths.ThirdReturn)
+
         );
     }
 
@@ -182,6 +183,7 @@ public class RedFar12 extends NextFTCOpMode {
                 })
         );
     }
+
 
 }
 
