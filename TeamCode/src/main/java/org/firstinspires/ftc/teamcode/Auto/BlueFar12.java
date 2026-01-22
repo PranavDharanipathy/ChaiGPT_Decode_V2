@@ -35,11 +35,11 @@ public class BlueFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {8500,8600, 8650, 8450};
+    public static double[] TURRET_POSITIONS = {8700,8800, 8750, 8450};
 
     public static double hoodPos = 0.11;
 
-    public static double flywheel_target = 455_000;
+    public static double flywheel_target = 451_000;
 
 
     private BlueFar12Paths paths;
