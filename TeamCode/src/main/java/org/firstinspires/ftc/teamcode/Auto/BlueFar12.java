@@ -96,7 +96,9 @@ public class BlueFar12 extends NextFTCOpMode {
     @Override
     public void onUpdate() {
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
-        telemetry.addData("turret curr pos: ", TurretNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
+        telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
         telemetry.update();
 
