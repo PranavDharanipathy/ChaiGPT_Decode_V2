@@ -9,6 +9,7 @@ import com.pedropathing.ftc.drivetrains.Mecanum;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.HubAddressChangedNotification;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
@@ -83,6 +85,7 @@ public class NewTurret {
     double robotHeading = 0;
 
 
+
     public NewTurret(HardwareMap hardwareMap, Pose initialPose, double targetX, double targetY) {
 
         right_back = hardwareMap.get(DcMotorEx.class, "right_back");
@@ -136,6 +139,7 @@ public class NewTurret {
         currError = turretCurrPos - turretTurnTicks;
 
 
+
         i = MathUtil.clamp(ki, i_MIN, i_MAX);
 
         if (dT > 0) {
@@ -153,7 +157,6 @@ public class NewTurret {
 
     public void update() {
 
-        follower.update();
 
         currentPose = follower.getPose();
 
@@ -171,22 +174,13 @@ public class NewTurret {
 
         fieldAngle = FastMath.atan2(dY,dX);
 
-        robotHeading = follower.getPose().getHeading();
+        robotHeading = currentPose.getHeading();
 
 
         robotTurn = 45 + (FastMath.abs(fieldAngle - robotHeading));
 
 
         turretTurnTicks = toTicks(180-robotTurn);
-
-
-        updatePID();
-
-
-
-
-
-
 
 
         updatePID();
