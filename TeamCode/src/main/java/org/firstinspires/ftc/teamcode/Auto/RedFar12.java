@@ -38,9 +38,9 @@ public class RedFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8600, -8650, -8650, -8550};
+    public static double[] TURRET_POSITIONS = {-8650, -8700, -8700, -8550};
 
-    public static double flywheel_target = 462_000;
+    public static double flywheel_target = 464_000;
 
 
     private RedFar12Paths paths;
@@ -69,6 +69,8 @@ public class RedFar12 extends NextFTCOpMode {
         follower = PPConstants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
         paths = new RedFar12Paths(PedroComponent.follower());
+
+        telemetry.addData("turret start: ", TurretNF.INSTANCE.turret.startPosition);
     }
 
 
@@ -83,12 +85,13 @@ public class RedFar12 extends NextFTCOpMode {
 
         auto().schedule();
 
+
     }
 
     @Override
     public void onUpdate() {
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
-        telemetry.addData("turret pos: ", TurretNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
         telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
@@ -129,18 +132,20 @@ public class RedFar12 extends NextFTCOpMode {
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
                 followCancelable(paths.SecondIntake, 8000),//new FollowPath(paths.intake),
-                new FollowPath(paths.SecondIntake, false),
 
-                followCancelable(paths.SecondReturn, 8000),
+
                 new FollowPath(paths.SecondReturn, true),
 
                 //second intake shooting balls
                 RobotNF.robot.shootBalls(0.45,0.4, 1, paths.SecondReturn),
 
 
+
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3] + TurretNF.INSTANCE.turret.startPosition),
+
+                followCancelable(paths.setupForFirstIntake, 2000),
                 followCancelable(paths.IntakeExtra, 8000),
-                new FollowPath(paths.IntakeExtra),
+
 
                 //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[5]),
                 followCancelable(paths.ThirdReturn, 8000),

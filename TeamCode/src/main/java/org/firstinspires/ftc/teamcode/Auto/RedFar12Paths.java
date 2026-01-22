@@ -11,6 +11,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
+import org.firstinspires.ftc.teamcode.TeleOp.Intake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,13 +97,13 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(63.610, 16.000).mirror(),
                                 //new Pose(56.561, 34.268),
-                                new Pose(54.390, 39.732).mirror(),
+                                new Pose(54.390, 37).mirror(),
                                 //new Pose(49.707, 54.634),
-                                new Pose(47, 54).mirror(),
-                                new Pose(38.732, 62).mirror(), //y = 49
-                                new Pose(25.244, 62).mirror(),
-                                new Pose(13.390, 62).mirror(),
-                                new Pose(13, 64).mirror()
+                                //new Pose(47, 54).mirror(),
+                                new Pose(38.732, 55).mirror(), //y = 49
+                                new Pose(25.244, 55).mirror(),
+                                new Pose(13.390, 55).mirror(),
+                                new Pose(13, 57).mirror()
                         )
 
                 )
@@ -134,7 +135,7 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(17.463, 51.847).mirror(),
                                 new Pose(54.876, 35.408).mirror(),
-                                new Pose(67.154, 11.924).mirror()
+                                new Pose(59.154, 11.924).mirror()
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(25), 0)
@@ -149,7 +150,7 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(3.436, 0.390).mirror(),
                                 new Pose(54.132, 29.597).mirror(),
-                                new Pose(62.503, 8.762).mirror()
+                                new Pose(58.503, 8.762).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(0)
@@ -159,17 +160,15 @@ public class RedFar12Paths {
         setupForFirstIntake = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(
-                                new Pose(97.000, 9.500).mirror(),
-                                new Pose(151, 42).mirror())
+                        new BezierLine(new Pose(58.503, 8.762).mirror(), new Pose(151, 65))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(Math.toRadians(270)))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .build();
 
         IntakeExtra = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(151, 42).mirror(), new Pose(151, 33).mirror())
+                        new BezierLine(new Pose(151, 42), new Pose(151, 33))
                 )
                 .setNoDeceleration()
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
