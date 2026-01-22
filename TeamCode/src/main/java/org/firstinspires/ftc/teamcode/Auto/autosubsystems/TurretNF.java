@@ -32,7 +32,7 @@ public class TurretNF implements Subsystem {
     }
 
     public Command setPosition(double position) {
-        return new InstantCommand(() -> turret.setPosition(position - turret.startPosition));
+        return new InstantCommand(() -> turret.setPosition(position + turret.startPosition));
     }
 
     ///  Tells turret to go to the start position

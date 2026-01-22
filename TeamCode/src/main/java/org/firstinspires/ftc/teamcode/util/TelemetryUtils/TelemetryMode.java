@@ -6,6 +6,7 @@ public enum TelemetryMode {
     INFO,
     RAW_DATA,
     AURA,
+    MESSAGE,
     MISCELLANEOUS;
 
     public static TelemetryMode[] getAll() {
@@ -15,6 +16,7 @@ public enum TelemetryMode {
                 INFO,
                 RAW_DATA,
                 AURA,
+                MESSAGE,
                 MISCELLANEOUS
         };
     }

@@ -47,7 +47,7 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
                         IntakeNF.INSTANCE,
                         TransferNF.INSTANCE
                 ),
-                new PedroComponent(PPConstants::createFollower),
+                new PedroComponent(PPConstants::createAutoFollower),
                 BulkReadComponent.INSTANCE
         );
     }

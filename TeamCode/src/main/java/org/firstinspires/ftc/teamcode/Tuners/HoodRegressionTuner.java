@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -44,7 +45,6 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
 
     public static GOAL goal = GOAL.BLUE;
 
-    private Telemetry telemetry;
     private Rev9AxisImuWrapped rev9AxisImuWrapped;
 
     private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
@@ -52,7 +52,7 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
     @Override
     public void runOpMode() {
 
-        telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
+        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initializeDevices();
         rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);
@@ -90,15 +90,13 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
                 relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK);
             }
 
-            customDrive.updatePoseEstimate();
+            follower.update();
 
             double robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
-            Pose2d robotPose = ShooterInformation.Calculator.getBotPose(customDrive.localizer.getPose().position, robotYawRad);
-            Pose2d turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose.position, robotYawRad, 0, 0);
+            Pose robotPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), robotYawRad);
+            Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, robotYawRad, 0, 0);
 
-            Vector2d turretVector = turretPose.position;
-
-            double distanceToGoal = Goal.getDistanceFromGoal(turretVector.x, turretVector.y, goal.getCoordinate());
+            double distanceToGoal = Goal.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goal.getCoordinate());
 
             robotCentricDrive.update();
 
@@ -117,7 +115,7 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
             telemetry.addData("turret target position", turret.getTargetPosition());
             telemetry.addData("turret position error", turret.getPositionError());
 
-            telemetry.addData("turret position + robot heading", "%.2f, %.2f, %.2f", turretVector.x, turretVector.y, Math.toDegrees(robotYawRad));
+            telemetry.addData("turret position + robot heading", "%.2f, %.2f, %.2f", turretPose.getX(), turretPose.getY(), Math.toDegrees(robotYawRad));
             telemetry.addData("distance to goal", distanceToGoal);
 
             telemetry.addData("goal coordinate", "x:%.2f, y:%.2f", goal.getCoordinate().getX(), goal.getCoordinate().getY());
@@ -135,14 +133,14 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
 
         double heading = ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][2];
 
-        Pose2d reZeroPose = new Pose2d(
+        Pose reZeroPose = new Pose(
 
                 ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][0],
                 ShooterInformation.Odometry.REZERO_POSES[pose.getPoseIndex()][1],
                 Math.toRadians(heading)
         );
 
-        customDrive.localizer.setPose(reZeroPose);
+        follower.setPose(reZeroPose);
         rev9AxisImuWrapped.setYaw(heading);
     }
 

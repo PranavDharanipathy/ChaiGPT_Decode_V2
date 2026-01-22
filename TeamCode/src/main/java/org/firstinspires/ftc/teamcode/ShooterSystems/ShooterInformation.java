@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.chaigptrobotics.systems.DeprecatedSystem;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +69,9 @@ public strictfp class ShooterInformation {
 
         public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_000;
 
-        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
+        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 369_700;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
+
         /** Distance to goal when shooting at close where flywheel velocity switches from farther close to closer close when
         bot is within this distance to the goal. */
         public static double CLOSE_SIDE_SWITCH = 64;
@@ -112,38 +116,40 @@ public strictfp class ShooterInformation {
         /// Index 0 is translational, index 1 in angular (in radians).
         /// <p>
         /// Translational is in inches per second and angular is in radians per second.
-        public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {5, Math.toRadians(5)};
+        public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {9, Math.toRadians(15)};
     }
 
     public static class Calculator {
 
-        /// @return The normalized bot pose as a {@link Pose2d}
-        public static Pose2d getBotPose(Vector2d robotPosition, double headingRad) {
-
-            double heading = Math.toDegrees(headingRad);
-
-            return new Pose2d(
-                    robotPosition.x,
-                    robotPosition.y,
-                    heading
-            );
+        /// @return The normalized bot pose as a {@link Pose}
+        public static Pose getBotPose(Pose rawPose, double headingRad) {
+            return rawPose.withHeading(headingRad);
         }
 
         /// Field-relative
-        public static Pose2d getTurretPoseFromBotPose(Vector2d normalizedRobotPosition, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
+        public static Pose getTurretPoseFromBotPose(Pose normalizedRobotPose, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
 
             double reZeroedTurretTicks = turretPositionTicks - turretStartPositionTicks;
-            double turretRotation = reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE;
+            double turretRotation = Math.toRadians(reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE);
 
-            double turretHeading = Math.toDegrees(headingRad) + turretRotation + ShooterConstants.TURRET_ANGULAR_OFFSET;
+            double turretHeading = headingRad + turretRotation + Math.toRadians(ShooterConstants.TURRET_ANGULAR_OFFSET);
 
-            double turretX = normalizedRobotPosition.x + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
-            double turretY = normalizedRobotPosition.y + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
+            double turretX = normalizedRobotPose.getX() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
+            double turretY = normalizedRobotPose.getY() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
 
-            return new Pose2d(
+            return new Pose(
                     turretX,
                     turretY,
                     turretHeading
+            );
+        }
+
+        public static Pose getFutureRobotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity) {
+
+            return new Pose(
+                    currentRobotPose.getX() + (t * poseVelocity.getXVelocity()),
+                    currentRobotPose.getY() + (t * poseVelocity.getYVelocity()),
+                    currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity())
             );
         }
 
@@ -151,9 +157,10 @@ public strictfp class ShooterInformation {
             return Math.hypot(xVelocity, yVelocity);
         }
 
-        /// For turret hysteresis control.
-        public static double getTurretFuturePosePredictionTime(double translationalVelocity) {
-            return 0.6;
+        /// For turret hysteresis control - the amount of time in the future where the robot's pose
+        /// will be predicted based on it's current pose and velocity.
+        public static double getTurretFuturePosePredictionTime() {
+            return 1.5;
         }
 
     }

@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.WaitUntil;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -47,7 +46,7 @@ public class SlingAuto_CYCLE_RED_FAR extends NextFTCOpMode {
                         IntakeNF.INSTANCE,
                         TransferNF.INSTANCE
                 ),
-                new PedroComponent(PPConstants::createFollower),
+                new PedroComponent(PPConstants::createAutoFollower),
                 BulkReadComponent.INSTANCE
         );
     }
