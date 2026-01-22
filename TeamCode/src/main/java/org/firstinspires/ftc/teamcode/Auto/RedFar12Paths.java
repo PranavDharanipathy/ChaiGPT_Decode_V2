@@ -99,10 +99,10 @@ public class RedFar12Paths {
                                 new Pose(54.390, 39.732).mirror(),
                                 //new Pose(49.707, 54.634),
                                 new Pose(47, 54).mirror(),
-                                new Pose(38.732, 60).mirror(), //y = 49
-                                new Pose(25.244, 60).mirror(),
-                                new Pose(13.390, 50).mirror(),
-                                new Pose(13, 61).mirror()
+                                new Pose(38.732, 62).mirror(), //y = 49
+                                new Pose(25.244, 62).mirror(),
+                                new Pose(13.390, 62).mirror(),
+                                new Pose(13, 64).mirror()
                         )
 
                 )

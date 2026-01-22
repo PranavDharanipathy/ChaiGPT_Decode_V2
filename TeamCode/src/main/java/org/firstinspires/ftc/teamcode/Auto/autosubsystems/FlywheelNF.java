@@ -52,12 +52,12 @@ public class FlywheelNF implements Subsystem {
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10]
         );
+
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
         flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
 
         flywheel.reset();
     }
-
     public Command setVel(double vel, boolean allowIntegralReset) {
         return new InstantCommand(() -> flywheel.setVelocity(vel, allowIntegralReset));
     }

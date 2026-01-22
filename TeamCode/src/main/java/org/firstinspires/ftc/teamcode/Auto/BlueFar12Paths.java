@@ -89,13 +89,13 @@ public class BlueFar12Paths {
                         new BezierCurve(
                                 new Pose(61.610, 17.000),
                                 //new Pose(56.561, 34.268),
-                                new Pose(54.390, 33.732),
+                                new Pose(55.390, 39.732),
                                 //new Pose(49.707, 54.634),
-                                new Pose(47, 49),
-                                new Pose(41.73200, 60), //y = 49
-                                new Pose(31.244, 60),
-                                new Pose(23.390, 60),
-                                new Pose(15, 63)
+                                new Pose(49, 49),
+                                //new Pose(43.73200, 68), //y = 49
+                                new Pose(31.244, 68),
+                                new Pose(23.390, 68),
+                                new Pose(19, 70)
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -103,11 +103,11 @@ public class BlueFar12Paths {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.4,
-                                        HeadingInterpolator.facingPoint(23, 62)
+                                        0.35,
+                                        HeadingInterpolator.facingPoint(22, 61)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.4,
+                                        0.35,
                                         1,
                                         HeadingInterpolator.constant(Math.PI)
                                 )
@@ -177,7 +177,7 @@ public class BlueFar12Paths {
                         new BezierCurve(
                                 new Pose(150, 26).mirror(),
                                 new Pose(125, 30).mirror(),
-                                new Pose(68, 11).mirror()
+                                new Pose(82, 11).mirror()
                         )
                 )
                 .setNoDeceleration()
