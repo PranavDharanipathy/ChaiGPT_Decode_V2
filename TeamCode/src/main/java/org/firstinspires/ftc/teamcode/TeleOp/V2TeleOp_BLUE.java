@@ -1,22 +1,19 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
-import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
 @TeleOp (name = "V2TeleOp_BLUE", group = "AAAA_MatchPurpose")
 public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
-    private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
+    private final CurrentAlliance alliance = new CurrentAlliance(CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
+
+    private final PedroDrive pedroDrive = new PedroDrive();
 
     private final Intake intake = new Intake();
 
@@ -37,10 +34,10 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
         //initialize subsystems here
         telemetry.provideComponents(super.telemetry, true, controller2);
-        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
+        pedroDrive.provideInitComponents(follower, controller1, controller2, alliance);
         intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, customDrive, rev9AxisImu, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, rev9AxisImu, controller1, controller2);
 
         //setup lynx module
         setUpLynxModule();
@@ -70,12 +67,13 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
             shooter.update();
 
-            robotCentricDrive.update();
+            pedroDrive.provideLoopComponents(intake.getStage());
+            pedroDrive.update();
 
             //background action processes
             CommandScheduler.update();
 
-            telemetry.runInstance(shooter, intake);
+            telemetry.runInstance(shooter, intake, pedroDrive);
         }
 
         //end

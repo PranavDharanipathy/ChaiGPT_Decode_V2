@@ -6,14 +6,10 @@ public class CurrentAlliance {
         BLUE_ALLIANCE, RED_ALLIANCE
     }
 
-    private ALLIANCE alliance;
+    private final ALLIANCE alliance;
 
     public CurrentAlliance(ALLIANCE startAlliance) {
         alliance = startAlliance;
-    }
-
-    public void setAlliance(ALLIANCE alliance) {
-        this.alliance = alliance;
     }
 
     public ALLIANCE getAlliance() {
