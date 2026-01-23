@@ -30,7 +30,7 @@ public class Goal {
 
         //            CLOSE                                  FAR
         RED(new GoalCoordinate(70,-69), new GoalCoordinate(72,-67)),
-        BLUE(new GoalCoordinate(70, 69), new GoalCoordinate(72, 67));
+        BLUE(new GoalCoordinate(67, 71), new GoalCoordinate(72, 67));
 
         private GoalCoordinate close;
         private GoalCoordinate far;

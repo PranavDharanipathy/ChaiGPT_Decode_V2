@@ -51,6 +51,7 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData(TelemetryMode.INFO, "flywheel real velocity", "%.0f", shooter.flywheel.getRealVelocity());
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
+        telem.addData(TelemetryMode.INFO, "turret target angle", shooter.tt);
         telem.addData(TelemetryMode.INFO, "turret position error", shooter.turret.getRawPositionError());
 
         telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
