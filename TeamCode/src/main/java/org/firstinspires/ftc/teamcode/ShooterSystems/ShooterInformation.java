@@ -109,7 +109,7 @@ public strictfp class ShooterInformation {
          * the turret spin the proper way.
          */
         public static int BLUE_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
-        public static int RED_TURRET_ANGULAR_OFFSET_DIRECTION = 1;
+        public static int RED_TURRET_ANGULAR_OFFSET_DIRECTION = -1;
 
         /// The robot velocities must be greater than this for turret hysteresis control to be used.
         /// <p>
