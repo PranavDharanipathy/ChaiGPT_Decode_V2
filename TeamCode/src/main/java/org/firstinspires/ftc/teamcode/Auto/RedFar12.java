@@ -38,7 +38,7 @@ public class RedFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8650, -8700, -8700, -8350};
+    public static double[] TURRET_POSITIONS = {-8450, -8500, -8500, -8350};
 
     public static double flywheel_target = 464_000;
 
@@ -71,6 +71,8 @@ public class RedFar12 extends NextFTCOpMode {
         paths = new RedFar12Paths(PedroComponent.follower());
 
         telemetry.addData("turret start: ", TurretNF.INSTANCE.turret.startPosition);
+
+        telemetry.update();
     }
 
 
