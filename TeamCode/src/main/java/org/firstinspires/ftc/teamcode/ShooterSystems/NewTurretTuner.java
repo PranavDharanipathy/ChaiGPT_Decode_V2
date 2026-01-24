@@ -44,6 +44,8 @@ public class NewTurretTuner extends OpMode {
 
         telemetry.addData("turretTurn ", turret.turretTurnTicks);
 
+        telemetry.update();
+
 
 
     }

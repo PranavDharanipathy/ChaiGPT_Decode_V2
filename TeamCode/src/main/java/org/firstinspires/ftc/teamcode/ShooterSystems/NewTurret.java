@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
 import static java.lang.Double.NaN;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -105,6 +106,9 @@ public class NewTurret {
 
         encoder = new Encoder(right_back);
 
+        follower.setStartingPose(initialPose);
+
+        follower.update();
     }
 
 
