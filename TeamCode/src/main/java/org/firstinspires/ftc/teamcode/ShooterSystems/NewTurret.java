@@ -99,7 +99,7 @@ public class NewTurret {
         this.targetX = targetX;
         this.targetY = targetY;
 
-        follower = PPConstants.createFollower(hardwareMap);
+        follower = PPConstants.createAutoFollower(hardwareMap);
 
         localizer = new PinpointLocalizer(hardwareMap, PPConstants.localizerConstants, initialPose);
 
