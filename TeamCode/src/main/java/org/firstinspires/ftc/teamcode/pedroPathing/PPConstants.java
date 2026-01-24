@@ -46,7 +46,8 @@ public class PPConstants {
             .centripetalScaling(0.00062)
             ;
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.994, 50, 1.5, 1.5);
+    public static PathConstraints autoPathConstraints = new PathConstraints(0.994, 50, 1.5, 1.5);
+    public static PathConstraints teleOpPathConstraints = new PathConstraints(0.994, 50, 1.6, 1.5);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -71,9 +72,17 @@ public class PPConstants {
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-    public static Follower createFollower(HardwareMap hardwareMap) {
+    public static Follower createAutoFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
-                .pathConstraints(pathConstraints)
+                .pathConstraints(autoPathConstraints)
+                .mecanumDrivetrain(driveConstants)
+                .pinpointLocalizer(localizerConstants)
+                .build();
+    }
+
+    public static Follower createTeleOpFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .pathConstraints(teleOpPathConstraints)
                 .mecanumDrivetrain(driveConstants)
                 .pinpointLocalizer(localizerConstants)
                 .build();

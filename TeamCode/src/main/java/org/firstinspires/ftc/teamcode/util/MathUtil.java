@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.util;
 
 import org.apache.commons.math3.util.FastMath;
 
+import java.math.BigDecimal;
+
 public strictfp class MathUtil {
 
     private MathUtil() {}
@@ -50,6 +52,10 @@ public strictfp class MathUtil {
         return seconds * 1_000_000_000.0;
     }
 
+    public static BigDecimal secondsToNanosecondsSafe(double seconds) {
+        return new BigDecimal(seconds).multiply(new BigDecimal("1000000000.0"));
+    }
+
     public static double nanosecondsToSeconds(double nanoseconds) {
         return nanoseconds / 1_000_000_000.0;
     }
@@ -83,8 +89,40 @@ public strictfp class MathUtil {
         return meters * 39.3701;
     }
 
+    public static double metersToCentimeters(double meters) {
+        return meters * 100;
+    }
+    public static double metersToMillimeters(double meters) {
+        return meters * 1000;
+    }
+    public static double inchesToCentimeters(double inches) {
+        return inches * 2.54;
+    }
     public static double inchesToMillimeters(double inches) {
         return inches * 25.4;
+    }
+    public static double inchesToMeters(double inches) {
+        return inches * 0.0254;
+    }
+    public static double centimetersToInches(double meters) {
+        return meters * 0.393701;
+    }
+
+    public static double centimetersToMillimeters(double meters) {
+        return meters * 10;
+    }
+    public static double centimetersToMeters(double meters) {
+        return meters * 0.01;
+    }
+    public static double millimetersToInches(double meters) {
+        return meters * 0.0393701;
+    }
+
+    public static double millimetersToCentimeters(double meters) {
+        return meters * 0.1;
+    }
+    public static double millimetersToMeters(double meters) {
+        return meters * 0.001;
     }
 
     public static double deadband(double targetValue, double currentValue, double deadbandValue) {

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.TeleOp.IntakeMotor;
 import org.firstinspires.ftc.teamcode.TeleOp.LiftPTO;
-import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
+import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public Limelight3A unstartedLimelight;
 
-    public CustomMecanumDrive customDrive;
+    public Follower follower;
 
     public TurretBase turret;
 
@@ -84,7 +85,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
 
-        customDrive = new CustomMecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        follower = PPConstants.createTeleOpFollower(hardwareMap);
 
         rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
 
@@ -118,6 +119,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        follower.setStartingPose(new Pose(0, 0, 0));
 
         intake.setLiftPIDFSCoefficients(
                 Constants.LIFT_PIDFS_COEFFICIENTS[0],
