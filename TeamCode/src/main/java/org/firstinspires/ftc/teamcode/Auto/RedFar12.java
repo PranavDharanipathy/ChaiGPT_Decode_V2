@@ -38,7 +38,7 @@ public class RedFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {-8650, -8700, -8700, -8550};
+    public static double[] TURRET_POSITIONS = {-8650, -8700, -8700, -8350};
 
     public static double flywheel_target = 464_000;
 
@@ -55,7 +55,7 @@ public class RedFar12 extends NextFTCOpMode {
                         IntakeNF.INSTANCE,
                         TransferNF.INSTANCE
                 ),
-                new PedroComponent(PPConstants::createFollower),
+                new PedroComponent(PPConstants::createAutoFollower),
                 BulkReadComponent.INSTANCE
         );
     }
@@ -66,7 +66,7 @@ public class RedFar12 extends NextFTCOpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
-        follower = PPConstants.createFollower(hardwareMap);
+        follower = PPConstants.createAutoFollower(hardwareMap);
         follower.setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
         paths = new RedFar12Paths(PedroComponent.follower());
 
