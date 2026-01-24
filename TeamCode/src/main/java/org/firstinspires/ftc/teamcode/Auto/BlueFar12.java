@@ -35,7 +35,7 @@ public class BlueFar12 extends NextFTCOpMode {
     private Telemetry telemetry;
     public Follower follower; // Pedro Pathing follower instance
 
-    public static double[] TURRET_POSITIONS = {8300,8400, 8350, 8450};
+    public static double[] TURRET_POSITIONS = {8600,8650, 8750, 8850};
 
     public static double hoodPos = 0.11;
 
@@ -110,6 +110,7 @@ public class BlueFar12 extends NextFTCOpMode {
         return new SequentialGroup(
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0] - TurretNF.INSTANCE.turret.startPosition),
                 //PRELOAD SHOOTING
+                new FollowPath(paths.preload),
 
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
                 //preload shooting
