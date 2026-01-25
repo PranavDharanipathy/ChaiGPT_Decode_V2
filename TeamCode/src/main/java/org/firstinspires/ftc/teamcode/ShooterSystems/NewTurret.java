@@ -128,9 +128,6 @@ public class NewTurret {
 
     public void updatePID() {
 
-
-        follower.update();
-
         if (!(dT == 0)) {
             errorRate = (currError-prevError) / dT;
         }
