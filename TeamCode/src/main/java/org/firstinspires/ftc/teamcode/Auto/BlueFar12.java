@@ -41,6 +41,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
     public static double flywheel_target = 468_000;
 
+public static Pose Blue_Auto_End_Pose = new Pose(0, 0, 0);
 
     private BlueFar12Paths paths;
 
@@ -101,6 +102,17 @@ public class BlueFar12 extends NextFTCOpMode {
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
         telemetry.update();
+
+        follower.update();
+
+    }
+
+    @Override
+    public void onStop() {
+
+        follower.update();
+
+        Blue_Auto_End_Pose = follower.getPose();
 
     }
 
