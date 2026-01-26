@@ -139,10 +139,7 @@ public class NewTurret {
         dT = currTime - prevTime;
 
         prevError = currError;
-
-        currError = turretCurrPos - turretTurnTicks;
-
-
+        currError = turretTurnTicks - turretCurrPos;
 
         i = MathUtil.clamp(ki, i_MIN, i_MAX);
 
@@ -159,19 +156,17 @@ public class NewTurret {
         return degrees * MecanumDrive.PARAMS.inPerTick;
     }
 
+
+
     public void update() {
 
 
         currentPose = follower.getPose();
 
         currX = currentPose.getX();
-
         currY = currentPose.getY();
 
         turretCurrPos = encoder.getCurrentPosition();
-
-
-
 
         dX = targetX - currX;
         dY = targetY - currY;
@@ -183,16 +178,6 @@ public class NewTurret {
 
         robotTurn = 45 + (FastMath.abs(fieldAngle - robotHeading));
 
-
-        turretTurnTicks = toTicks(180-robotTurn);
-
-
         updatePID();
-
-
     }
-
-
-
-
 }
