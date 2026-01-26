@@ -33,7 +33,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class BlueFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
-    public Follower follower; // Pedro Pathing follower instance
+    public Follower follower;
 
     public static double[] TURRET_POSITIONS = {8600,8650, 8750, 8850};
 
@@ -121,61 +121,45 @@ public static Pose Blue_Auto_End_Pose = new Pose(0, 0, 0);
 
         return new SequentialGroup(
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0] - TurretNF.INSTANCE.turret.startPosition),
+
                 //PRELOAD SHOOTING
                 new FollowPath(paths.preload),
-
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                //preload shooting
-
                 RobotNF.robot.shootBalls(0.32,0.5),
+
+                //FIRST INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]- TurretNF.INSTANCE.turret.startPosition),
 
                 RobotNF.robot.intakeClearingSpecial(1),
-
-                //intaking balls already set at the the human player zone
-                //TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
-
-                //RobotNF.robot.intakeClearingSpecial(0.5),
                 new FollowPath(paths.FirstIntake),
 
-                //intaking balls at the human  followCancelable(paths.FirstIntake, 7000), //new FollowPath(paths.firstInplayer zone
-
+                //FIRST RETURN
                 followCancelable(paths.FirstReturn, 8000),//new FollowPath(paths.intake),
-
-                //shooting balls
                 RobotNF.robot.shootBalls(0.32,0.6, 3, paths.FirstReturn),
 
-
+                //SECOND INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
-                //intaking balls at the human player zone
-
                 followCancelable(paths.SecondIntake, 8000),//new FollowPath(paths.intake),
 
-                //RobotNF.robot.intakeClearingSpecial(0.3),
-
+                //SECOND RETURN
                 followCancelable(paths.SecondReturn, 8000),
-
-                //second intake shooting balls
                 RobotNF.robot.shootBalls(0.32,0.6, 3, paths.SecondReturn),
 
-               // RobotNF.robot.intakeClearingSpecial(0.3),
+                //EXTRA INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
 
-
-                //RobotNF.robot.intakeClearingSpecial(1),
-                //intake extra balls from corner
-
                 followCancelable(paths.setupForFirstIntake, 3000),
-
                 followCancelable(paths.intakeExtra, 2000),
+
+                //INTAKE EXTRA RETURN
 
                 followCancelable(paths.firstReturnn, 4000),
 
 
                 RobotNF.robot.shootBalls(0.32, 0.6, 1, paths.firstReturnn),
 
-
+                //SET TURRET TO END POS
                 TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition)
 
 
