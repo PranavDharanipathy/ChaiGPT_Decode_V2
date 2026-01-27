@@ -4,6 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.chaigptrobotics.systems.DeprecatedSystem;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
@@ -18,10 +23,37 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBasePIDFSCoefficients;
+import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
 
 @Config
 public class Constants {
+
+    public static class DriveConstants {
+
+        public static Pose RED_BASE_POSE = new Pose(-45, 33.5, Math.toRadians(180));
+        public static Pose BLUE_BASE_POSE = new Pose(-45, -33.5, Math.toRadians(180));
+        public static double[] BASE_POSE_TOLERANCE = {1, 1, Math.toRadians(1)};
+
+        public static Pose getBasePose(CurrentAlliance alliance) {
+            return alliance.getAlliance() == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? BLUE_BASE_POSE : RED_BASE_POSE;
+        }
+
+        public static PathChain getMoveToBasePathChain(CurrentAlliance alliance, Follower follower) {
+
+            Pose basePose = alliance.getAlliance() == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? BLUE_BASE_POSE : RED_BASE_POSE;
+
+            return follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    follower.getPose(),
+                                    basePose
+                            )
+                    )
+                    .setConstantHeadingInterpolation(basePose.getHeading())
+                    .build();
+        }
+    }
 
     public static class IMUConstants {
 
@@ -147,14 +179,14 @@ public class Constants {
     //intake and transfer
     public static double INTAKE_POWER = 1;
 
-    public static double REVERSE_INTAKE_POWER = -0.8;
+    public static double REVERSE_INTAKE_POWER = -1;
 
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
     public static double TRANSFER_VELOCITY = 1500;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
-    public static double ANTI_TRANSFER_VELOCITY = -300;
+    public static double ANTI_TRANSFER_VELOCITY = -100;
 
     /// in milliseconds
     public static double FULLY_TRANSFER_TIME = 2000;

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 @Configurable // Panels
 @Config
-public class RedFar12Paths {
+public class RedFar15Paths {
 
     private static final Logger log = LoggerFactory.getLogger(RedFar12Paths.class);
     public PathChain FirstIntake;
@@ -37,7 +37,12 @@ public class RedFar12Paths {
     public PathChain firstIntake;
     public PathChain firstReturnn;
 
-    public RedFar12Paths(Follower follower) {
+    public PathChain SecondsetupForFirstIntake;
+
+    public PathChain SecondIntakeExtra;
+    public PathChain SecondfirstReturnn;
+
+    public RedFar15Paths(Follower follower) {
 
         preload = follower
                 .pathBuilder()
@@ -175,6 +180,36 @@ public class RedFar12Paths {
                 .build();
 
         firstReturnn = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(150, 26).mirror(),
+                                new Pose(125, 30).mirror(),
+                                new Pose(97, 11).mirror()
+                        )
+                )
+                .setNoDeceleration()
+                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-180))
+                .build();
+
+        SecondsetupForFirstIntake = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(58.503, 8.762).mirror(), new Pose(151, 65))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
+                .build();
+
+        SecondIntakeExtra = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(151, 42), new Pose(151, 33))
+                )
+                .setNoDeceleration()
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .build();
+
+        SecondfirstReturnn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(

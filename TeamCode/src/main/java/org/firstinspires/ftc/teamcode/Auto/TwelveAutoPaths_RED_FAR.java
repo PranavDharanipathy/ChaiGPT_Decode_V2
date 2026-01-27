@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import static java.lang.Math.log;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -11,16 +8,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Intake;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-@Configurable // Panels
 @Config
-public class RedFar12Paths {
+public class TwelveAutoPaths_RED_FAR {
 
-    private static final Logger log = LoggerFactory.getLogger(RedFar12Paths.class);
     public PathChain FirstIntake;
     public PathChain FirstReturn;
     public PathChain SecondIntake;
@@ -31,13 +21,8 @@ public class RedFar12Paths {
     public PathChain ThirdReturn;
 
     public PathChain preload;
-    public PathChain curvedIntake2;
 
-    public PathChain setupForFirstIntake;
-    public PathChain firstIntake;
-    public PathChain firstReturnn;
-
-    public RedFar12Paths(Follower follower) {
+    public TwelveAutoPaths_RED_FAR(Follower follower) {
 
         preload = follower
                 .pathBuilder()
@@ -97,34 +82,34 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(63.610, 16.000).mirror(),
                                 //new Pose(56.561, 34.268),
-                                new Pose(54.390, 37).mirror(),
+                                new Pose(54.390, 36.732).mirror(),
                                 //new Pose(49.707, 54.634),
-                                //new Pose(47, 54).mirror(),
-                                new Pose(38.732, 55).mirror(), //y = 49
-                                new Pose(25.244, 55).mirror(),
-                                new Pose(13.390, 55).mirror(),
-                                new Pose(13, 57).mirror()
+                                new Pose(47, 48).mirror(),
+                                new Pose(38.732, 50).mirror(), //y = 49
+                                new Pose(25.244, 50).mirror(),
+                                new Pose(13.390, 50).mirror(),
+                                new Pose(13, 51).mirror()
                         )
-
                 )
-
+                //.setConstantHeadingInterpolation(Math.PI)
                 .setHeadingInterpolation(
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.4,
-                                        HeadingInterpolator.facingPoint(145, 64)
+                                        0.24,
+                                        HeadingInterpolator.linear(0, Math.toRadians(52))
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.4,
+                                        0.24,
                                         1,
-                                        HeadingInterpolator.tangent
+                                        HeadingInterpolator.constant(Math.toRadians(25))
                                 )
-//                                    new HeadingInterpolator.PiecewiseNode(
-//                                            0.87,
-//                                            1,
-//                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
-//                                    )
+                               /* new HeadingInterpolator.PiecewiseNode(
+                                        0.65,
+                                        1,
+                                        HeadingInterpolator.linear(0, Math.toRadians(68))
+
+                                _*/
                         )
                 )
                 .build();
@@ -135,58 +120,37 @@ public class RedFar12Paths {
                         new BezierCurve(
                                 new Pose(17.463, 51.847).mirror(),
                                 new Pose(54.876, 35.408).mirror(),
-                                new Pose(59.154, 14.924).mirror()
+                                new Pose(67.154, 11.924).mirror()
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(25), 0)
-
-
-
-
                 .build();
+
+        IntakeExtra = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(67.463, 11.924).mirror(),
+                                new Pose(32, 11.924).mirror(),
+                                new Pose(15.4360, 11.924).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(0)
+
+                .setGlobalDeceleration()
+                .build();
+
         ThirdReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(3.436, 0.390).mirror(),
                                 new Pose(54.132, 29.597).mirror(),
-                                new Pose(58.503, 8.762).mirror()
+                                new Pose(62.503, 8.762).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(0)
                 .build();
-
-
-        setupForFirstIntake = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(58.503, 8.762).mirror(), new Pose(151, 65))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
-                .build();
-
-        IntakeExtra = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(151, 42), new Pose(151, 33))
-                )
-                .setNoDeceleration()
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
-                .build();
-
-        firstReturnn = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierCurve(
-                                new Pose(150, 26).mirror(),
-                                new Pose(125, 30).mirror(),
-                                new Pose(97, 11).mirror()
-                        )
-                )
-                .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-180))
-                .build();
-
 
 
 

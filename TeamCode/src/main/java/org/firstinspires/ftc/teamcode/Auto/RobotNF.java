@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.HoodNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TransferNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TurretNF;
+import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.TeleOp.Intake;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
@@ -84,7 +86,7 @@ public class RobotNF extends SubsystemGroup {
                 new Delay(transferTime),
                 TransferNF.INSTANCE.anti(),
 
-                new Delay(timeBetweenTransfers),
+                //new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),

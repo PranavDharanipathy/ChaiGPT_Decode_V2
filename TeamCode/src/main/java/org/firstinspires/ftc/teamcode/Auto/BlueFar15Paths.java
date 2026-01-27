@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 
 import org.slf4j.Logger;
@@ -15,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 @Configurable // Panels
 @Config
-public class BlueFar12Paths {
+public class BlueFar15Paths {
 
-    private static final Logger log = LoggerFactory.getLogger(BlueFar12Paths.class);
+    private static final Logger log = LoggerFactory.getLogger(BlueFar15Paths.class);
     public PathChain FirstIntake;
 
     public PathChain FirstReturn;
@@ -25,13 +26,18 @@ public class BlueFar12Paths {
     public PathChain IntakeExtra;
     public PathChain SecondReturn;
 
-
     public PathChain preload;
     public PathChain setupForFirstIntake;
     public PathChain intakeExtra;
     public PathChain firstReturnn;
 
-    public BlueFar12Paths(Follower follower) {
+    public PathChain SecondsetupForFirstIntake;
+
+    public PathChain SecondintakeExtra;
+
+    public PathChain SecondfirstReturnn;
+
+    public BlueFar15Paths(Follower follower) {
 
         preload = follower
                 .pathBuilder()
@@ -191,6 +197,41 @@ public class BlueFar12Paths {
                 .build();
 
         firstReturnn = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(150, 26).mirror(),
+                                new Pose(125, 30).mirror(),
+                                new Pose(82, 11).mirror()
+                        )
+                )
+                .setNoDeceleration()
+                .setLinearHeadingInterpolation(Math.toRadians(270), Math.PI)
+                .build();
+
+
+
+        SecondsetupForFirstIntake = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(65.154, 11.924),
+                                new Pose(151, 65).mirror()
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
+                .build();
+
+        SecondintakeExtra = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(151, 65).mirror(), new Pose(151, 21).mirror())
+                )
+                .setNoDeceleration()
+                .setConstantHeadingInterpolation(Math.toRadians(270))
+                .build();
+
+        SecondfirstReturnn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
