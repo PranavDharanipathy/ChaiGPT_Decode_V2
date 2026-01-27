@@ -34,17 +34,10 @@ public class AutonTuner extends OpMode {
     @Override
     public void loop() {
 
+        follower.update();
+
         currX = localizer.getPose().getX();
         currY = localizer.getPose().getY();
-
-            /*follower.followPath(
-                    new BezierLine(
-                    new Pose(currX, currY),
-                    new Pose(goX, goY)
-
-                    )
-
-            )*/
 
 
 
