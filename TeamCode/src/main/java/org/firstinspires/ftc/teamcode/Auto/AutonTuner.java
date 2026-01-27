@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -21,15 +22,22 @@ public class AutonTuner extends OpMode {
 
 
 
-    @Override
-    public void init() {
-        localizer = new PinpointLocalizer(hardwareMap, PPConstants.localizerConstants, new Pose(64, 9.5, 0));
-        follower = PPConstants.createFollower(hardwareMap);
-
-    }
+    PathChain autoTuner;
 
     double currX = 0;
     double currY = 0;
+
+
+
+
+    @Override
+    public void init() {
+        localizer = new PinpointLocalizer(hardwareMap, PPConstants.localizerConstants, new Pose(64, 9.5, 0));
+        follower = PPConstants.createAutoFollower(hardwareMap);
+
+    }
+
+
 
     @Override
     public void loop() {
@@ -38,6 +46,26 @@ public class AutonTuner extends OpMode {
 
         currX = localizer.getPose().getX();
         currY = localizer.getPose().getY();
+
+        autoTuner = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(currX, currY),
+                                new Pose(goX, goY)
+                        )
+                )
+                .setHeadingInterpolation(
+                        HeadingInterpolator.facingPoint(goX, goY)
+                )
+                .build();
+
+        follower.followPath(autoTuner);
+
+
+        follower.update();
+
+
+
 
 
 
