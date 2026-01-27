@@ -3,33 +3,30 @@ package org.firstinspires.ftc.teamcode.ShooterSystems;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import javax.annotation.Nullable;
 
-@Peak
 /// USES EXTERNAL ENCODER
-/// <p>|<p>
-/// PIDFVAS measured by external encoder.
-/// <p>P: Proportional
-/// <p>I: Integral
-/// <p>D: Derivative
-/// <p>F: Holding Feedforward
-/// <p>V: Velocity Feedforward
-/// <p>A: Acceleration Feedforward
-/// <p>S: Static Friction
-public final strictfp class ExtremePrecisionFlywheel {
-
-    private static final double EXTERNAL_ENCODER_VELOCITY_DIVISOR = 13.5617542039;
+@Peak
+public final class ExtremePrecisionFlywheel {
 
     private final Encoder encoder;
 
+    public Encoder getEncoder() {
+        return encoder;
+    }
+
     private final DcMotorEx leftFlywheel; //has encoder
     private final DcMotorEx rightFlywheel; //follows leftFlywheel
+
+    private VoltageSensor batteryVoltageSensor;
 
     public ExtremePrecisionFlywheel(DcMotorEx leftFlywheel, DcMotorEx rightFlywheel) {
 
@@ -41,16 +38,37 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         encoder = new Encoder(leftFlywheel);
         encoder.setDirection(Encoder.Direction.REVERSE);
+        encoder.initializeVelocityKalmanFilter(
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[0],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[1],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[2],
+                Constants.FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS[3]
+        );
 
         this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.rightFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+
+    public void initVoltageSensor(HardwareMap hardwareMap) {
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
     public double kp;
-    public double ki;
+    public double kiFar, kiClose;
+    private double ki;
+    public double getRealKi() {
+        return ki;
+    }
     public double kISmash;
+    private double kISwitchError;
+    private double kISwitchTargetVelocity;
+    public double getKISwitchTargetVelocity() {
+        return kISwitchTargetVelocity;
+    }
     public double kd;
     public double kf;
+    public double unscaledKv;
     public double kv;
     public double ka;
     public double ks;
@@ -66,9 +84,9 @@ public final strictfp class ExtremePrecisionFlywheel {
     private double SHAFT_RADIUS;
 
     private double targetVelocity;
-    private double currentVelocity;
+    private double currentFilteredVelocity;
 
-    private double lastCurrentVelocity = 0;
+    private double lastCurrentFilteredVelocity = 0;
 
     private double burstVelocity = 0;
     private double BURST_DECELERATION_RATE;
@@ -97,20 +115,46 @@ public final strictfp class ExtremePrecisionFlywheel {
         this.BURST_DECELERATION_RATE = BURST_DECELERATION_RATE;
     }
 
-    // p i d f v a s
     public double p = 0, i = 0, d = 0;
+    private double errorSum = 0;
     public double f = 0; //constant feedforward - can be enabled or disabled
     public double v = 0, a = 0;
     public double s = 0;
 
-    public Double i_max = Double.MAX_VALUE;
-    public Double i_min = -Double.MAX_VALUE;
+    public double i_max = Double.MAX_VALUE;
+    public double i_min = -Double.MAX_VALUE;
 
-    public void setIConstraints(Double i_min, Double i_max) {
+    public void setIConstraints(double i_min, double i_max) {
 
         this.i_min = i_min;
         this.i_max = i_max;
     }
+
+    public double p_max = Double.MAX_VALUE;
+    public double p_min = -Double.MAX_VALUE;
+
+    public void setPConstraints(double p_min, double p_max) {
+
+        this.p_min = p_min;
+        this.p_max = p_max;
+    }
+
+    public double filteredVoltage;
+
+    /// The alpha that determines the filtering done by the Low Pass filter. Default is 1 (no filtering)
+    private double voltageFilterAlpha = 1;
+
+    public void setVoltageFilterAlpha(double voltageFilterAlpha) {
+        this.voltageFilterAlpha = voltageFilterAlpha;
+    }
+
+    public void updateKvBasedOnVoltage() {
+
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltageSensor.getVoltage(), voltageFilterAlpha);
+
+        kv = ShooterInformation.Models.getScaledFlywheelKv(unscaledKv, filteredVoltage);
+    }
+
 
     public double[] getPIDFVAS() {
 
@@ -119,8 +163,8 @@ public final strictfp class ExtremePrecisionFlywheel {
 
     /// @param kp Proportional
     /// <p>
-    /// @param ki Integral
-    /// <p>
+    /// @param kiFar Integral
+    /// @param kiClose Integral
     /// <p>
     /// @param kd Derivative
     /// <p>
@@ -133,17 +177,23 @@ public final strictfp class ExtremePrecisionFlywheel {
     /// @param ks Static Friction
     /// <p>
     /// @param kPIDFUnitsPerVolt delta PIDF / delta volts
-    public void setVelocityPIDFVASCoefficients(double kp, double ki, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash) {
+    /// <p>
+    /// @param kISmash Multiplies I to decrease I when error switches
+    /// <p>
+    /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
+    public void setVelocityPIDFVASCoefficients(double kp, double kiFar, double kiClose, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
         this.kp = kp;
-        this.ki = ki;
+        this.kiFar = kiFar;
+        this.kiClose = kiClose;
         this.kd = kd;
         this.kf = kf;
-        this.kv = kv;
+        this.kv = unscaledKv = kv;
         this.ka = ka;
         this.ks = ks;
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
         this.kISmash = kISmash;
+        this.kISwitchError = kISwitchError;
     }
 
     private double currentTime = 0;
@@ -154,7 +204,8 @@ public final strictfp class ExtremePrecisionFlywheel {
     public void setVelocity(double velocity, boolean allowIntegralReset) {
 
         if (allowIntegralReset && targetVelocity != velocity) {
-            i = 0; //resetting integral when target velocity changes to prevent integral windup
+
+            resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
         }
 
         burstVelocity = 0;
@@ -167,7 +218,7 @@ public final strictfp class ExtremePrecisionFlywheel {
     public void setVelocityWithBurst(double velocity, @Nullable Double burst, boolean allowIntegralReset) {
 
         if (allowIntegralReset && targetVelocity != velocity) {
-            i = 0; //resetting integral when target velocity changes to prevent integral windup
+            resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
         }
 
         if (burst != null) burstVelocity = burst;
@@ -178,9 +229,14 @@ public final strictfp class ExtremePrecisionFlywheel {
         targetVelocity += burstVelocity;
     }
 
-    private boolean firstTick = true;
+    private double velocityEstimate = 0;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private boolean firstTick = true;
+    private double startTime;
+
+    private double seconds() {
+        return System.nanoTime() * 1e-9;
+    }
 
     private double power = 0;
 
@@ -189,52 +245,69 @@ public final strictfp class ExtremePrecisionFlywheel {
         //setting start time
         if (firstTick) {
 
-            timer.reset();
+            startTime = seconds();
             firstTick = false;
         }
 
         prevTime = currentTime;
-        currentTime = timer.seconds();
+        currentTime = seconds() - startTime;
         double dt = currentTime - prevTime;
 
         burstVelocity = Math.max(0, burstVelocity - (BURST_DECELERATION_RATE * dt));
 
-        lastCurrentVelocity = currentVelocity;
+        lastCurrentFilteredVelocity = currentFilteredVelocity;
 
         lastPosition = currentPosition;
         currentPosition = encoder.getCurrentPosition();
 
-        currentVelocity = ((currentPosition - lastPosition) / dt) / EXTERNAL_ENCODER_VELOCITY_DIVISOR;
+        velocityEstimate = (currentPosition - lastPosition) / dt;
+
+        encoder.runVelocityCalculation(velocityEstimate);
+        currentFilteredVelocity = encoder.getRealVelocity();
+        //currentFilteredVelocity = velocityEstimate;
 
         //telemetry.addData("current vel", currentVelocity);
 
-        double error = targetVelocity - currentVelocity;
+        double error = targetVelocity - currentFilteredVelocity;
 
 
         //proportional
         p = kp * error;
+        p = MathUtil.clamp(p, p_min, p_max);
 
         //integral - is in fact reset when target velocity changes IF ALLOWED
-        if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) i += ki * error * dt;
-        else i = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
+        if (kISwitchTargetVelocity == targetVelocity || error < kISwitchError) {
+
+            ki = kiClose;
+            resetIntegral();
+            kISwitchTargetVelocity = targetVelocity;
+        }
+        else {
+            ki = kiFar;
+        }
+
+        if (!Double.isNaN(error * dt) && error * dt != 0 && targetVelocity != 0) errorSum += error * dt;
+        else errorSum = 0; //integral is reset if it's NaN or if targetVelocity is equal to 0
         // i is prevented from getting too high or too low
-        i = MathUtil.clamp(i, i_min, i_max);
+        i = MathUtil.clamp(ki * errorSum, i_min, i_max);
 
         // i smashing
         if (Math.signum(error) != Math.signum(prevError)) {
-            i *= kISmash;
+            errorSum *= kISmash;
         }
 
         //derivative
         d = dt > 0 ? kd * (error - prevError) / dt : 0;
+        if (!MathUtil.valueWithinRangeIncludingPoles(d, -1, 1)) d = 0;
+        d = MathUtil.clamp(d, -0.2, 0.2);
 
         //positional feedforward for holding
-        f = targetVelocity != 0 ? kf : 0; /* cos(0 degrees) = 1 so no need to multiply kf by it */;
+        f = targetVelocity != 0 ? kf : 0;
 
         //velocity feedforward
         v = kv * targetVelocity;
 
-        targetAcceleration = targetVelocity / dt;
+        targetAcceleration = -targetVelocity / dt;
         a = ka * targetAcceleration;
 
         //static friction
@@ -249,16 +322,14 @@ public final strictfp class ExtremePrecisionFlywheel {
 
         power = PIDFVAPower + (Math.signum(PIDFVAPower) >= 0 ? s : -s);
 
+        if (targetVelocity == 0) power = 0;
+
         //telemetry.addData("power", power);
 
         if (isMotorEnabled) {
             leftFlywheel.setPower(power);
             rightFlywheel.setPower(power);
         }
-//        else {
-//            leftFlywheel.setPower(0);
-//            rightFlywheel.setPower(0);
-//        }
 
         prevError = error;
     }
@@ -278,6 +349,14 @@ public final strictfp class ExtremePrecisionFlywheel {
         }
     }
 
+    public void setPower(double power) {
+
+        if (isMotorEnabled) throw new IllegalArgumentException("Must disable PID mode!");
+
+        leftFlywheel.setPower(power);
+        rightFlywheel.setPower(power);
+    }
+
     // default mode is enabled
     private boolean isMotorEnabled = true;
 
@@ -295,12 +374,19 @@ public final strictfp class ExtremePrecisionFlywheel {
     ///Calculated by external encoder using ticks
     /// <p>
     ///Gets past encoder overflow, if you're using a high resolution encoder like the REV Through-Bore, it's prone to these problems.
-    public double getFrontendCalculatedVelocity() {
-        return currentVelocity;
+    /// <p>
+    /// Uses Kalman Filter
+    public double getRealVelocity() {
+        return currentFilteredVelocity;
     }
 
-    public double getLastFrontendCalculatedVelocity() {
-        return lastCurrentVelocity;
+    /// @return distance in ticks / time in seconds => ticks per second
+    public double getCurrentVelocityEstimate() {
+        return velocityEstimate;
+    }
+
+    public double getLastRealVelocity() {
+        return lastCurrentFilteredVelocity;
     }
 
     public double getBurstVelocity() {
@@ -327,9 +413,9 @@ public final strictfp class ExtremePrecisionFlywheel {
         boolean motorIsAtVelocityAndStable = false;
 
         double currentVelocity; //different for each type of calculation
-        currentVelocity = Math.abs(this.currentVelocity);
+        currentVelocity = Math.abs(this.currentFilteredVelocity);
 
-        if (Math.abs(Math.abs(targetVelocity - lastCurrentVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
+        if (Math.abs(Math.abs(targetVelocity - lastCurrentFilteredVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentFilteredVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
 
         return motorIsAtVelocityAndStable;
     }
@@ -351,18 +437,23 @@ public final strictfp class ExtremePrecisionFlywheel {
         prevTime = 0;
 
         targetVelocity = 0;
-        currentVelocity = 0;
+        currentFilteredVelocity = 0;
 
-        lastCurrentVelocity = 0;
+        lastCurrentFilteredVelocity = 0;
 
         lastPosition = 0;
         currentPosition = 0;
 
         setVelocity(0, false); //allowIntegralReset is false to speed up computation because of how '||' works - probably negligible
-        i = 0; //integral reset
+        resetIntegral(); //integral reset
     }
 
-    public double[] $getMotorPowers() {
+    private void resetIntegral() {
+        errorSum = 0;
+        i = 0;
+    }
+
+    public double[] getMotorPowers() {
         return new double[] {leftFlywheel.getPower(), rightFlywheel.getPower()};
     }
 

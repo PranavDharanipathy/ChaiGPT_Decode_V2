@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
@@ -13,7 +14,9 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
-import org.firstinspires.ftc.teamcode.roadrunner.CustomMecanumDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.IntakeMotor;
+import org.firstinspires.ftc.teamcode.TeleOp.LiftPTO;
+import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 import java.util.List;
@@ -22,28 +25,31 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public TeleOpBaseOpMode() {}
 
-    public volatile BetterGamepad controller1;
-    public volatile BetterGamepad controller2;
+    public BetterGamepad controller1;
+    public BetterGamepad controller2;
 
-    public volatile DcMotor left_front, right_front, left_back, right_back;
+    public DcMotor left_front, right_front, left_back, right_back;
 
-    public volatile Rev9AxisImu rev9AxisImu;
+    public Rev9AxisImu rev9AxisImu;
 
-    public volatile BasicVeloMotor intake;
-    public volatile BasicVeloMotor transfer;
-    public volatile AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
+    public IntakeMotor intake;
+    public LiftPTO liftPTO;
 
-    public volatile Limelight3A unstartedLimelight;
+    public BasicVeloMotor transfer;
 
-    public volatile CustomMecanumDrive customDrive;
+    public AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
-    public volatile TurretBase turret;
+    public Limelight3A unstartedLimelight;
 
-    public volatile HoodAngler hoodAngler;
+    public Follower follower;
 
-    public volatile ExtremePrecisionFlywheel flywheel;
+    public TurretBase turret;
 
-    private volatile List<LynxModule> robotHubs;
+    public HoodAngler hoodAngler;
+
+    public ExtremePrecisionFlywheel flywheel;
+
+    private List<LynxModule> robotHubs;
 
     /// initializes/creates LynxModule
     public void setUpLynxModule() {
@@ -79,11 +85,13 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, Constants.MapSetterConstants.rightBackMotorDeviceName);
 
-        customDrive = new CustomMecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        follower = PPConstants.createTeleOpFollower(hardwareMap);
 
         rev9AxisImu = hardwareMap.get(Rev9AxisImu.class, Constants.MapSetterConstants.rev9AxisIMUDeviceName);
 
-        intake = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.intakeMotorDeviceName);
+        intake = new IntakeMotor(hardwareMap);
+        liftPTO = new LiftPTO(hardwareMap);
+
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
         unstartedLimelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
@@ -112,15 +120,24 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake.setDirection(DcMotor.Direction.REVERSE);
-        transfer.setDirection(DcMotor.Direction.REVERSE);
+        follower.setStartingPose(new Pose(0, 0, 0));
 
-        intake.setVelocityPIDFCoefficients(
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
-                Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
+        intake.setLiftPIDFSCoefficients(
+                Constants.LIFT_PIDFS_COEFFICIENTS[0],
+                Constants.LIFT_PIDFS_COEFFICIENTS[1],
+                Constants.LIFT_PIDFS_COEFFICIENTS[2],
+                Constants.LIFT_PIDFS_COEFFICIENTS[3],
+                Constants.LIFT_PIDFS_COEFFICIENTS[4],
+                Constants.LIFT_PIDFS_COEFFICIENTS[5],
+                Constants.LIFT_PIDFS_COEFFICIENTS[6],
+                Constants.LIFT_PIDFS_COEFFICIENTS[7],
+                Constants.LIFT_PIDFS_COEFFICIENTS[8]
         );
+        intake.setLiftIConstraints(Constants.LIFT_MIN_INTEGRAL_LIMIT, Constants.LIFT_MAX_INTEGRAL_LIMIT);
+
+        liftPTO.setState(LiftPTO.PTOState.DISENGAGE);
+
+        transfer.setDirection(DcMotor.Direction.REVERSE);
 
         transfer.setVelocityPIDFCoefficients(
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[0],
@@ -131,13 +148,14 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
         unstartedLimelight.setPollRateHz(ShooterInformation.CameraConstants.CAMERA_POLL_RATE);
 
+        flywheel.initVoltageSensor(hardwareMap);
         flywheel.setInternalParameters(
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
-                ShooterInformation.ShooterConstants.MOTOR_CORE_VOLTAGE,
-                ShooterInformation.ShooterConstants.MOTOR_RPM,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM,
                 ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
-                );
+        );
         flywheel.setVelocityPIDFVASCoefficients(
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1],
@@ -147,18 +165,15 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7],
-                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8]
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9],
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10]
         );
+        flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
+        flywheel.setPConstraints(Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT);
 
-        turret.setPIDFCoefficients(
-                Constants.TURRET_PIDF_COEFFICIENTS[0],
-                Constants.TURRET_PIDF_COEFFICIENTS[1],
-                Constants.TURRET_PIDF_COEFFICIENTS[2],
-                Constants.TURRET_PIDF_COEFFICIENTS[3],
-                Constants.TURRET_PIDF_COEFFICIENTS[4]
-        );
-        turret.setIConstraints(Constants.TURRET_MIN_INTEGRAL_LIMIT, Constants.TURRET_MAX_INTEGRAL_LIMIT);
+        turret.setPIDFSCoefficients(Constants.TURRET_PIDFS_COEFFICIENTS);
         turret.reverse();
 
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);

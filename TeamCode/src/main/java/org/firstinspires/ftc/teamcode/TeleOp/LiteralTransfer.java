@@ -35,7 +35,7 @@ public class LiteralTransfer extends Subsystem {
 
             transfer.setVelocity(Constants.TRANSFER_VELOCITY);
 
-            if (transferBeambreak.isBeamBroken().getBoolean()) {
+            if (transferBeambreak.getBeamState().getBoolean()) {
 
                 fullyTransfer = true;
                 fullyTransferTimer.reset();

@@ -55,7 +55,7 @@ public class FieldCentricDrive extends Subsystem {
 //        double rfPower = forward - strafe - turnJoystickAmount;
 //        double rbPower = forward - strafe + turnJoystickAmount;
 //
-//        left_front.setPower(Math.abs(lfPower));
+//       left_front.setPower(Math.abs(lfPower));
 //        right_front.setPower(Math.abs(rfPower));
 //        left_back.setPower(Math.abs(lbPower));
 //        right_back.setPower(Math.abs(rbPower));

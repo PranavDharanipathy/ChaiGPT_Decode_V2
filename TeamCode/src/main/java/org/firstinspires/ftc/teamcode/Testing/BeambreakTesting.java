@@ -31,7 +31,7 @@ public class BeambreakTesting extends OpMode {
     @Override
     public void loop() {
 
-        telemetry.addData("Beam state", beambreak.isBeamBroken());
+        telemetry.addData("Beam state", beambreak.getBeamState());
         telemetry.update();
     }
 }

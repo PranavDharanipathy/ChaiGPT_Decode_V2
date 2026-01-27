@@ -21,11 +21,7 @@ public class DistanceSensorTripleTesting extends OpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        distance3 = new DistanceSensorTriple(hardwareMap,
-                Constants.MapSetterConstants.rev2mDistanceSensorNames[0],
-                Constants.MapSetterConstants.rev2mDistanceSensorNames[1],
-                Constants.MapSetterConstants.rev2mDistanceSensorNames[2]
-        );
+        distance3 = new DistanceSensorTriple(hardwareMap, Constants.MapSetterConstants.rev2mDistanceSensorNames);
     }
 
     @Override

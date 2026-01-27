@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.util;
 
 import org.apache.commons.math3.util.FastMath;
 
+import java.math.BigDecimal;
+
 public strictfp class MathUtil {
 
     private MathUtil() {}
@@ -50,6 +52,10 @@ public strictfp class MathUtil {
         return seconds * 1_000_000_000.0;
     }
 
+    public static BigDecimal secondsToNanosecondsSafe(double seconds) {
+        return new BigDecimal(seconds).multiply(new BigDecimal("1000000000.0"));
+    }
+
     public static double nanosecondsToSeconds(double nanoseconds) {
         return nanoseconds / 1_000_000_000.0;
     }
@@ -63,19 +69,60 @@ public strictfp class MathUtil {
     }
 
     public static double getDistance2d(double x1, double x2, double y1, double y2) {
-        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2));
+
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+
+        return FastMath.sqrt((deltaX * deltaX) + (deltaY * deltaY));
     }
 
     public static double getDistance3d(double x1, double x2, double y1, double y2, double z1, double z2) {
-        return FastMath.sqrt(FastMath.pow(x2 - x1, 2) + FastMath.pow(y2 - y1, 2) + FastMath.pow(z2 - z1, 2));
+
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+        double deltaZ = z2 - z1;
+
+        return FastMath.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
     }
 
     public static double metersToInches(double meters) {
         return meters * 39.3701;
     }
 
+    public static double metersToCentimeters(double meters) {
+        return meters * 100;
+    }
+    public static double metersToMillimeters(double meters) {
+        return meters * 1000;
+    }
+    public static double inchesToCentimeters(double inches) {
+        return inches * 2.54;
+    }
     public static double inchesToMillimeters(double inches) {
         return inches * 25.4;
+    }
+    public static double inchesToMeters(double inches) {
+        return inches * 0.0254;
+    }
+    public static double centimetersToInches(double meters) {
+        return meters * 0.393701;
+    }
+
+    public static double centimetersToMillimeters(double meters) {
+        return meters * 10;
+    }
+    public static double centimetersToMeters(double meters) {
+        return meters * 0.01;
+    }
+    public static double millimetersToInches(double meters) {
+        return meters * 0.0393701;
+    }
+
+    public static double millimetersToCentimeters(double meters) {
+        return meters * 0.1;
+    }
+    public static double millimetersToMeters(double meters) {
+        return meters * 0.001;
     }
 
     public static double deadband(double targetValue, double currentValue, double deadbandValue) {
@@ -83,5 +130,43 @@ public strictfp class MathUtil {
         double deltaValue = targetValue - currentValue;
 
         return Math.abs(deltaValue) < deadbandValue ? currentValue : targetValue;
+    }
+
+    public static double truncate(double value, double truncateFactor) {
+        return Math.round(value * truncateFactor) / truncateFactor;
+    }
+
+    public static boolean valueWithinRange(double value, double minRange, double maxRange) {
+        return value > minRange && value < maxRange;
+    }
+
+    public static boolean valueWithinRangeIncludingPoles(double value, double minRange, double maxRange) {
+        return value >= minRange && value <= maxRange;
+    }
+
+    /// @param array must be sorted
+    public static double[] findBoundingValues(double[] array, double value) {
+
+        for (int index = 0; index < array.length - 1; index++) {
+            double lower = array[index];
+            double upper = array[index + 1];
+
+            if (value >= lower && value <= upper) {
+                return new double[] {lower, upper};
+            }
+        }
+
+        throw new IllegalArgumentException("No bounding values for input: value can be found from input array!");
+    }
+
+    public static double interpolateLinear(double x, InterpolationData data) {
+
+        double x0 = data.dataPoints[0][0];
+        double x1 = data.dataPoints[1][0];
+
+        double y0 = data.dataPoints[0][1];
+        double y1 = data.dataPoints[1][1];
+
+        return y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
     }
 }

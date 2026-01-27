@@ -34,9 +34,16 @@ public class BetterGamepad {
     public boolean left_trigger(float threshold) { return gamepad.left_trigger >= threshold; }
     public boolean right_trigger(float threshold) { return gamepad.right_trigger >= threshold; }
 
-    public boolean back() { return gamepad.back; }
+    public boolean back() { return gamepad.back;}
+
+    public boolean options() { return gamepad.options || gamepad.options; }
+
+    public boolean share() { return gamepad.share || gamepad.share; }
 
     public boolean main_button() { return gamepad.guide || gamepad.ps; }
+
+    public boolean left_stick_button() { return gamepad.left_stick_button; }
+    public boolean right_stick_button() { return gamepad.right_stick_button; }
 
     public boolean isRumbling() { return gamepad.isRumbling(); }
 
@@ -121,6 +128,22 @@ public class BetterGamepad {
     public boolean prev_main_button = false;
     public boolean main_buttonHasJustBeenPressed = false;
 
+    public boolean curr_options = false;
+    public boolean prev_options = false;
+    public boolean optionsHasJustBeenPressed = false;
+
+    public boolean curr_share = false;
+    public boolean prev_share = false;
+    public boolean shareHasJustBeenPressed = false;
+
+    public boolean curr_left_stick_button = false;
+    public boolean prev_left_stick_button = false;
+    public boolean left_stick_buttonHasJustBeenPressed = false;
+
+    public boolean curr_right_stick_button = false;
+    public boolean prev_right_stick_button = false;
+    public boolean right_stick_buttonHasJustBeenPressed = false;
+
     public void getInformation() {
 
         prev_a = curr_a;
@@ -186,6 +209,22 @@ public class BetterGamepad {
         prev_main_button = curr_main_button;
         curr_main_button = main_button();
         main_buttonHasJustBeenPressed = !prev_main_button && curr_main_button;
+
+        prev_options = curr_options;
+        curr_options = gamepad.options;
+        optionsHasJustBeenPressed = !prev_options && curr_options;
+
+        prev_share = curr_share;
+        curr_share = gamepad.share;
+        shareHasJustBeenPressed = !prev_share && curr_share;
+
+        prev_left_stick_button = curr_left_stick_button;
+        curr_left_stick_button = gamepad.left_stick_button;
+        left_stick_buttonHasJustBeenPressed = !prev_left_stick_button && curr_left_stick_button;
+
+        prev_right_stick_button = curr_right_stick_button;
+        curr_right_stick_button = gamepad.right_stick_button;
+        right_stick_buttonHasJustBeenPressed = !prev_right_stick_button && curr_right_stick_button;
     }
 
 }

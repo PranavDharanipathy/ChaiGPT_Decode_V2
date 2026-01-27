@@ -5,21 +5,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.Constants;
-
 public class VMotor {
 
-    /// exposed for child class usage
-    DcMotorEx internalMotor;
+    //exposed for further usage
+    public DcMotorEx internalMotor;
 
     /// for object usage
     public VoltageSensor internalBatteryVoltageSensor;
 
-    public VMotor(HardwareMap hardwareMap, String deviceName, Constants.HUB_TYPE hub) {
+    public VMotor(HardwareMap hardwareMap, String deviceName) {
 
         internalMotor = hardwareMap.get(DcMotorEx.class, deviceName);
 
-        internalBatteryVoltageSensor = hardwareMap.get(VoltageSensor.class, hub.getGivenName());
+        internalBatteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
@@ -50,8 +48,12 @@ public class VMotor {
         internalMotor.setPower(volts / internalBatteryVoltageSensor.getVoltage());
     }
 
-    public void getVolts() {
-        internalMotor.setPower(internalMotor.getPower() * internalBatteryVoltageSensor.getVoltage());
+    public double getVolts() {
+        return internalMotor.getPower() * internalBatteryVoltageSensor.getVoltage();
+    }
+
+    public double getPower() {
+        return internalMotor.getPower();
     }
 
 }

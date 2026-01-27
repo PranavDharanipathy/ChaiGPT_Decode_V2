@@ -1,5 +1,5 @@
 include ':FtcRobotController'
 include ':TeamCode'
 include ':chaigptrobotics'
-include ':MeepMeepTesting'
-include ':CPPOptimization'
+include ':CPPOptimizations'
+include ':chaigptrobotics:lib'

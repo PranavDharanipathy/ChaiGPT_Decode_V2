@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import com.chaigptrobotics.shenanigans.Peak;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,15 +10,41 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import org.firstinspires.ftc.teamcode.util.InterpolationData;
+import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_PD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KPS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KDS;
+
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_FEEDFORWARD_POSITIONS;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.ShooterConstants.TURRET_KFS;
+
+import java.util.Collections;
+
+/// USES EXTERNAL ENCODER
+@Peak
 public class TurretBase {
 
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    private double kp, ki, kd, kf, kISmash;
-    public double p, i, d, ff;
+    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter;
+    public double ki, kf;
+
+    private double maxI = 1;
+    private double minI = -1;
+
+    public double dActivation = 0;
+
+    private double iSwitch, iSwitchTargetPosition = 0;
+
+    public double p, i, d, f, s;
+
+    public double filteredDerivative = 0;
+
+    public double filteredPower = 0;
 
     public TurretBase(HardwareMap hardwareMap) {
 
@@ -33,39 +60,157 @@ public class TurretBase {
         encoder = new Encoder(hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.turretExternalEncoderMotorPairName));
         encoder.setDirection(Encoder.Direction.FORWARD);
 
+        // first targetPosition is the position it starts at
+        lastTargetPosition = targetPosition = startPosition = encoder.getCurrentPosition();
     }
 
+    private double fDirection = 1;
+
+    private boolean reversed = false;
+
+    /// Call after setting PIDFS coefficients
     public void reverse() {
 
         DcMotorSimple.Direction direction = leftTurretBase.getDirection() == DcMotorSimple.Direction.FORWARD ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD;
 
         leftTurretBase.setDirection(direction);
         rightTurretBase.setDirection(direction);
+
+        TURRET_PD_POSITIONS.replaceAll(i -> -i);
+        TURRET_FEEDFORWARD_POSITIONS.replaceAll(i -> -i);
+
+        Collections.reverse(TURRET_PD_POSITIONS);
+        Collections.reverse(TURRET_FEEDFORWARD_POSITIONS);
+
+        Collections.reverse(TURRET_KPS);
+        Collections.reverse(TURRET_KDS);
+        Collections.reverse(TURRET_KFS);
+
+        reversed = true;
+
+        fDirection = -1;
+
     }
 
-    public void setPIDFCoefficients(double kp, double ki, double kd, double kf, double kISmash) {
+    private TurretBasePIDFSCoefficients coefficients;
 
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-        this.kf = kf;
+    public void setPIDFSCoefficients(TurretBasePIDFSCoefficients coefficients) {
 
-        this.kISmash = kISmash;
+        this.coefficients = coefficients;
+
+        //setting variables that do not change
+        ks = coefficients.ks;
+
+        kPowerFilter = coefficients.kPowerFilter;
+
+        minI = coefficients.minI;
+        maxI = coefficients.maxI;
     }
 
-    private double targetPosition = 0;
+    /// @param tuning true means that turret's in tuning mode while false means that turret is in normal mode.
+    /// If the object isn't initialized, nothing will happen and the method will deal with the error.
+    public void setTuning(boolean tuning) {
 
-    private double MAX_I = Double.MAX_VALUE;
-    private double MIN_I = -Double.MAX_VALUE;
-
-    public void setIConstraints(double min_i, double max_i) {
-
-        MIN_I = min_i;
-        MAX_I = max_i;
+        try {
+            coefficients.setTuning(tuning);
+        }
+        catch (Exception ignore) {}
     }
+
+    public enum PD_INTERPOLATION_MODE {
+
+        NONE, P, D, BOTH;
+
+        /**
+         * <p>"00" - Indicates NONE
+         * <p>"10" - Indicates P
+         * <p>"01" - Indicates D
+         * <p>"11" - Indicates BOTH
+         * @throws IllegalArgumentException If an invalid mode is inputted
+         */
+        public static PD_INTERPOLATION_MODE fromString(String mode) {
+
+            switch (mode) {
+
+                case "00":
+                    return NONE;
+
+                case "10":
+                    return P;
+
+                case "01":
+                    return D;
+
+                case "11":
+                    return BOTH;
+
+                default:
+                    throw new IllegalArgumentException(mode + " is an invalid mode string!");
+            }
+        }
+    }
+
+    public PD_INTERPOLATION_MODE pdInterpolationMode = PD_INTERPOLATION_MODE.BOTH;
+
+    /// To be able to set from FTC Dashboard
+    public void setPdInterpolationMode(PD_INTERPOLATION_MODE mode) {
+        pdInterpolationMode = mode;
+    }
+
+    /// Setting variables that do in fact change
+    private void chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide side) {
+
+        if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.BOTH)) {
+
+            double[] kpAndKd = coefficients.kpAndKd(targetPosition, startPosition);
+            kp = kpAndKd[0];
+            kd = kpAndKd[1];
+        }
+        else if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.P)) {
+
+            kp = coefficients.kp(targetPosition, startPosition);
+            kd = coefficients.kd;
+        }
+        else if(pdInterpolationMode.equals(PD_INTERPOLATION_MODE.D)) {
+
+            kp = coefficients.kp;
+            kd = coefficients.kd(targetPosition, startPosition);
+        }
+        else { //if pdInterpolationMode equals PD_INTERPOLATION_MODE.NONE
+
+            kp = coefficients.kp;
+            kd = coefficients.kd;
+        }
+
+
+        kiFar = coefficients.kiFar(side);
+        kiClose = coefficients.kiClose(side);
+        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, reversed);
+
+        kDFilter = coefficients.kDFilter(side);
+
+        iSwitch = coefficients.iSwitch(side);
+
+        kISmash = coefficients.kISmash(side);
+
+        dActivation = coefficients.dActivation(side);
+    }
+
+    public double startPosition;
+    private double lastTargetPosition;
+    private double targetPosition;
 
     public void setPosition(double position) {
-        targetPosition = position;
+
+        if (targetPosition != position) {
+
+            lastTargetPosition = targetPosition;
+            targetPosition = position;
+        }
+    }
+
+    public double getLastTargetPosition() {
+        return lastTargetPosition;
     }
 
     public double getTargetPosition() {
@@ -90,61 +235,74 @@ public class TurretBase {
 
         error = targetPosition - currentPosition;
 
+        chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
+
         //proportional
         p = kp * error;
 
         //integral
-        i += ki * error * dt;
-        i = MathUtil.clamp(i, MIN_I, MAX_I);
-        if (Math.signum(prevError) != Math.signum(error)) i *= kISmash;
+        if (targetPosition == iSwitchTargetPosition || Math.abs(error) <= iSwitch) {
+
+            iSwitchTargetPosition = targetPosition;
+            ki = kiClose;
+        }
+        else {
+            ki = kiFar;
+        }
+        if (dt != 0) i += ki * error * dt;
+        if (Math.signum(error) != Math.signum(prevError) && error != 0) i *= kISmash;
+        i = MathUtil.clamp(i, minI, maxI);
 
         //derivative
-        d = dt > 0 ? kd * (error - prevError) / dt : 0;
+        double rawDerivative = (error - prevError) / dt;
+        filteredDerivative = LowPassFilter.getFilteredValue(filteredDerivative, rawDerivative, kDFilter);
+        d = dt > 0 && Math.abs(error) >= dActivation ? kd * filteredDerivative : 0;
 
         //feedforward
-        ff = usingFeedforward ? kf * Math.cos(Math.toRadians(targetPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE)) : 0;
+        double reZeroedTargetPosition = targetPosition - startPosition;
+        f = kf * fDirection * reZeroedTargetPosition;
 
-        double power = p + i + d + ff;
+        //static friction feedforward
+        s = ks * Math.signum(error);
 
-        leftTurretBase.setPower(power);
-        rightTurretBase.setPower(power);
+        double rawPower = p + i + d + f + s;
+        filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
+
+        if (powerOverride != null) {
+            leftTurretBase.setPower(powerOverride);
+            rightTurretBase.setPower(powerOverride);
+        }
+        else {
+            leftTurretBase.setPower(filteredPower);
+            rightTurretBase.setPower(filteredPower);
+        }
 
         prevTime = currTime;
         prevError = error;
     }
 
-    private boolean usingFeedforward = true;
+    private Double powerOverride = null;
 
-    public void setUsingFeedforwardState(boolean usingFeedforward) {
-        this.usingFeedforward = usingFeedforward;
+    public void overridePower(Double power) {
+        powerOverride = power;
     }
 
     public double getPositionError() {
-        return Math.abs(targetPosition - getCurrentPosition());
+        return Math.abs(error);
     }
 
-    public double $getRawPositionError() {
+    public double getRawPositionError() {
         return error;
     }
 
-    public double[] $getServoPowers() {
+    public double[] getServoPowers() {
         return new double[] {leftTurretBase.getPower(), rightTurretBase.getPower()};
     }
 
-    public void $stopTurret() {
+    /// Sets the power to zero for this instance, if the update function sets power later, that power will be set.
+    public void stopTurret() {
         leftTurretBase.setPower(0);
         rightTurretBase.setPower(0);
-    }
-
-    /// used for tuning
-    public void updateCoefficients(double kp, double ki, double kd, double kf, double kISmash) {
-
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-        this.kf = kf;
-
-        this.kISmash = kISmash;
     }
 
 }

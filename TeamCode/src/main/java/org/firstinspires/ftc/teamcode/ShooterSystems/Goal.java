@@ -5,6 +5,21 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class Goal {
 
+    public static class GoalCoordinate {
+
+        private final double x;
+        private final double y;
+
+        public GoalCoordinate(double x, double y) {
+
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getX() { return x; }
+        public double getY() { return y; }
+    }
+
     /**
      * x is forward-backward with forward being positive and backward being negative
      * <p>
@@ -13,19 +28,40 @@ public class Goal {
     @SuppressWarnings("all")
     public enum GoalCoordinates {
 
-        RED(58,-61),
-        BLUE(58, 61);
+        //            CLOSE                                  FAR
+        RED(new GoalCoordinate(70,-69), new GoalCoordinate(72,-67)),
+        BLUE(new GoalCoordinate(67, 71), new GoalCoordinate(72, 67));
 
-        private double x;
-        private double y;
+        private GoalCoordinate close;
+        private GoalCoordinate far;
 
-        GoalCoordinates(double x, double y) {
-            this.x = x;
-            this.y = y;
+        GoalCoordinates(GoalCoordinate close, GoalCoordinate far) {
+
+            this.close = close;
+            this.far = far;
         }
 
-        public double[] getCoordinate() {
-            return new double[] {x, y};
+        public GoalCoordinate getCloseCoordinate() {
+            return close;
+        }
+        public GoalCoordinate getFarCoordinate() {
+            return far;
+        }
+    }
+
+    public enum GoalCoordinatesForDistance {
+
+        RED(new GoalCoordinate(60, -60)),
+        BLUE(new GoalCoordinate(60, 60));
+
+        private GoalCoordinate coord;
+
+        GoalCoordinatesForDistance(GoalCoordinate coord) {
+            this.coord = coord;
+        }
+
+        public GoalCoordinate getCoordinate() {
+            return coord;
         }
     }
 
@@ -34,17 +70,17 @@ public class Goal {
     /// x is forward-backward and y is left-right.
     /// @param x In inches
     /// @param y In inches
-    public static double getAngleToGoal(double x, double y, GoalCoordinates goalCoordinates) {
+    public static double getAngleToGoal(double x, double y, GoalCoordinate goalCoordinate) {
 
-        double dx = goalCoordinates.x - x;
-        double dy = goalCoordinates.y - y;
+        double dx = goalCoordinate.getX() - x;
+        double dy = goalCoordinate.getY() - y;
 
         return Math.toDegrees(FastMath.atan2(dy, dx));
     }
 
     /// Gets the flat (2d) distance from the goal.
-    public static double getDistanceFromGoal(double x, double y, GoalCoordinates goalCoordinates) {
-        return MathUtil.getDistance2d(x, goalCoordinates.x, y, goalCoordinates.y);
+    public static double getDistanceFromGoal(double x, double y, GoalCoordinate goalCoordinate) {
+        return MathUtil.getDistance2d(x, goalCoordinate.getX(), y, goalCoordinate.getY());
     }
 
 }

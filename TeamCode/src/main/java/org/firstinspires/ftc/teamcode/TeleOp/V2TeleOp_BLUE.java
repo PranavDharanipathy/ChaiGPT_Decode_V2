@@ -1,25 +1,19 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
-import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
-import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
 
-@Config
-@TeleOp (name = "V2TeleOp BLUE", group = "AAAA_MatchPurpose")
+@TeleOp (name = "V2TeleOp_BLUE", group = "AAAA_MatchPurpose")
 public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
-    public static PIPELINES PIPELINE = PIPELINES.BLUE_PIPELINE;
+    private final CurrentAlliance alliance = new CurrentAlliance(CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
 
-    private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
+    private final PedroDrive pedroDrive = new PedroDrive();
 
     private final Intake intake = new Intake();
 
@@ -27,22 +21,23 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
     private final Shooter shooter = new Shooter();
 
-    private ElapsedTime universalTimer = new ElapsedTime();
+    private final TelemetrySubsystem telemetry = new TelemetrySubsystem();
+
+    //private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-
-        telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initializeDevices();
 
         applyComponentTraits();
 
         //initialize subsystems here
-        robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-        intake.provideComponents(super.intake, intakeBeambreak, transferBeambreak, controller1);
+        telemetry.provideComponents(super.telemetry, true, controller2);
+        pedroDrive.provideInitComponents(follower, controller1, controller2, alliance);
+        intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, customDrive, rev9AxisImu, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, rev9AxisImu, controller1, controller2);
 
         //setup lynx module
         setUpLynxModule();
@@ -51,11 +46,13 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
         if (isStopRequested()) return;
         waitForStart();
+        CommandScheduler.start();
 
+        //all subsystem starting methods
         shooter.start(Goal.GoalCoordinates.BLUE);
 
         //run robot reset
-        RobotResetter robotReset = new PostAutonomousRobotReset();
+        RobotResetter robotReset = new PostAutonomousRobotReset(this);
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -70,32 +67,13 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
 
             shooter.update();
 
-            robotCentricDrive.update();
+            pedroDrive.provideLoopComponents(intake.getStage());
+            pedroDrive.update();
 
             //background action processes
+            CommandScheduler.update();
 
-            telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
-            telemetry.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
-
-            telemetry.addData("hood position", shooter.hoodAngler.getPosition());
-
-            telemetry.addData("flywheel current velocity", shooter.flywheel.getFrontendCalculatedVelocity());
-            telemetry.addData("flywheel target velocity", shooter.flywheel.getTargetVelocity());
-
-            telemetry.addData("p", shooter.flywheel.p);
-            telemetry.addData("i", shooter.flywheel.i);
-            telemetry.addData("d", shooter.flywheel.d);
-            telemetry.addData("v", shooter.flywheel.v);
-            telemetry.addData("power", shooter.flywheel.$getMotorPowers()[0]);
-
-            telemetry.addData("turret position error", shooter.turret.$getRawPositionError());
-
-            telemetry.addData("Robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.robotPose.position.x, shooter.robotPose.position.y, shooter.robotPose.heading.toDouble());
-            telemetry.addData("Turret target angle", shooter.robotPose);
-
-            telemetry.addData("REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
-            telemetry.update();
-
+            telemetry.runInstance(shooter, intake, pedroDrive);
         }
 
         //end

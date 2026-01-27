@@ -3,28 +3,36 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BasicVeloMotor;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.InstantCommand;
+import org.firstinspires.ftc.teamcode.util.CommandUtils.T;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
-public final class Intake extends Subsystem {
+public class Intake extends Subsystem {
 
     private BetterGamepad controller1;
-    private BasicVeloMotor intake;
+    private BetterGamepad controller2;
+
+    private IntakeMotor intake;
+    private LiftPTO liftPTO;
 
     private AdafruitBeambreakSensor intakeBeambreak;
 
     private AdafruitBeambreakSensor transferBeambreak;
 
-    public void provideComponents(BasicVeloMotor intake, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1) {
+    public void provideComponents(IntakeMotor intake, LiftPTO liftPTO, AdafruitBeambreakSensor intakeBeambreak, AdafruitBeambreakSensor transferBeambreak, BetterGamepad controller1, BetterGamepad controller2) {
 
         this.intake = intake;
+
+        this.liftPTO = liftPTO;
 
         this.intakeBeambreak = intakeBeambreak;
         this.transferBeambreak = transferBeambreak;
 
         this.controller1 = controller1;
+        this.controller2 = controller2;
     }
     private boolean isBallInIntake = false;
     private boolean isBallInTransfer = false;
@@ -35,14 +43,13 @@ public final class Intake extends Subsystem {
 
     private void beamBreakProcesses() {
 
-        boolean RAW_isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
+        boolean rawIsBallInIntake = !intakeBeambreak.getBeamState().getBoolean();
 
-        if (RAW_isBallInIntake) {
+        if (rawIsBallInIntake) {
             isBallInIntake = true;
             isBallInIntakeDeadBandTriggered = true;
             isBallinIntakeDeadBandTimer.reset();
         }
-
         else if (isBallInIntakeDeadBandTriggered && isBallinIntakeDeadBandTimer.milliseconds() < Constants.IS_BALL_IN_INTAKE_DEADBAND_TIMER) {
             isBallInIntake = true;
         }
@@ -51,38 +58,18 @@ public final class Intake extends Subsystem {
             isBallInIntakeDeadBandTriggered = false;
         }
 
-        isBallInIntake = intakeBeambreak.isBeamBroken().getBoolean();
-        isBallInTransfer = transferBeambreak.isBeamBroken().getBoolean();
+        //isBallInIntake = !intakeBeambreak.getBeamState().getBoolean();
+        isBallInTransfer = !transferBeambreak.getBeamState().getBoolean();
     }
 
-    private double intakeVelocity;
+    public enum Stage {
+        INTAKE, DRIVE_TO_BASE, LIFT
+    }
 
-    private void intakePIDFAndVelocityProcesses() {
+    private Stage stage = Stage.INTAKE;
 
-        //If one ball is in Intake and one ball is in transfer
-
-        if (isBallInTransfer && isBallInIntake) {
-            //does not integral
-            intake.setVelocityPIDFCoefficients(
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[0],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[1],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[2],
-                    Constants.INTAKE_PIDF_COEFFICIENTS_WHEN_BALL_IS_IN_TRANSFER[3]
-            );
-
-            intakeVelocity = Constants.INTAKE_VELOCITY_WHEN_BALL_IN_TRANSFER;
-        }
-        else {
-            //uses integral
-            intake.setVelocityPIDFCoefficients(
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[0],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[1],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[2],
-                    Constants.INTAKE_PIDF_DEFAULT_COEFFICIENTS[3]
-            );
-
-            intakeVelocity = Constants.BASE_INTAKE_VELOCITY;
-        }
+    public Stage getStage() {
+        return stage;
     }
 
     @Override
@@ -90,19 +77,89 @@ public final class Intake extends Subsystem {
 
         beamBreakProcesses();
 
-        intakePIDFAndVelocityProcesses();
+        if (controller2.right_stick_buttonHasJustBeenPressed) {
+            toIntake();
+        }
+        else if (controller2.left_bumperHasJustBeenPressed) {
 
-        if (isBallInIntake) intake.setVelocity(intakeVelocity);
+            switch (stage) {
+
+                case INTAKE:
+                    toDriveToBase();
+                    break;
+
+                case DRIVE_TO_BASE:
+                    toLift();
+                    break;
+
+                case LIFT:
+                    toIntake();
+                    break;
+            }
+        }
+
+        if (stage == Stage.LIFT) lift();
+        else intake();
+
+        intake.update();
+    }
+
+    private void intake() {
 
         //Intake and reverse-intake
         if (controller1.right_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(intakeVelocity);
-        } else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
-            intake.setVelocity(Constants.REVERSE_INTAKE_VELOCITY);
-        } else if (!isBallInIntake) {
-            intake.setVelocity(0);
+            intake.setPower(Constants.INTAKE_POWER);
         }
+        else if (controller1.left_trigger(Constants.TRIGGER_THRESHOLD)) {
+            intake.setPower(Constants.REVERSE_INTAKE_POWER);
+        }
+//        else if (isBallInIntake) {
+//            intake.setPower(Constants.INTAKE_POWER);
+//        }
+        else {
+            intake.setPower(0);
+        }
+    }
 
+    private boolean liftFirstInstance;
+
+    private void lift() {
+
+        if (liftFirstInstance) {
+
+            intake.setPosition(Constants.LIFT_POSITION);
+            liftFirstInstance = false;
+        }
+    }
+
+    private void toIntake() {
+
+        stage = Stage.INTAKE;
+        intake.setFunction(IntakeMotor.Function.INTAKE);
+        liftPTO.setState(LiftPTO.PTOState.DISENGAGE);
+    }
+
+    private void toDriveToBase() {
+
+        stage = Stage.DRIVE_TO_BASE;
+        intake.setFunction(IntakeMotor.Function.INTAKE);
+        liftPTO.setState(LiftPTO.PTOState.DISENGAGE);
+    }
+
+    private void toLift() {
+
+        stage = Stage.LIFT;
+        intake.setFunction(IntakeMotor.Function.LIFT);
+        liftPTO.setState(LiftPTO.PTOState.ENGAGE);
+        liftFirstInstance = true;
+    }
+
+    public boolean getLiftEngaged() {
+        return liftPTO.getState() == LiftPTO.PTOState.ENGAGE;
+    }
+
+    public double getLiftPosition() {
+        return intake.getReZeroedPosition();
     }
 
 }

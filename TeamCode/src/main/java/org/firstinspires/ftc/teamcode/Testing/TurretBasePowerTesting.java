@@ -15,7 +15,7 @@ public class TurretBasePowerTesting extends OpMode {
     private CRServoImplEx leftTurretBase;
     private CRServoImplEx rightTurretBase;
 
-    public static double POWER;
+    public static double POWER = 0;
 
     @Override
     public void init() {

@@ -42,7 +42,6 @@ public class BasicVeloMotorTuner extends OpMode {
         motor.setVelocity(VELOCITY);
 
         telemetry.addData("velocity", motor.getVelocity());
-        telemetry.addData("power", motor.getPower());
         telemetry.update();
     }
 }
