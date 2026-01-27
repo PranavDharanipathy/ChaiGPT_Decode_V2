@@ -28,7 +28,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "AUTO BLUE FAR 12", group = "Autonomous")
+@Autonomous(name = "AUTO BLUE FAR 12", group = "AAA_MatchPurpose")
 @Config
 public class BlueFar12 extends NextFTCOpMode {
 
