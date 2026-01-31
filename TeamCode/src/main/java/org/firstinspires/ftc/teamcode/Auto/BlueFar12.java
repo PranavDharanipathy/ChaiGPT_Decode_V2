@@ -203,13 +203,13 @@ public class BlueFar12 extends NextFTCOpMode {
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
 
+                RobotNF.robot.intakeClearingSpecial(0.5),
 
 
                 followCancelable(paths.setupForFirstIntake, 2300),
                 followCancelable(paths.intakeExtra, 1300),
 
 
-                RobotNF.robot.intakeClearingSpecial(0.5),
 
 
                 //INTAKE EXTRA RETURN
