@@ -44,7 +44,7 @@ public class BlueFar12 extends NextFTCOpMode {
     public Follower follower;
 
 
-    public static double[] TURRET_POSITIONS = {8700,8750, 8650, 8450};
+    public static double[] TURRET_POSITIONS = {8500,8550, 8450, 8450};
 
 
     public static double hoodPos = 0.11;
