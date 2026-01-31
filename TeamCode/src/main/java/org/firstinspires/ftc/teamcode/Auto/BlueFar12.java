@@ -209,9 +209,6 @@ public class BlueFar12 extends NextFTCOpMode {
                 followCancelable(paths.setupForFirstIntake, 2300),
                 followCancelable(paths.intakeExtra, 1300),
 
-
-
-
                 //INTAKE EXTRA RETURN
 
 

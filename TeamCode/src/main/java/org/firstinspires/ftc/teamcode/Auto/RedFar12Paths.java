@@ -95,6 +95,19 @@ public class RedFar12Paths {
         SecondIntake = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
+                                new Pose(61.610, 18.000).mirror(),
+                                //new Pose(56.561, 34.268).mirror(),
+                                new Pose(55.390, 39.732).mirror(),
+                                //new Pose(49.707, 54.634).mirror(),
+                                new Pose(49, 49).mirror(),
+                                //new Pose(43.73200, 68).mirror(), //y = 49
+                                new Pose(31.244, 68).mirror(),
+                                new Pose(23.390, 68).mirror(),
+                                new Pose(19, 70).mirror()
+                        )
+                )
+                /*.addPath(
+                        new BezierCurve(
                                 new Pose(63.610, 16.000).mirror(),
                                 //new Pose(56.561, 34.268),
                                 new Pose(54.390, 37).mirror(),
@@ -106,9 +119,28 @@ public class RedFar12Paths {
                                 new Pose(13, 57).mirror()
                         )
 
+                )*/
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0,
+                                        0.35,
+                                        HeadingInterpolator.facingPoint(151, 61)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.35,
+                                        1,
+                                        HeadingInterpolator.constant(0)
+                                )
+//                                    new HeadingInterpolator.PiecewiseNode(
+//                                            0.87,
+//                                            1,
+//                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
+//                                    )
+                        )
                 )
 
-                .setHeadingInterpolation(
+                /*.setHeadingInterpolation(
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
@@ -120,13 +152,8 @@ public class RedFar12Paths {
                                         1,
                                         HeadingInterpolator.tangent
                                 )
-//                                    new HeadingInterpolator.PiecewiseNode(
-//                                            0.87,
-//                                            1,
-//                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
-//                                    )
                         )
-                )
+                )*/
                 .build();
 
         SecondReturn = follower
@@ -162,29 +189,66 @@ public class RedFar12Paths {
                 .addPath(
                         new BezierLine(new Pose(58.503, 8.762).mirror(), new Pose(151, 65))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0, 0.21,
+                                        HeadingInterpolator.tangent
+                                ),
+
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.21, 0.29,
+                                        HeadingInterpolator.facingPoint(158,0)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.29, 1,
+                                        HeadingInterpolator.constant(Math.toRadians(270))
+                                )
+
+
+                        )
+                )
+                //.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .build();
 
         IntakeExtra = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(151, 42), new Pose(151, 33))
+                        new BezierLine(new Pose(151, 42),
+                        new Pose(151, 33)
+                        )
                 )
+
                 .setNoDeceleration()
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
+
+                .setConstantHeadingInterpolation(Math.toRadians(270))
                 .build();
 
         firstReturnn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(150, 26).mirror(),
-                                new Pose(125, 30).mirror(),
-                                new Pose(97, 11).mirror()
+                                new Pose(150, 26),
+                                new Pose(125, 30),
+                                new Pose(86, 11)
                         )
                 )
                 .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-180))
+
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0, 0.23,
+                                        HeadingInterpolator.linear(Math.toRadians(270), 0)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.23, 1,
+                                        HeadingInterpolator.constant(0)
+                                )
+                        )
+                )
+                //.setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-180))
                 .build();
 
 
