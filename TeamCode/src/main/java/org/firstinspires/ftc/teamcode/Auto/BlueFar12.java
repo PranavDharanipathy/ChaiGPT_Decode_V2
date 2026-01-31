@@ -44,13 +44,13 @@ public class BlueFar12 extends NextFTCOpMode {
     public Follower follower;
 
 
-    public static double[] TURRET_POSITIONS = {8500,8550, 8550, 8450};
+    public static double[] TURRET_POSITIONS = {8700,8750, 8650, 8450};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 468_000;
+    public static double flywheel_target = 465_000;
 
 
     public static Pose Blue_Auto_End_Pose = new Pose(0, 0, 0);
@@ -181,6 +181,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 followCancelable(paths.FirstReturn, 15000),//new FollowPath(paths.intake),
                 RobotNF.robot.shootBalls(0.21,0.8, 3, paths.FirstReturn),
 
+                RobotNF.robot.intakeClearingSpecial(0.25),
 
                 //SECOND INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
@@ -188,6 +189,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
                 //SECOND RETURN
+
                 followCancelable(paths.SecondReturn, 10000),
                 RobotNF.robot.shootBalls(0.23,0.8, 3, paths.SecondReturn),
 
@@ -213,7 +215,9 @@ public class BlueFar12 extends NextFTCOpMode {
                 //INTAKE EXTRA RETURN
 
 
-                followCancelable(paths.firstReturnn, 9000),
+                new FollowPath(paths.firstReturnn, true),
+
+                //followCancelable(paths.firstReturnn, 9000),
 
 
 
