@@ -112,6 +112,8 @@ public class RobotNF extends SubsystemGroup {
 
                 new Delay(transferTime),
                 TransferNF.INSTANCE.anti(),
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 2000, true),
+
 
 
                 //new Delay(timeBetweenTransfers),
