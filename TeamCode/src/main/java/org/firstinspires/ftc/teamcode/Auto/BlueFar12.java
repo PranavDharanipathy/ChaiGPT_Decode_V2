@@ -178,19 +178,19 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
                 //FIRST RETURN
-                followCancelable(paths.FirstReturn, 15000),//new FollowPath(paths.intake),
+                followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
                 RobotNF.robot.shootBalls(0.21,0.8, 3, paths.FirstReturn),
 
                 RobotNF.robot.intakeClearingSpecial(0.25),
 
                 //SECOND INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
-                followCancelable(paths.SecondIntake, 8000),//new FollowPath(paths.intake),
+                followCancelable(paths.SecondIntake, 4000),//new FollowPath(paths.intake),
 
 
                 //SECOND RETURN
 
-                followCancelable(paths.SecondReturn, 10000),
+                followCancelable(paths.SecondReturn, 3500),
                 RobotNF.robot.shootBalls(0.23,0.8, 3, paths.SecondReturn),
 
 
