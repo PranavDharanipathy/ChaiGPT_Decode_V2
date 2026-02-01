@@ -104,10 +104,16 @@ public class RobotNF extends SubsystemGroup {
 
 
         return new SequentialGroup(
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 7000, true),
                 new WaitUntil(() -> pathChain.lastPath().getDistanceRemaining() <= distance),
                 TransferNF.INSTANCE.transfer(),
+
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity(), true),
+
                 new Delay(transferTime),
                 TransferNF.INSTANCE.anti(),
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 2000, true),
+
 
 
                 //new Delay(timeBetweenTransfers),

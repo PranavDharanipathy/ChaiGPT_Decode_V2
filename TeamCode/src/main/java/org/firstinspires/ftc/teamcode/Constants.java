@@ -186,7 +186,7 @@ public class Constants {
 
     public static double TRANSFER_VELOCITY = 1500;
 
-    public static double BLUE_12_FAR_VELOCITY = 2100;
+    public static double BLUE_12_FAR_VELOCITY = 4500;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -100;
 

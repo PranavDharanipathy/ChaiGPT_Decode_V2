@@ -45,7 +45,7 @@ public class RedFar12 extends NextFTCOpMode {
     public Follower follower; // Pedro Pathing follower instance
 
 
-    public static double[] TURRET_POSITIONS = {-8650, -8600, -8600, -8550};
+    public static double[] TURRET_POSITIONS = {-8550, -8600, -8500, -8550};
 
 
     public static double flywheel_target = 468_000;
@@ -154,6 +154,7 @@ public class RedFar12 extends NextFTCOpMode {
                 followCancelable(paths.FirstReturn, 15000),//new FollowPath(paths.intake),
                 RobotNF.robot.shootBalls(0.21,0.8, 3, paths.FirstReturn),
 
+                RobotNF.robot.intakeClearingSpecial(0.25),
 
                 //SECOND INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
@@ -161,6 +162,7 @@ public class RedFar12 extends NextFTCOpMode {
 
 
                 //SECOND RETURN
+
                 followCancelable(paths.SecondReturn, 10000),
                 RobotNF.robot.shootBalls(0.23,0.8, 3, paths.SecondReturn),
 
@@ -173,20 +175,22 @@ public class RedFar12 extends NextFTCOpMode {
 
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
-
+                RobotNF.robot.intakeClearingSpecial(0.5),
 
 
                 followCancelable(paths.setupForFirstIntake, 2300),
                 followCancelable(paths.IntakeExtra, 1300),
 
 
-                RobotNF.robot.intakeClearingSpecial(0.5),
+
 
 
                 //INTAKE EXTRA RETURN
 
 
-                followCancelable(paths.firstReturnn, 9000),
+                new FollowPath(paths.firstReturnn, true),
+
+                //followCancelable(paths.firstReturnn, 9000),
 
 
 
