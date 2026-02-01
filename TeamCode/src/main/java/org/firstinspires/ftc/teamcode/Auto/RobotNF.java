@@ -49,24 +49,23 @@ public class RobotNF extends SubsystemGroup {
 
 
         return new SequentialGroup(
-                TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 7000, true),
 
+                TransferNF.INSTANCE.transfer(),
+                //new Delay(transferTime),
+
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 9000, true),
+
+                //new Delay(timeBetweenTransfers),
+
+
+                TransferNF.INSTANCE.transfer(),
 
                 new Delay(timeBetweenTransfers),
 
 
                 TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
-
-
-                new Delay(timeBetweenTransfers),
-
-
-                TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime + 0.25),
+                new Delay(transferTime + 0.15),
                 TransferNF.INSTANCE.anti()
         );
     }
@@ -110,17 +109,11 @@ public class RobotNF extends SubsystemGroup {
 
                 FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity(), true),
 
-                new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 2000, true),
-
-
-
-                //new Delay(timeBetweenTransfers),
-
+                //new Delay(transferTime),
+                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 7000, true),
 
                 TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime),
+                //new Delay(transferTime),
                 //TransferNF.INSTANCE.anti(), //no need to anti-transfer when only 1 artifact in intake
 
 
