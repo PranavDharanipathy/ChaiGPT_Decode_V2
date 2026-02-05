@@ -69,6 +69,10 @@ public class TelemetryO {
         if (enabledModes.contains(mode)) telemetry.addAction(action);
     }
 
+    public void addAction(Runnable action) {
+        telemetry.addAction(action);
+    }
+
     public void speak(TelemetryMode mode, String text) {
         if (enabledModes.contains(mode)) telemetry.speak(text);
     }

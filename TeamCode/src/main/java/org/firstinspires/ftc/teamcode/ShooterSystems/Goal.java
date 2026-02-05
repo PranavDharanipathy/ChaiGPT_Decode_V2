@@ -29,13 +29,20 @@ public class Goal {
     public enum GoalCoordinates {
 
         //            CLOSE                                  FAR
-        RED(new GoalCoordinate(70,-69), new GoalCoordinate(72,-67)),
-        BLUE(new GoalCoordinate(67, 71), new GoalCoordinate(72, 67));
+        RED(new GoalCoordinate(70,-72), new GoalCoordinate(72,-67)),
+        BLUE(new GoalCoordinate(72, 72), new GoalCoordinate(72, 67));
 
         private GoalCoordinate close;
         private GoalCoordinate far;
 
         GoalCoordinates(GoalCoordinate close, GoalCoordinate far) {
+
+            this.close = close;
+            this.far = far;
+        }
+
+        /// Sets the current the close and far {@link GoalCoordinate}
+        public void setGoalCoordinates(GoalCoordinate close, GoalCoordinate far) {
 
             this.close = close;
             this.far = far;

@@ -47,7 +47,7 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
 
             telemetry.addData("future pose",
                     ShooterInformation.Calculator.getFutureRobotPose(
-                            1.25,
+                            1.3,
                             botPose,
                             botVel
                     ).toString()

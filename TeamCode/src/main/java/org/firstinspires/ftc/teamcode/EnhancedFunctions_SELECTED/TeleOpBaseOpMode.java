@@ -16,12 +16,24 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.TeleOp.IntakeMotor;
 import org.firstinspires.ftc.teamcode.TeleOp.LiftPTO;
+import org.firstinspires.ftc.teamcode.data.EOALocalization;
+import org.firstinspires.ftc.teamcode.data.LocalizationData;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.util.AdafruitBeambreakSensor;
 
 import java.util.List;
 
 public abstract class TeleOpBaseOpMode extends LinearOpMode {
+
+    private boolean localizationFromAuto = false;
+    private LocalizationData localizationData;
+
+    public void useEOALocalizationData() {
+
+        localizationData = EOALocalization.read();
+
+        localizationFromAuto = true;
+    }
 
     public TeleOpBaseOpMode() {}
 
@@ -104,7 +116,12 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName)
         );
 
-        turret = new TurretBase(hardwareMap);
+        if (localizationFromAuto) {
+            turret = new TurretBase(hardwareMap, localizationData.getTurretStartPosition());
+        }
+        else {
+            turret = new TurretBase(hardwareMap);
+        }
 
         hoodAngler = new HoodAngler(hardwareMap, Constants.MapSetterConstants.hoodAnglerLeftServoDeviceName, Constants.MapSetterConstants.hoodAnglerRightServoDeviceName);
 
@@ -120,7 +137,12 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        follower.setStartingPose(new Pose(0, 0, 0));
+        if (localizationFromAuto) {
+            follower.setStartingPose(localizationData.getPose());
+        }
+        else {
+            follower.setStartingPose(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK.toPedroPose());
+        }
 
         intake.setLiftPIDFSCoefficients(
                 Constants.LIFT_PIDFS_COEFFICIENTS[0],

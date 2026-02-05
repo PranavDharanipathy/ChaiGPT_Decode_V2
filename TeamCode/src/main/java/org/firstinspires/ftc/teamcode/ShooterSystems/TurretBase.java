@@ -48,6 +48,12 @@ public class TurretBase {
 
     public TurretBase(HardwareMap hardwareMap) {
 
+        this (hardwareMap, null); //using encoder's current position
+    }
+
+    /// @param turretStartPosition for re-zeroing the turret compensating for the home position not always being at 0
+    public TurretBase(HardwareMap hardwareMap, Double turretStartPosition) {
+
         leftTurretBase = hardwareMap.get(CRServoImplEx.class, Constants.MapSetterConstants.turretBaseLeftServoDeviceName);
         rightTurretBase = hardwareMap.get(CRServoImplEx.class, Constants.MapSetterConstants.turretBaseRightServoDeviceName);
 
@@ -60,8 +66,9 @@ public class TurretBase {
         encoder = new Encoder(hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.turretExternalEncoderMotorPairName));
         encoder.setDirection(Encoder.Direction.FORWARD);
 
-        // first targetPosition is the position it starts at
-        lastTargetPosition = targetPosition = startPosition = encoder.getCurrentPosition();
+        // first targetPosition is the start position
+        double tsp = turretStartPosition != null ? turretStartPosition : encoder.getCurrentPosition();
+        lastCurrentPosition = currentPosition = lastTargetPosition = targetPosition = startPosition = tsp;
     }
 
     private double fDirection = 1;
@@ -200,6 +207,9 @@ public class TurretBase {
     private double lastTargetPosition;
     private double targetPosition;
 
+    private double currentPosition;
+    private double lastCurrentPosition;
+
     public void setPosition(double position) {
 
         if (targetPosition != position) {
@@ -217,6 +227,10 @@ public class TurretBase {
         return targetPosition;
     }
 
+    public double getLastCurrentPosition() {
+        return lastCurrentPosition;
+    }
+
     public double getCurrentPosition() {
         return encoder.getCurrentPosition();
     }
@@ -228,7 +242,8 @@ public class TurretBase {
 
     public void update() {
 
-        double currentPosition = getCurrentPosition();
+        lastCurrentPosition = currentPosition;
+        currentPosition = getCurrentPosition();
 
         currTime = timer.milliseconds();
         double dt = currTime - prevTime;

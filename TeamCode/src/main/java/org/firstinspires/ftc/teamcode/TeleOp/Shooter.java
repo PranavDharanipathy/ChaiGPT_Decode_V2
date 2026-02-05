@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
+import org.firstinspires.ftc.teamcode.ShooterSystems.TurretHelper;
 import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocityTracker;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -23,6 +24,16 @@ import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.S
 
 @Peak
 public class Shooter implements SubsystemInternal {
+
+    private boolean turretHysteresisTuning = false;
+
+    public void setTurretHysteresisTuning(boolean turretHysteresisTuning) {
+        this.turretHysteresisTuning = turretHysteresisTuning;
+    }
+
+    public void setTurretTimeLookahead(double ttl) {
+        turretTimeLookahead = ttl;
+    }
 
     private BetterGamepad controller1, controller2;
 
@@ -77,7 +88,28 @@ public class Shooter implements SubsystemInternal {
 
     private Goal.GoalCoordinates goalCoordinates;
 
+    /// Primarily for modification purposes, however can totally be used for telemetry, haptics, etc.
+    public Goal.GoalCoordinates accessGoalCoordinates() {
+        return goalCoordinates;
+    }
+
     private double turretAngularOffset = ShooterInformation.ShooterConstants.TURRET_ANGULAR_OFFSET;
+
+    public void switchAlliance(CurrentAlliance.ALLIANCE alliance) {
+
+        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
+
+            goalCoordinates = Goal.GoalCoordinates.BLUE;
+            turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
+        }
+        else {
+
+            goalCoordinates = Goal.GoalCoordinates.RED;
+            turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
+        }
+    }
+
+    public Pose EOAPose;
 
     public void start(Goal.GoalCoordinates goalCoordinates) {
 
@@ -86,11 +118,10 @@ public class Shooter implements SubsystemInternal {
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
         else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
 
-        turretStartPosition = turret.startPosition; //turret.getCurrentPosition();
-        turretPosition = turretStartPosition;
+        turretPosition = turretStartPosition = turret.startPosition;
 
-        if (goalCoordinates == Goal.GoalCoordinates.BLUE) relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.BLUE_FAR_START_POSITION);
-        else relocalization(ShooterInformation.Odometry.RELOCALIZATION_POSES.RED_FAR_START_POSITION);
+        EOAPose = follower.getPoseTracker().getPreviousPose(); //starting pose
+        relocalization(EOAPose); //runs full multi-sensor localization
 
         flywheel.reset();
     }
@@ -107,6 +138,8 @@ public class Shooter implements SubsystemInternal {
     /// For hysteresis control on the turret, this is the robot's position on the field at a point in time in the future.
     public Pose futureRobotPose;
     public Pose currentRobotPose;
+    private double turretTimeLookahead = 0;
+    private boolean isTurretLookingAhead = false; //initially the bot is stationary
 
     private boolean automaticHoodToggle = true;
     private double distanceToGoal;
@@ -118,11 +151,13 @@ public class Shooter implements SubsystemInternal {
 
         follower.update();
         poseVelocityTracker.update();
+        TurretHelper.update(turret);
 
         robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
         PoseVelocity robotVelocity = poseVelocityTracker.getPoseVelocity();
         double translationalVelocity = ShooterInformation.Calculator.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
         //turret
+        double turretAcceleration = TurretHelper.getAcceleration(AngleUnit.RADIANS);
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
         if (controller2.dpad_leftHasJustBeenPressed) {
@@ -135,14 +170,23 @@ public class Shooter implements SubsystemInternal {
         currentRobotPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), robotYawRad);
 
         //hysteresis control is only used if the robot is moving fast enough
-        if (Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1]) {
+        isTurretLookingAhead = Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1];
+
+        if (isTurretLookingAhead) {
+
+            if (!turretHysteresisTuning) {
+                turretTimeLookahead = 0;//1.3;
+            }
+
             futureRobotPose = ShooterInformation.Calculator.getFutureRobotPose(
-                    ShooterInformation.Calculator.getTurretFuturePosePredictionTime(),
+                    turretTimeLookahead,
                     currentRobotPose,
                     robotVelocity
             );
         }
         else {
+
+            turretTimeLookahead = 0;
             futureRobotPose = currentRobotPose;
         }
 
@@ -314,6 +358,12 @@ public class Shooter implements SubsystemInternal {
         rev9AxisImuWrapped.setYaw(heading);
     }
 
+    private void relocalization(Pose reZeroPose) {
+
+        follower.setPose(reZeroPose);
+        rev9AxisImuWrapped.setYaw(Math.toDegrees(reZeroPose.getHeading()));
+    }
+
     public double rev9AxisImuHeadingDeg() {
         return Math.toDegrees(robotYawRad);
     }
@@ -325,6 +375,14 @@ public class Shooter implements SubsystemInternal {
 
     public ZONE getZone() {
         return flywheelTargetVelocityZone;
+    }
+
+    public boolean isTurretLookingAhead() {
+        return isTurretLookingAhead;
+    }
+
+    public double getTurretTimeLookahead() {
+        return turretTimeLookahead;
     }
 
 }

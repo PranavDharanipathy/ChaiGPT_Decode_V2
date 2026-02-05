@@ -22,8 +22,8 @@ public class PossibleObeliskSelector extends Subsystem {
 
     public void provideComponents(HardwareMap hardwareMap, BetterGamepad controller2) {
 
-        obeliskDataFile = new SimpleDataFile_XML(Constants.OBELISK_XML_FILE_NAME, hardwareMap.appContext);
-        int aprilTagNumber = obeliskDataFile.loadData(Constants.OBELISK_XML_DATA_KEY, Constants.OBELISK_XML_DEFAULT_KEY);
+        obeliskDataFile = new SimpleDataFile_XML(Constants.IOConstants.OBELISK_XML_FILE_NAME, hardwareMap.appContext);
+        int aprilTagNumber = obeliskDataFile.loadData(Constants.IOConstants.OBELISK_XML_DATA_KEY, Constants.IOConstants.OBELISK_XML_DEFAULT_KEY);
 
         aprilTagNumberFromData = aprilTagNumber;
         currentObelisk = new Obelisk(Obelisk.getFromAprilTagNumber(aprilTagNumber));
@@ -41,11 +41,11 @@ public class PossibleObeliskSelector extends Subsystem {
     @Override
     public void update() {
 
-        aprilTagNumberFromData = obeliskDataFile.loadData(Constants.OBELISK_XML_DATA_KEY, Constants.OBELISK_XML_DEFAULT_KEY);
+        aprilTagNumberFromData = obeliskDataFile.loadData(Constants.IOConstants.OBELISK_XML_DATA_KEY, Constants.IOConstants.OBELISK_XML_DEFAULT_KEY);
 
         // save data if changes are made
         if (currentObelisk.getObelisk().getAprilTagNumber() != aprilTagNumberFromData) {
-            obeliskDataFile.saveData(Constants.OBELISK_XML_DATA_KEY, currentObelisk.getObelisk().getAprilTagNumber());
+            obeliskDataFile.saveData(Constants.IOConstants.OBELISK_XML_DATA_KEY, currentObelisk.getObelisk().getAprilTagNumber());
         }
 
         // if current obelisk code invalid

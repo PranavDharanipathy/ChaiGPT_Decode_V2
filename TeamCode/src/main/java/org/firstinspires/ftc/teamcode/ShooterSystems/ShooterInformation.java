@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
+import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.Odometry.RELOCALIZATION_POSES.CENTER;
+
 import com.chaigptrobotics.systems.DeprecatedSystem;
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocity;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 public strictfp class ShooterInformation {
 
@@ -116,7 +117,7 @@ public strictfp class ShooterInformation {
         /// Index 0 is translational, index 1 in angular (in radians).
         /// <p>
         /// Translational is in inches per second and angular is in radians per second.
-        public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {9, Math.toRadians(15)};
+        public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {10, Math.toRadians(15)};
     }
 
     public static class Calculator {
@@ -158,9 +159,19 @@ public strictfp class ShooterInformation {
         }
 
         /// For turret hysteresis control - the amount of time in the future where the robot's pose
-        /// will be predicted based on it's current pose and velocity.
-        public static double getTurretFuturePosePredictionTime() {
-            return 1.5;
+        /// will be predicted based on it's current pose and velocity as well as the turret's acceleration.
+        /// @param turretAcceleration is in rad/sec^2
+        public static double getTurretFuturePosePredictionTime(double turretAcceleration) {
+
+            final double NORMAL_ACCEL = Math.toRadians(7.2);
+            final double NORMAL = 1.5;
+            final double MAX = 2.5;
+
+            final double turretAccel = Math.abs(turretAcceleration);
+
+            double futurePredictionTime = NORMAL * (1 + Math.sqrt(NORMAL_ACCEL / (turretAccel + 1e-3)));
+
+            return MathUtil.clamp(futurePredictionTime, NORMAL, MAX);
         }
 
     }
@@ -170,9 +181,7 @@ public strictfp class ShooterInformation {
         public enum RELOCALIZATION_POSES {
 
             CENTER(0),
-            BACK(1),
-            BLUE_FAR_START_POSITION(2),
-            RED_FAR_START_POSITION(3);
+            BACK(1);
 
             private int index;
 
@@ -183,15 +192,23 @@ public strictfp class ShooterInformation {
             public int getPoseIndex() {
                 return index;
             }
+
+            public Pose toPedroPose() {
+
+                double[] reZeroPose = REZERO_POSES[index];
+                return new Pose(reZeroPose[0], reZeroPose[1], Math.toRadians(reZeroPose[2]));
+            }
         }
 
         public static double[][] REZERO_POSES = {
                 {0,0,0}, //center-center-forward-pointing
                 {-62.5,0,180}, //back-center-backward-pointing
-                {-62.5,15,0}, //BLUE start position
-                {-62.5,-15,0} //RED start position
 //                {62.5,0,0} //front-center-forward-pointing
         };
+
+        public static Pose convertReZeroPoseToPedro(double[] reZeroPose) {
+            return new Pose(reZeroPose[0], reZeroPose[1], Math.toRadians(reZeroPose[2]));
+        }
     }
 
     public static class Models {

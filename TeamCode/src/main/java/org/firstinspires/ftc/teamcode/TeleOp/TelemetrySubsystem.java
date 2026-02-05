@@ -41,6 +41,8 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData("Tick rate", TickrateChecker.getTimePerTick());
         telem.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 
+        telem.addData(TelemetryMode.RAW_DATA, "EOA Pose", shooter.EOAPose.toString());
+
         telem.addData(TelemetryMode.INFO, "zone", shooter.getZone().toString());
 
         telem.addData(TelemetryMode.INFO, "hood mode", shooter.usingAutomaticHood() ? "AUTOMATIC" : "STATIC");
@@ -57,6 +59,8 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
         telem.addData(TelemetryMode.RAW_DATA, "REV 9-axis IMU heading", shooter.rev9AxisImuHeadingDeg());
         telem.addData(TelemetryMode.INFO, "future robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.futureRobotPose.getX(), shooter.futureRobotPose.getY(), Math.toDegrees(shooter.futureRobotPose.getHeading()));
+        telem.addData(TelemetryMode.INFO, "is turret looking ahead", shooter.isTurretLookingAhead());
+        telem.addData(TelemetryMode.RAW_DATA, "turret lookahead time", shooter.getTurretTimeLookahead());
 
         telem.addData(TelemetryMode.RAW_DATA, "Lift Engaged", intake.getLiftEngaged());
         telem.addData(TelemetryMode.RAW_DATA, "Lift Position", intake.getLiftPosition());
