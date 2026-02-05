@@ -53,12 +53,7 @@ public class DataSaver_JSON {
 
     /// Reads data from JSON
     public String[] retrieveData() {
-
-        String[] data = gson.fromJson(dataReader, String[].class);
-
-        //want a list/array type value
-        ArrayList<String> allData = new ArrayList<>(Arrays.asList(data));
-        return allData.toArray(new String[0]);
+        return gson.fromJson(dataReader, String[].class);
     }
 
 

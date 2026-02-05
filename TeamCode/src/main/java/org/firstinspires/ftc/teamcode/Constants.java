@@ -31,8 +31,46 @@ public class Constants {
 
     public static class DriveConstants {
 
-        public static Pose RED_BASE_POSE = new Pose(-45, 33.5, Math.toRadians(180));
-        public static Pose BLUE_BASE_POSE = new Pose(-45, -33.5, Math.toRadians(180));
+        public static Pose RED_SHOOT_POSE = new Pose(15, -10);
+        public static Pose BLUE_SHOOT_POSE = new Pose(15, 10);
+        public static double[] SHOOT_POSE_TOLERANCE = {4, 4};
+
+        public static Pose getShootPose(CurrentAlliance alliance) {
+            return alliance.getAlliance() == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? BLUE_SHOOT_POSE : RED_SHOOT_POSE;
+        }
+
+        public static PathChain getMoveToShootPathChain(CurrentAlliance alliance, Follower follower, Pose driveToShootOrigPose) {
+
+            Pose shootPose = alliance.getAlliance() == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? BLUE_SHOOT_POSE : RED_SHOOT_POSE;
+
+            double poseYDifference = shootPose.getY() - driveToShootOrigPose.getY();
+            HeadingInterpolator headingFunction =
+                    Math.abs(poseYDifference) < 20 ||
+                    (driveToShootOrigPose.getY() < shootPose.getY() && alliance.getAlliance() == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) ||
+                    (driveToShootOrigPose.getY() > shootPose.getY() && alliance.getAlliance() == CurrentAlliance.ALLIANCE.RED_ALLIANCE)
+                            ? HeadingInterpolator.facingPoint(-72, driveToShootOrigPose.getY())
+                            : HeadingInterpolator.facingPoint(-72, poseYDifference);
+
+            boolean decelerationAllowed = driveToShootOrigPose.distanceFrom(shootPose) < 30;
+            PathChain.DecelerationType deceleration = decelerationAllowed ? PathChain.DecelerationType.GLOBAL : PathChain.DecelerationType.NONE;
+
+            PathChain pathChain = follower.pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    driveToShootOrigPose,
+                                    shootPose
+                            )
+                    )
+                    .setHeadingInterpolation(headingFunction)
+                    .build();
+
+            pathChain.setDecelerationType(deceleration);
+
+            return pathChain;
+        }
+
+        public static Pose RED_BASE_POSE = new Pose(-45, 33.35, Math.toRadians(180));
+        public static Pose BLUE_BASE_POSE = new Pose(-45, -33.35, Math.toRadians(180));
         public static double[] BASE_POSE_TOLERANCE = {1, 1, Math.toRadians(1)};
 
         public static Pose getBasePose(CurrentAlliance alliance) {
@@ -129,17 +167,23 @@ public class Constants {
         public static String[] rev2mDistanceSensorNames = {"left_distance_sensor", "back_distance_sensor", "right_distance_sensor"};
     }
 
+    public static class IOConstants {
+
+        /// End-of-auto (EOA) pose data file name
+        public static String EOA_LOCALIZATION_DATA_FILE_NAME = "localizationData.csv";
+        public static String EOA_LOCALIZATION_DATA_DELIMITER = ",";
+
+        /// name of the obelisk xml file
+        public static String OBELISK_XML_FILE_NAME = "obelisk";
+        /// the key used when saving and loading data to the obelisk xml file
+        public static String OBELISK_XML_DATA_KEY = "motif";
+        /// defaults to INVALID
+        public static int OBELISK_XML_DEFAULT_KEY = Obelisk.OBELISK.INVALID.getAprilTagNumber();
+    }
 
     //OTHER CONSTANTS
 
     public static double JOYSTICK_MINIMUM = 0.02;
-
-    /// name of the obelisk xml file
-    public static String OBELISK_XML_FILE_NAME = "obelisk";
-    /// the key used when saving and loading data to the obelisk xml file
-    public static String OBELISK_XML_DATA_KEY = "motif";
-    /// defaults to INVALID
-    public static int OBELISK_XML_DEFAULT_KEY = Obelisk.OBELISK.INVALID.getAprilTagNumber();
 
     /// time driver has to enter the obelisk code manually
     /// <p>
@@ -184,12 +228,12 @@ public class Constants {
     /// in milliseconds
     public static double IS_BALL_IN_INTAKE_DEADBAND_TIMER = 1200;
 
-    public static double TRANSFER_VELOCITY = 1500;
+    public static double TRANSFER_VELOCITY = 2000;
     public static double REVERSE_TRANSFER_VELOCITY = -1600;
     public static double ANTI_TRANSFER_VELOCITY = -100;
 
     /// in milliseconds
-    public static double FULLY_TRANSFER_TIME = 2000;
+    public static double FULLY_TRANSFER_TIME_SAFE = 1500;
 
     public static double[] TRANSFER_VELO_PIDF_COEFFICIENTS = {20, 7, 1, 5};
 

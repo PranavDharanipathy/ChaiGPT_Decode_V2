@@ -50,15 +50,15 @@ public class PoseVelocityTracker {
         prevTime = currTime;
         currTime = getSeconds();
 
-        double dt = currTime = prevTime;
+        double dt = currTime - prevTime;
 
         Pose pose = follower.getPose();
 
         buildVelHistory(xVelHistory, pose.getX());
         buildVelHistory(yVelHistory, pose.getY());
 
-        xVelocity = calcVelUnitless(xVelHistory) * dt;
-        yVelocity = calcVelUnitless(yVelHistory) * dt;
+        xVelocity = calcVelUnitless(xVelHistory) / dt;
+        yVelocity = calcVelUnitless(yVelHistory) / dt;
 
         rev9AxisImuWrapped.updateVelocities();
 

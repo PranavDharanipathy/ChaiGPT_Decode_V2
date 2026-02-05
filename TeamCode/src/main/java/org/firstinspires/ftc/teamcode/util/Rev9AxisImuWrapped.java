@@ -39,6 +39,7 @@ public class Rev9AxisImuWrapped {
         headingHomeDeg = yawDeg - rev9AxisImu.getRobotYawPitchRollAngles().getYaw();
     }
 
+    ///  In degrees
     public double getYaw() {
         return rev9AxisImu.getRobotYawPitchRollAngles().getYaw() + headingHomeDeg;
     }
@@ -104,9 +105,9 @@ public class Rev9AxisImuWrapped {
         buildVelHistory(pitchVelHistory, this::getPitch);
         buildVelHistory(rollVelHistory, this::getRoll);
 
-        yawVel = calcVelUnitless(yawVelHistory) * dt;
-        pitchVel = calcVelUnitless(pitchVelHistory) * dt;
-        rollVel = calcVelUnitless(rollVelHistory) * dt;
+        yawVel = calcVelUnitless(yawVelHistory) / dt;
+        pitchVel = calcVelUnitless(pitchVelHistory) / dt;
+        rollVel = calcVelUnitless(rollVelHistory) / dt;
     }
 
     private void buildVelHistory(List<Double> velHistory, DoubleSupplier dataSupplier) {

@@ -48,7 +48,7 @@ public class LiteralTransfer extends Subsystem {
         else if (!fullyTransfer) {
             transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY);
         }
-        else if (fullyTransferTimer.milliseconds() > Constants.FULLY_TRANSFER_TIME) {
+        else if (fullyTransferTimer.milliseconds() > Constants.FULLY_TRANSFER_TIME_SAFE) {
             fullyTransfer = false;
         }
         else {
