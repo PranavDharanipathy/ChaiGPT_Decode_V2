@@ -28,6 +28,8 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
     @Override
     public void runOpMode() {
 
+        useEOALocalizationData();
+
         initializeDevices();
 
         applyComponentTraits();

@@ -17,11 +17,11 @@ public class LiftPTO {
     }
 
     /// The PTOState of the LiftPTO will be set to this if the position is not that of ENGAGE or DISENGAGE.
-    public static double NULL_STATE_POSITION = -99999;
+    public static double INVALID_STATE_POSITION = -99999;
 
     public enum PTOState {
 
-        ENGAGE(Constants.LIFT_PTO_ENGAGE_POSITION), DISENGAGE(Constants.LIFT_PTO_DISENGAGE_POSITION), NULL(NULL_STATE_POSITION);
+        ENGAGE(Constants.LIFT_PTO_ENGAGE_POSITION), DISENGAGE(Constants.LIFT_PTO_DISENGAGE_POSITION), INVALID(INVALID_STATE_POSITION);
 
         private double position;
 
@@ -39,14 +39,14 @@ public class LiftPTO {
                     : (
                         position == DISENGAGE.position
                                 ? DISENGAGE
-                                : NULL
+                                : INVALID
                     );
         }
     }
 
     public void setState(PTOState state) {
 
-        if (state == PTOState.NULL) throw new IllegalArgumentException("Not allowed to set servo to state NULL");
+        if (state == PTOState.INVALID) throw new IllegalArgumentException("Not allowed to set servo to state INVALID!");
 
         ptoServo.setPosition(state.getPosition());
     }

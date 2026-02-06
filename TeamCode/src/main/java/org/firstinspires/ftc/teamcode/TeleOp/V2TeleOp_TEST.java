@@ -14,18 +14,22 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 @TeleOp (name = "V2TeleOp_TEST")
 public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
+    public static CurrentAlliance.ALLIANCE alliance = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
+
     //sorry for how inefficient this part is
-    public static double RED_CLOSE_GOAL_X = Goal.GoalCoordinates.RED.getCloseCoordinate().getX();
-    public static double RED_CLOSE_GOAL_Y = Goal.GoalCoordinates.RED.getCloseCoordinate().getY();
+    public static double RED_CLOSE_ALLIANCE_GOAL_X = Goal.GoalCoordinates.RED.getCloseAllianceCoordinate().getX();
+    public static double RED_CLOSE_ALLIANCE_GOAL_Y = Goal.GoalCoordinates.RED.getCloseAllianceCoordinate().getY();
+    public static double RED_CLOSE_OPPONENT_GOAL_X = Goal.GoalCoordinates.RED.getCloseOpponentCoordinate().getX();
+    public static double RED_CLOSE_OPPONENT_GOAL_Y = Goal.GoalCoordinates.RED.getCloseOpponentCoordinate().getY();
     public static double RED_FAR_GOAL_X = Goal.GoalCoordinates.RED.getFarCoordinate().getX();
     public static double RED_FAR_GOAL_Y = Goal.GoalCoordinates.RED.getFarCoordinate().getY();
 
-    public static double BLUE_CLOSE_GOAL_X = Goal.GoalCoordinates.BLUE.getCloseCoordinate().getX();
-    public static double BLUE_CLOSE_GOAL_Y = Goal.GoalCoordinates.BLUE.getCloseCoordinate().getY();
+    public static double BLUE_CLOSE_ALLIANCE_GOAL_X = Goal.GoalCoordinates.BLUE.getCloseAllianceCoordinate().getX();
+    public static double BLUE_CLOSE_ALLIANCE_GOAL_Y = Goal.GoalCoordinates.BLUE.getCloseAllianceCoordinate().getY();
+    public static double BLUE_CLOSE_OPPONENT_GOAL_X = Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate().getX();
+    public static double BLUE_CLOSE_OPPONENT_GOAL_Y = Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate().getY();
     public static double BLUE_FAR_GOAL_X =Goal.GoalCoordinates.BLUE.getFarCoordinate().getX();
     public static double BLUE_FAR_GOAL_Y =Goal.GoalCoordinates.BLUE.getFarCoordinate().getY();
-
-    public static CurrentAlliance.ALLIANCE alliance = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
 
     private CurrentAlliance currentAlliance = new CurrentAlliance(alliance);
 
@@ -44,7 +48,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
     @Override
     public void runOpMode() {
 
-        //useEOALocalizationData();
+        //useEOALocalizationData(); <- not using when testing
 
         initializeDevices();
 
@@ -80,14 +84,16 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
 
                 shooter.accessGoalCoordinates().setGoalCoordinates(
-                        new Goal.GoalCoordinate(BLUE_CLOSE_GOAL_X, BLUE_CLOSE_GOAL_Y), //close
+                        new Goal.GoalCoordinate(BLUE_CLOSE_ALLIANCE_GOAL_X, BLUE_CLOSE_ALLIANCE_GOAL_Y), //close alliance
+                        new Goal.GoalCoordinate(BLUE_CLOSE_OPPONENT_GOAL_X, BLUE_CLOSE_OPPONENT_GOAL_Y), //close opponent
                         new Goal.GoalCoordinate(BLUE_FAR_GOAL_X, BLUE_FAR_GOAL_Y) //far
                 );
             }
             else {
 
                 shooter.accessGoalCoordinates().setGoalCoordinates(
-                        new Goal.GoalCoordinate(RED_CLOSE_GOAL_X, RED_CLOSE_GOAL_Y), //close
+                        new Goal.GoalCoordinate(RED_CLOSE_ALLIANCE_GOAL_X, RED_CLOSE_ALLIANCE_GOAL_Y), //close alliance
+                        new Goal.GoalCoordinate(RED_CLOSE_OPPONENT_GOAL_X, RED_CLOSE_OPPONENT_GOAL_Y), //close opponent
                         new Goal.GoalCoordinate(RED_FAR_GOAL_X, RED_FAR_GOAL_Y) //far
                 );
             }

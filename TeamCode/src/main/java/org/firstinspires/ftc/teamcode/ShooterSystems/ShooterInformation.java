@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import static org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation.Odometry.RELOCALIZATION_POSES.CENTER;
-
 import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.pedropathing.geometry.Pose;
 
@@ -11,7 +9,6 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.DoubleSupplier;
 
 public strictfp class ShooterInformation {
 
@@ -70,8 +67,9 @@ public strictfp class ShooterInformation {
 
         public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_000;
 
-        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 369_700;
+        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
+        public static double OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 390_000;
 
         /** Distance to goal when shooting at close where flywheel velocity switches from farther close to closer close when
         bot is within this distance to the goal. */

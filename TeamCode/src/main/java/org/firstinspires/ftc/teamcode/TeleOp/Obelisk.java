@@ -8,60 +8,60 @@ public class Obelisk {
      * <p>PPG: 23
      * <p>INVALID: -1
      **/
-    public enum OBELISK {
+    public enum MOTIF {
 
         GPP(21),
         PGP(22),
         PPG(23),
         INVALID(-1);
 
-        private int obeliskModeAprilTagNumber;
+        private int motifAprilTagNumber;
 
-        OBELISK(int aprilTagNumber) {
-            obeliskModeAprilTagNumber = aprilTagNumber;
+        MOTIF(int aprilTagNumber) {
+            motifAprilTagNumber = aprilTagNumber;
         }
 
         public synchronized int getAprilTagNumber() {
-            return obeliskModeAprilTagNumber;
+            return motifAprilTagNumber;
         }
     }
 
-    private Obelisk.OBELISK obelisk;
+    private MOTIF motif;
 
-    public Obelisk(Obelisk.OBELISK startObelisk) {
-        obelisk = startObelisk;
+    public Obelisk(MOTIF startMotif) {
+        motif = startMotif;
     }
 
-    public void setObelisk(Obelisk.OBELISK obelisk) {
-        this.obelisk = obelisk;
+    public void setMotif(MOTIF motif) {
+        this.motif = motif;
     }
 
-    public Obelisk.OBELISK getObelisk() {
-        return obelisk;
+    public MOTIF getMotif() {
+        return motif;
     }
 
-    public static OBELISK getFromAprilTagNumber(int aprilTagNumber) {
+    public static MOTIF getFromAprilTagNumber(int aprilTagNumber) {
 
-        OBELISK obelisk;
+        MOTIF motif;
 
         switch (aprilTagNumber) {
 
             case 21:
-                obelisk = OBELISK.GPP;
+                motif = MOTIF.GPP;
                 break;
 
             case 22:
-                obelisk = OBELISK.PGP;
+                motif = MOTIF.PGP;
                 break;
 
             case 23:
-                obelisk = OBELISK.PPG;
+                motif = MOTIF.PPG;
                 break;
 
             default:
                 throw new IllegalArgumentException("aprilTagNumber can only be 21, 22 or 23!");
         }
 
-        return obelisk;
+        return motif;
     }
 }
