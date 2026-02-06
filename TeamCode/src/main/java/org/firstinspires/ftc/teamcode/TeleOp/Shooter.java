@@ -120,7 +120,7 @@ public class Shooter implements SubsystemInternal {
 
         turretPosition = turretStartPosition = turret.startPosition;
 
-        EOAPose = follower.getPoseTracker().getPreviousPose(); //starting pose
+        EOAPose = follower.getPose(); //starting pose
         relocalization(EOAPose); //runs full multi-sensor localization
 
         flywheel.reset();
@@ -135,9 +135,12 @@ public class Shooter implements SubsystemInternal {
     private double robotYawRad;
     public double tt;
 
+    private Goal.GoalCoordinate goalCoordinate;
+
     /// For hysteresis control on the turret, this is the robot's position on the field at a point in time in the future.
     public Pose futureRobotPose;
     public Pose currentRobotPose;
+    public Pose turretPose;
     private double turretTimeLookahead = 0;
     private boolean isTurretLookingAhead = false; //initially the bot is stationary
 
@@ -190,13 +193,11 @@ public class Shooter implements SubsystemInternal {
             futureRobotPose = currentRobotPose;
         }
 
-        Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(futureRobotPose, robotYawRad, turretCurrentPosition, turretStartPosition);
-
-        Goal.GoalCoordinate goalCoordinate;
+        turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(futureRobotPose, robotYawRad, turretCurrentPosition, turretStartPosition);
 
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (currentRobotPose.getX() > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate();
+            goalCoordinate = goalCoordinates.getCloseCoordinate(turretPose.getY(), goalCoordinates);
         }
         else {
             goalCoordinate = goalCoordinates.getFarCoordinate();
@@ -283,6 +284,12 @@ public class Shooter implements SubsystemInternal {
 
         if (flywheelTargetVelocityZone == ZONE.FAR) {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+        }
+        else if (
+                goalCoordinate == Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate() || //if we're on blue alliance
+                goalCoordinate == Goal.GoalCoordinates.RED.getCloseOpponentCoordinate() //if we're on red alliance
+        ) {
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
         else if (distanceToGoal < ShooterInformation.ShooterConstants.CLOSE_SIDE_SWITCH || !automaticHoodToggle) { //uses this close velocity if automatic hood isn't being used
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;

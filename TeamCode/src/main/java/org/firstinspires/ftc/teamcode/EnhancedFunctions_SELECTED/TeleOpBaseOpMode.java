@@ -138,10 +138,10 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if (localizationFromAuto) {
-            follower.setStartingPose(localizationData.getPose());
+            follower.setPose(localizationData.getPose());
         }
         else {
-            follower.setStartingPose(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK.toPedroPose());
+            follower.setPose(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK.toPedroPose());
         }
 
         intake.setLiftPIDFSCoefficients(

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
 import org.apache.commons.math3.util.FastMath;
+import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class Goal {
@@ -28,31 +29,64 @@ public class Goal {
     @SuppressWarnings("all")
     public enum GoalCoordinates {
 
-        //            CLOSE                                  FAR
-        RED(new GoalCoordinate(70,-72), new GoalCoordinate(72,-67)),
-        BLUE(new GoalCoordinate(72, 72), new GoalCoordinate(72, 67));
+        //           CLOSE ALLIANCE                  CLOSE OPPONENT                           FAR
+        RED(new GoalCoordinate(65,-72), new GoalCoordinate(40,-72), new GoalCoordinate(67,-74)),
+        BLUE(new GoalCoordinate(75, 72), new GoalCoordinate(55, 72), new GoalCoordinate(72, 67));
 
-        private GoalCoordinate close;
+        private GoalCoordinate closeAlliance;
+        private GoalCoordinate closeOpponent;
         private GoalCoordinate far;
 
-        GoalCoordinates(GoalCoordinate close, GoalCoordinate far) {
+        GoalCoordinates(GoalCoordinate closeAlliance, GoalCoordinate closeOpponent, GoalCoordinate far) {
 
-            this.close = close;
+            this.closeAlliance = closeAlliance;
+            this.closeOpponent = closeOpponent;
             this.far = far;
         }
 
         /// Sets the current the close and far {@link GoalCoordinate}
-        public void setGoalCoordinates(GoalCoordinate close, GoalCoordinate far) {
+        public void setGoalCoordinates(GoalCoordinate closeAlliance, GoalCoordinate closeOpponent, GoalCoordinate far) {
 
-            this.close = close;
+            this.closeAlliance = closeAlliance;
+            this.closeOpponent = closeOpponent;
             this.far = far;
         }
 
-        public GoalCoordinate getCloseCoordinate() {
-            return close;
+        public GoalCoordinate getCloseAllianceCoordinate() {
+            return closeAlliance;
         }
+        public GoalCoordinate getCloseOpponentCoordinate() {
+            return closeOpponent;
+        }
+
+        public GoalCoordinate getCloseCoordinate(double turretY, GoalCoordinates allianceUsingGoalCoordinates) {
+
+            boolean isClose = allianceUsingGoalCoordinates == RED ? turretY < RED_CLOSE_GOAL_COORDINATE_SWITCH : turretY > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isClose ? closeAlliance : closeOpponent;
+        }
+
+        public GoalCoordinate getCloseCoordinate(double turretY, CurrentAlliance.ALLIANCE alliance) {
+
+                boolean isClose = alliance == CurrentAlliance.ALLIANCE.RED_ALLIANCE ? turretY < RED_CLOSE_GOAL_COORDINATE_SWITCH : turretY > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+                return isClose ? closeAlliance : closeOpponent;
+        }
+
         public GoalCoordinate getFarCoordinate() {
             return far;
+        }
+
+        // (lateral) y value after which (once y is greater) close goal coordinate switches from alliance to opponent
+        public static double RED_CLOSE_GOAL_COORDINATE_SWITCH = -10;
+        public static double BLUE_CLOSE_GOAL_COORDINATE_SWITCH = 10;
+
+        public void setRedCloseGoalCoordinateSwitch(double redCloseGoalCoordinateSwitch) {
+            RED_CLOSE_GOAL_COORDINATE_SWITCH = redCloseGoalCoordinateSwitch;
+        }
+
+        public void setBlueCloseGoalCoordinateSwitch(double blueCloseGoalCoordinateSwitch) {
+            BLUE_CLOSE_GOAL_COORDINATE_SWITCH = blueCloseGoalCoordinateSwitch;
         }
     }
 

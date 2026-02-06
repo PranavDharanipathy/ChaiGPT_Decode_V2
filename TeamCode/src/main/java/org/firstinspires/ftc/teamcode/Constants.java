@@ -173,22 +173,16 @@ public class Constants {
         public static String EOA_LOCALIZATION_DATA_FILE_NAME = "localizationData.csv";
         public static String EOA_LOCALIZATION_DATA_DELIMITER = ",";
 
-        /// name of the obelisk xml file
-        public static String OBELISK_XML_FILE_NAME = "obelisk";
-        /// the key used when saving and loading data to the obelisk xml file
-        public static String OBELISK_XML_DATA_KEY = "motif";
-        /// defaults to INVALID
-        public static int OBELISK_XML_DEFAULT_KEY = Obelisk.OBELISK.INVALID.getAprilTagNumber();
     }
 
     //OTHER CONSTANTS
 
     public static double JOYSTICK_MINIMUM = 0.02;
 
-    /// time driver has to enter the obelisk code manually
+    /// time driver has to enter the motif code manually
     /// <p>
-    /// driver clicks multiple buttons to enter the code
-    public static int OBELISK_SELECTION_KEYBIND_TIME = 2250;
+    /// driver clicks buttons to enter the code
+    public static int MOTIF_SELECTION_KEYBIND_TIME = 2250;
 
     public static double CONTROL_HUB_HZ = 80;
 
