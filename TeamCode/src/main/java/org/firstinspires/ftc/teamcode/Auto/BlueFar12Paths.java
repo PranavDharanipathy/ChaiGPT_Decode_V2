@@ -21,14 +21,11 @@ import org.slf4j.LoggerFactory;
 @Config
 public class BlueFar12Paths {
 
-
-    private static final Logger log = LoggerFactory.getLogger(BlueFar12Paths.class);
-    public PathChain FirstIntake;
-
-
-    public PathChain FirstReturn;
     public PathChain SecondIntake;
+
     public PathChain SecondReturn;
+    public PathChain FirstIntake;
+    public PathChain FirstReturn;
 
 
 
@@ -52,7 +49,7 @@ public class BlueFar12Paths {
                 .build();
 
 
-        FirstIntake = follower
+        SecondIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
@@ -84,7 +81,7 @@ public class BlueFar12Paths {
                    .build();*/
 
 
-        FirstReturn = follower
+        SecondReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
@@ -126,7 +123,7 @@ public class BlueFar12Paths {
 
 
 
-        SecondIntake = follower.pathBuilder()
+        FirstIntake = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(61.610, 18.000),
@@ -163,7 +160,7 @@ public class BlueFar12Paths {
                 .build();
 
 
-        SecondReturn = follower
+        FirstReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
