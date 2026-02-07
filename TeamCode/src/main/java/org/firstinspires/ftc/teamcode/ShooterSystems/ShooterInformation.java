@@ -65,7 +65,7 @@ public strictfp class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 446_000;
 
         public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
@@ -93,9 +93,9 @@ public strictfp class ShooterInformation {
 
         public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 1850;
 
-        public static double TURRET_HOME_POSITION_INCREMENT = 50;
+        public static double TURRET_HOME_POSITION_INCREMENT = 200;
 
-        public static double HOOD_POSITION_MANUAL_INCREMENT = 0.1;
+        public static double HOOD_POSITION_MANUAL_INCREMENT = 0.05;
 
         public static double HOOD_CLOSE_POSITION = 0.25;
         public static double HOOD_FAR_POSITION = 0.16;

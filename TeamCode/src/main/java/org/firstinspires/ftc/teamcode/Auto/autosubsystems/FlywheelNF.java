@@ -62,12 +62,50 @@ public class FlywheelNF implements Subsystem {
         return new InstantCommand(() -> flywheel.setVelocity(vel, allowIntegralReset));
     }
 
+    private double velWanted, velInflated, velSwitch;
+    private boolean useVelCatching = false;
+
+    public void setVelCatch(double m_velWanted, double m_velInflated, double m_velSwitch) {
+
+        useVelCatching = true;
+        velWanted = m_velWanted;
+        velInflated = m_velInflated;
+        velSwitch = m_velSwitch;
+    }
+
+    public Command setVelCatchCmd(double m_velWanted, double m_velInflated, double m_velSwitch) {
+
+        return new Command() {
+
+            @Override
+            public boolean isDone() {
+
+                useVelCatching = true;
+                velWanted = m_velWanted;
+                velInflated = m_velInflated;
+                velSwitch = m_velSwitch;
+
+                return true;
+            }
+        };
+    }
+
     public void end() {
         flywheel.setVelocity(0, true);
     }
 
     @Override
     public void periodic() {
+
+        if (useVelCatching) {
+
+            if (Math.abs(flywheel.getTargetVelocity() - flywheel.getRealVelocity()) > velSwitch) {
+                flywheel.setVelocity(velInflated, false);
+            }
+            else {
+                flywheel.setVelocity(velWanted, false);
+            }
+        }
 
         flywheel.updateKvBasedOnVoltage();
         flywheel.update();
