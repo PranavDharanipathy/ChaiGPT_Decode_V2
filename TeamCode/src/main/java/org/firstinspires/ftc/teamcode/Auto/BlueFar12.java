@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.delays.WaitUntil;
+import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -41,13 +42,13 @@ public class BlueFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8480,8550, 8450, 8300};
+    public static double[] TURRET_POSITIONS = {8540, 8600, 8590, 8440};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 470_000;
+    public static double flywheel_target = 452_800;
 
 
     private BlueFar12Paths paths;
@@ -91,6 +92,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
 
+    private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void onStartButtonPressed() {
@@ -100,16 +102,27 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 570_000, 2000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 520_000, 120_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
-        TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0] - TurretNF.INSTANCE.turret.startPosition);
+        TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
 
+        universalTimer.reset();
 
-        auto().schedule();
+        //auto
+        new SequentialGroup(
+                new ParallelRaceGroup(
+                        auto(),
+                        new WaitUntil(() -> universalTimer.milliseconds() > 29_000)
+                ),
 
+                TurretNF.INSTANCE.goToHomePositionCmd(),
+                FlywheelNF.INSTANCE.setVel(0, true),
+                TransferNF.INSTANCE.antiVeryStrong(),
+                IntakeNF.INSTANCE.fullReverse(),
 
-
+                new FollowPath(paths.movementRP, true)
+        ).schedule();
 
     }
 
@@ -145,46 +158,50 @@ public class BlueFar12 extends NextFTCOpMode {
         );
     }
 
-
-
-
     private Command auto() {
 
 
         return new SequentialGroup(
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0] - TurretNF.INSTANCE.turret.startPosition),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
 
 
                 //PRELOAD SHOOTING
                 //new FollowPath(paths.preload),
-                new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 2000),
+                new WaitUntil(() -> (
+                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                        && Math.abs(TurretNF.INSTANCE.turret.getRawPositionError()) < 200
+                ),
                 shootBalls(
-                        new double[] {0.43, 0.43, 0.43},
-                        new double[] {1, 1},
-                        3000
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
                 ),
 
-
                 //FIRST INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]- TurretNF.INSTANCE.turret.startPosition),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
 
 
-                RobotNF.robot.intakeClearingSpecial(1),
-                new FollowPath(paths.FirstIntake),
+                RobotNF.robot.intakeClearingSpecial(0.5),
 
+                gating( //followCancelable(paths.FirstIntake, 5000),
+                        paths.FirstIntake, 5000,
+                        4000,
+                        200, 1),
 
                 //FIRST RETURN
                 followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
                 shootBalls(
-                        new double[] {0.43, 0.43, 0.43},
-                        new double[] {1, 1},
-                        3000
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
                 ),
 
                 RobotNF.robot.intakeClearingSpecial(0.25),
 
                 //SECOND INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
                 followCancelable(paths.SecondIntake, 4000),//new FollowPath(paths.intake),
 
 
@@ -192,9 +209,10 @@ public class BlueFar12 extends NextFTCOpMode {
 
                 followCancelable(paths.SecondReturn, 3500),
                 shootBalls(
-                        new double[] {0.43, 0.43, 0.43},
-                        new double[] {1, 1},
-                        3000
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
                 ),
 
 
@@ -210,8 +228,8 @@ public class BlueFar12 extends NextFTCOpMode {
                 RobotNF.robot.intakeClearingSpecial(0.5),
 
 
-                followCancelable(paths.setupForFirstIntake, 2300),
-                followCancelable(paths.intakeExtra, 1300),
+                followCancelable(paths.setupForFirstIntake, 1500),
+                followCancelable(paths.intakeExtra, 1000),
 
                 //INTAKE EXTRA RETURN
 
@@ -221,16 +239,15 @@ public class BlueFar12 extends NextFTCOpMode {
                 //followCancelable(paths.firstReturnn, 9000),
 
                 shootBalls(
-                        new double[] {0.43, 0.43, 0.43},
-                        new double[] {1, 1},
-                        3000
+                        new double[] {0.35, 0.375, 0.45},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
                 ),
 
                 //SET TURRET TO END POS
-                TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition)
-
-
-
+                TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition),
+                IntakeNF.INSTANCE.reverse()
 
         );
     }
@@ -240,49 +257,43 @@ public class BlueFar12 extends NextFTCOpMode {
     //makes sure it shoots  3 balls
 
 
-    boolean brokeFollowing;
 
 
 
-
-    private Command followCancelable(PathChain pathChain, double millisTilCancel) {
-
-
-        brokeFollowing = false;
-
+    private Command followCancelable(PathChain pathChain, double timeTilCancel) {
 
         return new SequentialGroup(
-
 
                 new InstantCommand(() -> PedroComponent.follower().followPath(pathChain)),
                 new Command() {
 
-
                     private boolean firstTick = true;
                     private double startTime;
+
+                    private boolean cancel = false;
+
                     @Override
                     public boolean isDone() {
 
-
                         if (firstTick) {
-
 
                             startTime = System.currentTimeMillis();
                             firstTick = false;
                         }
 
+                        if (System.currentTimeMillis() >= timeTilCancel + startTime) {
+                            cancel = true;
+                            PedroComponent.follower().breakFollowing();
 
-                        return PedroComponent.follower().atParametricEnd() || System.currentTimeMillis() >= millisTilCancel + startTime;
+                        }
+
+                        return PedroComponent.follower().atParametricEnd() || cancel;
                     }
-                },
-                new InstantCommand(() -> {
-                    brokeFollowing = true;
-                    PedroComponent.follower().breakFollowing();
-                })
+                }
         );
     }
 
-    private Command shootBalls(double[] transferTime, double[] timeBetweenTransfers, double flywheelVelMargin) {
+    private Command shootBalls(double[] transferTime, double[] minTimeBetweenTransfers, double[] maxTimeBetweenTransfers, double flywheelVelMargin) {
 
         ElapsedTime timer = new ElapsedTime();
 
@@ -291,22 +302,99 @@ public class BlueFar12 extends NextFTCOpMode {
                 //1
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime[0]),
-                TransferNF.INSTANCE.idle(),
+                TransferNF.INSTANCE.antiStrong(),
 
-                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > timeBetweenTransfers[0])),
+                new Delay(minTimeBetweenTransfers[0]),
+                new InstantCommand((timer::reset)),
+                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > maxTimeBetweenTransfers[0])),
 
                 //2
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime[1]),
-                TransferNF.INSTANCE.idle(),
+                TransferNF.INSTANCE.antiStrong(),
 
-                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > timeBetweenTransfers[1])),
+                new Delay(minTimeBetweenTransfers[1]),
+                new InstantCommand((timer::reset)),
+                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > maxTimeBetweenTransfers[1])),
 
                 //3
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime[2]),
-                TransferNF.INSTANCE.anti()
+                TransferNF.INSTANCE.antiStrong()
         );
+    }
+
+    public Command gating(PathChain cancelablePath, double timeTilCancel, double allowedTimeAtGateWhenFollowing, double uncancelledHoldTime, double cancelledHoldTime) {
+
+        return new Command() {
+
+            final String[] STAGES = {"START", "FOLLOW", "TIME_STOP", "HOLD_TIME_DECISION", "DELAY", "DONE"};
+
+            String stage = STAGES[0];
+
+            private ElapsedTime openGateTimer = new ElapsedTime();
+
+            private double timeAlreadyAtGate = 0;
+
+            private double holdTime = 0;
+
+            @Override
+            public boolean isDone() {
+
+                switch (stage) {
+
+                    case "START":
+
+                        openGateTimer.reset();
+                        PedroComponent.follower().followPath(cancelablePath);
+                        stage = STAGES[1];
+                        break;
+
+                    case "FOLLOW":
+
+                        boolean cancel = false;
+
+                        if (openGateTimer.milliseconds() >= timeTilCancel) {
+
+                            cancel = true;
+                            PedroComponent.follower().breakFollowing();
+                        }
+
+                        if (cancel || PedroComponent.follower().atParametricEnd()) {
+                            stage = STAGES[2];
+                        }
+                        break;
+
+                    case "TIME_STOP":
+
+                        timeAlreadyAtGate = openGateTimer.milliseconds();
+                        stage = STAGES[3];
+                        break;
+
+                    case "HOLD_TIME_DECISION":
+
+                        if (timeAlreadyAtGate > allowedTimeAtGateWhenFollowing) {
+                            holdTime = cancelledHoldTime;
+                        }
+                        else {
+                            holdTime = uncancelledHoldTime;
+                        }
+
+                        openGateTimer.reset();
+
+                        stage = STAGES[4];
+                        break;
+
+                    case "DELAY":
+
+                        if (openGateTimer.milliseconds() > holdTime) stage = STAGES[5];
+                        break;
+                }
+
+                return stage.equals("DONE");
+            }
+        };
+
     }
 
 }

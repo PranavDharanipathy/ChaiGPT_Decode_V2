@@ -65,7 +65,7 @@ public strictfp class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 446_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_200;
 
         public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;

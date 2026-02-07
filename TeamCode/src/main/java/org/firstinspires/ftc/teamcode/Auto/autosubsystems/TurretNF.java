@@ -40,6 +40,10 @@ public class TurretNF implements Subsystem {
         turret.setPosition(turret.startPosition);
     }
 
+    public Command goToHomePositionCmd() {
+        return new InstantCommand(() -> turret.setPosition(turret.startPosition));
+    }
+
     @Override
     public void periodic() {
 
