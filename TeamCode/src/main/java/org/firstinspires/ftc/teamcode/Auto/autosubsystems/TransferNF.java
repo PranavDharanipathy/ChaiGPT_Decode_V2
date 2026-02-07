@@ -29,10 +29,18 @@ public class TransferNF implements Subsystem {
     }
 
     public Command transfer() {
-        return new InstantCommand(() -> transfer.setVelocity(Constants.TRANSFER_VELOCITY));
+        return new InstantCommand(() -> transfer.setVelocity(2300));
     }
 
-    public Command anti() {
+    public Command antiStrong() {
+        return new InstantCommand(() -> transfer.setVelocity(-450));
+    }
+
+    public Command antiVeryStrong() {
+        return new InstantCommand(() -> transfer.setVelocity(-2000));
+    }
+
+    public Command antiNormal() {
         return new InstantCommand(() -> transfer.setVelocity(Constants.ANTI_TRANSFER_VELOCITY));
     }
 

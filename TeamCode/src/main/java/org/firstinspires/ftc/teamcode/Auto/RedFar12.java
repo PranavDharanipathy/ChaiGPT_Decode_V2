@@ -7,7 +7,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,12 +17,15 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TransferNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TurretNF;
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.data.EOALocalization;
+import org.firstinspires.ftc.teamcode.data.EOAOffset;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.delays.WaitUntil;
+import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -40,8 +43,9 @@ public class RedFar12 extends NextFTCOpMode {
 
     public static double[] TURRET_POSITIONS = {-8550, -8600, -8500, -8550};
 
+    public static double hoodPos = 0.11;
 
-    public static double flywheel_target = 468_000;
+    public static double flywheel_target = 452_800;
 
 
 
@@ -73,10 +77,13 @@ public class RedFar12 extends NextFTCOpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         PedroComponent.follower().setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
+
+
         paths = new RedFar12Paths(PedroComponent.follower());
 
 
-        telemetry.addData("turret start: ", TurretNF.INSTANCE.turret.startPosition);
+        telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
+        telemetry.addData("turret start pos: ", TurretNF.INSTANCE.turret.startPosition);
 
 
         telemetry.update();
@@ -84,79 +91,128 @@ public class RedFar12 extends NextFTCOpMode {
 
 
 
+    private ElapsedTime universalTimer = new ElapsedTime();
 
     @Override
     public void onStartButtonPressed() {
 
 
+        telemetry.clearAll();
+
+
         //setup
-        FlywheelNF.INSTANCE.flywheel.setVelocity(flywheel_target, true);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 520_000, 120_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
-        HoodNF.INSTANCE.hood.setPosition(0.132);
-        TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0] + TurretNF.INSTANCE.turret.startPosition);
+        HoodNF.INSTANCE.hood.setPosition(hoodPos);
+        TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
 
+        universalTimer.reset();
 
-        auto().schedule();
+        //auto
+        new SequentialGroup(
+                new ParallelRaceGroup(
+                        auto(),
+                        new WaitUntil(() -> universalTimer.milliseconds() > 29_000)
+                ),
 
+                TurretNF.INSTANCE.goToHomePositionCmd(),
+                FlywheelNF.INSTANCE.setVel(0, true),
+                TransferNF.INSTANCE.antiVeryStrong(),
+                IntakeNF.INSTANCE.fullReverse(),
 
-
+                new FollowPath(paths.movementRP, true)
+        ).schedule();
 
     }
 
 
     @Override
     public void onUpdate() {
-        telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
+        telemetry.addData("flywheel target vel: ", FlywheelNF.INSTANCE.flywheel.getTargetVelocity());
+        telemetry.addData("flywheel current vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
         telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
         telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
+
         telemetry.update();
+
+
     }
 
 
     @Override
     public void onStop() {
 
-        //EOALocalization.write();
-    }
+        EOAOffset offset = Constants.EOA_OFFSETS.get("auto12");
 
+        //EOALocalization.write();
+        EOALocalization.write(
+                EOALocalization.autoFormatToTeleOpFormat(
+                        PedroComponent.follower().getPose(),
+                        offset.getXOffset(),
+                        offset.getYOffset()
+                ),
+                TurretNF.INSTANCE.turret.startPosition
+        );
+    }
 
     private Command auto() {
 
+
         return new SequentialGroup(
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0] - TurretNF.INSTANCE.turret.startPosition),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
 
 
                 //PRELOAD SHOOTING
                 //new FollowPath(paths.preload),
-                new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                shootBalls(0.18,0.4),
-
+                new WaitUntil(() -> (
+                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                        && Math.abs(TurretNF.INSTANCE.turret.getRawPositionError()) < 200
+                ),
+                shootBalls(
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
+                ),
 
                 //FIRST INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]- TurretNF.INSTANCE.turret.startPosition),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
 
 
-                RobotNF.robot.intakeClearingSpecial(1),
-                new FollowPath(paths.FirstIntake),
+                RobotNF.robot.intakeClearingSpecial(0.5),
 
+                gating( //followCancelable(paths.FirstIntake, 5000),
+                        paths.FirstIntake, 5000,
+                        4000,
+                        200, 1),
 
                 //FIRST RETURN
-                followCancelable(paths.FirstReturn, 15000),//new FollowPath(paths.intake),
-               shootBalls(0.21,0.4, 3, paths.FirstReturn),
+                followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
+                shootBalls(
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
+                ),
 
                 RobotNF.robot.intakeClearingSpecial(0.25),
 
                 //SECOND INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]- TurretNF.INSTANCE.turret.startPosition),
-                followCancelable(paths.SecondIntake, 8000),//new FollowPath(paths.intake),
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
+                followCancelable(paths.SecondIntake, 4000),//new FollowPath(paths.intake),
 
 
                 //SECOND RETURN
 
-                followCancelable(paths.SecondReturn, 10000),
-                shootBalls(0.23,0.4, 3, paths.SecondReturn),
+                followCancelable(paths.SecondReturn, 3500),
+                shootBalls(
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
+                ),
 
 
                 //EXTRA INTAKE
@@ -167,15 +223,12 @@ public class RedFar12 extends NextFTCOpMode {
 
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
+
                 RobotNF.robot.intakeClearingSpecial(0.5),
 
 
-                followCancelable(paths.setupForFirstIntake, 2300),
-                followCancelable(paths.IntakeExtra, 1300),
-
-
-
-
+                followCancelable(paths.setupForFirstIntake, 1500),
+                followCancelable(paths.intakeExtra, 1000),
 
                 //INTAKE EXTRA RETURN
 
@@ -184,113 +237,165 @@ public class RedFar12 extends NextFTCOpMode {
 
                 //followCancelable(paths.firstReturnn, 9000),
 
-
-
-
-                shootBalls(0.23, 0.7, 1, paths.firstReturnn),
-
+                shootBalls(
+                        new double[] {0.35, 0.375, 0.45},
+                        new double[] {0.38, 0.38},
+                        new double[] {0.85, 0.85},
+                        300
+                ),
 
                 //SET TURRET TO END POS
-                TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition)
-
-
-
+                TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition),
+                IntakeNF.INSTANCE.reverse()
 
         );
     }
 
 
-    boolean brokeFollowing;
+    // compensate paths fo rstart pos
+    //makes sure it shoots  3 balls
 
 
 
 
-    private Command followCancelable(PathChain pathChain, double millisTilCancel) {
 
-
-        brokeFollowing = false;
-
+    private Command followCancelable(PathChain pathChain, double timeTilCancel) {
 
         return new SequentialGroup(
-
 
                 new InstantCommand(() -> PedroComponent.follower().followPath(pathChain)),
                 new Command() {
 
-
                     private boolean firstTick = true;
                     private double startTime;
+
+                    private boolean cancel = false;
+
                     @Override
                     public boolean isDone() {
 
-
                         if (firstTick) {
-
 
                             startTime = System.currentTimeMillis();
                             firstTick = false;
                         }
 
+                        if (System.currentTimeMillis() >= timeTilCancel + startTime) {
+                            cancel = true;
+                            PedroComponent.follower().breakFollowing();
 
-                        return PedroComponent.follower().atParametricEnd() || System.currentTimeMillis() >= millisTilCancel + startTime;
+                        }
+
+                        return PedroComponent.follower().atParametricEnd() || cancel;
                     }
-                },
-                new InstantCommand(() -> {
-                    brokeFollowing = true;
-                    PedroComponent.follower().breakFollowing();
-                })
-        );
-    }
-    private Command shootBalls(double transferTime, double timeBetweenTransfers) {
-
-
-        return new SequentialGroup(
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 7000, true),
-
-                TransferNF.INSTANCE.transfer(),
-                //new Delay(transferTime),
-
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 9000, true),
-
-                //new Delay(timeBetweenTransfers),
-
-
-                TransferNF.INSTANCE.transfer(),
-
-                new Delay(timeBetweenTransfers),
-
-
-                TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime + 0.15),
-                TransferNF.INSTANCE.anti()
+                }
         );
     }
 
-    private Command shootBalls(double transferTime, double timeBetweenTransfers, double distance, PathChain pathChain) {
+    private Command shootBalls(double[] transferTime, double[] minTimeBetweenTransfers, double[] maxTimeBetweenTransfers, double flywheelVelMargin) {
 
+        ElapsedTime timer = new ElapsedTime();
 
         return new SequentialGroup(
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 7000, true),
-                new WaitUntil(() -> pathChain.lastPath().getDistanceRemaining() <= distance),
+
+                //1
                 TransferNF.INSTANCE.transfer(),
+                new Delay(transferTime[0]),
+                TransferNF.INSTANCE.antiStrong(),
 
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity(), true),
+                new Delay(minTimeBetweenTransfers[0]),
+                new InstantCommand((timer::reset)),
+                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > maxTimeBetweenTransfers[0])),
 
-                //new Delay(transferTime),
-                FlywheelNF.INSTANCE.setVel(FlywheelNF.INSTANCE.flywheel.getTargetVelocity() + 7000, true),
-
+                //2
                 TransferNF.INSTANCE.transfer(),
-                //new Delay(transferTime),
-                //TransferNF.INSTANCE.anti(), //no need to anti-transfer when only 1 artifact in intake
+                new Delay(transferTime[1]),
+                TransferNF.INSTANCE.antiStrong(),
 
+                new Delay(minTimeBetweenTransfers[1]),
+                new InstantCommand((timer::reset)),
+                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > maxTimeBetweenTransfers[1])),
 
-                new Delay(timeBetweenTransfers),
-
-
+                //3
                 TransferNF.INSTANCE.transfer(),
-                new Delay(transferTime),
-                TransferNF.INSTANCE.anti()
+                new Delay(transferTime[2]),
+                TransferNF.INSTANCE.antiStrong()
         );
+    }
+
+    public Command gating(PathChain cancelablePath, double timeTilCancel, double allowedTimeAtGateWhenFollowing, double uncancelledHoldTime, double cancelledHoldTime) {
+
+        return new Command() {
+
+            final String[] STAGES = {"START", "FOLLOW", "TIME_STOP", "HOLD_TIME_DECISION", "DELAY", "DONE"};
+
+            String stage = STAGES[0];
+
+            private ElapsedTime openGateTimer = new ElapsedTime();
+
+            private double timeAlreadyAtGate = 0;
+
+            private double holdTime = 0;
+
+            @Override
+            public boolean isDone() {
+
+                switch (stage) {
+
+                    case "START":
+
+                        openGateTimer.reset();
+                        PedroComponent.follower().followPath(cancelablePath);
+                        stage = STAGES[1];
+                        break;
+
+                    case "FOLLOW":
+
+                        boolean cancel = false;
+
+                        if (openGateTimer.milliseconds() >= timeTilCancel) {
+
+                            cancel = true;
+                            PedroComponent.follower().breakFollowing();
+                        }
+
+                        if (cancel || PedroComponent.follower().atParametricEnd()) {
+                            stage = STAGES[2];
+                        }
+                        break;
+
+                    case "TIME_STOP":
+
+                        timeAlreadyAtGate = openGateTimer.milliseconds();
+                        stage = STAGES[3];
+                        break;
+
+                    case "HOLD_TIME_DECISION":
+
+                        if (timeAlreadyAtGate > allowedTimeAtGateWhenFollowing) {
+                            holdTime = cancelledHoldTime;
+                        }
+                        else {
+                            holdTime = uncancelledHoldTime;
+                        }
+
+                        openGateTimer.reset();
+
+                        stage = STAGES[4];
+                        break;
+
+                    case "DELAY":
+
+                        if (openGateTimer.milliseconds() > holdTime) stage = STAGES[5];
+                        break;
+                }
+
+                return stage.equals("DONE");
+            }
+        };
+
     }
 
 }
+
+

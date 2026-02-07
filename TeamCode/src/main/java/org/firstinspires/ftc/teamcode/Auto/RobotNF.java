@@ -38,19 +38,19 @@ public class RobotNF extends SubsystemGroup {
         return new SequentialGroup(
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti()
+                TransferNF.INSTANCE.antiStrong()
         );
     }
 
@@ -60,19 +60,19 @@ public class RobotNF extends SubsystemGroup {
                 new WaitUntil(() -> pathChain.lastPath().isAtParametricEnd()),
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti()
+                TransferNF.INSTANCE.antiStrong()
         );
     }
 
@@ -82,19 +82,19 @@ public class RobotNF extends SubsystemGroup {
                 new WaitUntil(() -> pathChain.lastPath().getDistanceRemaining() <= distance),
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti(),
+                TransferNF.INSTANCE.antiStrong(),
 
                 new Delay(timeBetweenTransfers),
 
                 TransferNF.INSTANCE.transfer(),
                 new Delay(transferTime),
-                TransferNF.INSTANCE.anti()
+                TransferNF.INSTANCE.antiStrong()
         );
     }
 
