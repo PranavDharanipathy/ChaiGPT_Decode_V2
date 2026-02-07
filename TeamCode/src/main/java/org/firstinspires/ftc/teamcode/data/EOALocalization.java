@@ -19,14 +19,8 @@ public class EOALocalization {
 
     /// @param xOffset is added to x (in TeleOp format nomenclature)
     /// @param yOffset is added to y (in TeleOp format nomenclature)
-    public static Pose autoFormatToTeleOpFormat(Pose autoPose, Rev9AxisImuWrapped rev9AxisImuWrapped, double xOffset, double yOffset) {
-        return new Pose(autoPose.getY() - 72 + xOffset, -autoPose.getX() + 72 + yOffset, rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS) - Math.toRadians(90));
-    }
-
-    /// @param xOffset is added to x (in TeleOp format nomenclature)
-    /// @param yOffset is added to y (in TeleOp format nomenclature)
-    public static Pose teleOpFormatToAutoFormat(Pose teleOpPose, Rev9AxisImuWrapped rev9AxisImuWrapped, double xOffset, double yOffset) {
-        return new Pose(-teleOpPose.getY() + 72 + yOffset, teleOpPose.getX() + 72 - xOffset, rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS) + Math.toRadians(90));
+    public static Pose autoFormatToTeleOpFormat(Pose autoPose, double xOffset, double yOffset) {
+        return new Pose(autoPose.getY() - 72 + xOffset, -autoPose.getX() + 72 + yOffset, autoPose.getHeading() + Math.toRadians(90));
     }
 
     public static void write(double x, double y, double headingRad, double turretStartPosition) {

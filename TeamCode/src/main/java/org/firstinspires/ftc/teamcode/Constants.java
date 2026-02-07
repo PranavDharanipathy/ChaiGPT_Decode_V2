@@ -25,8 +25,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBasePIDFSCoefficients;
 import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
+import org.firstinspires.ftc.teamcode.data.EOAOffset;
 
-@Config
+import java.util.HashMap;
+import java.util.Map;
+
+//@Config
 public class Constants {
 
     public static class DriveConstants {
@@ -300,5 +304,9 @@ public class Constants {
 
     public static double LIFT_PTO_ENGAGE_POSITION = 0.48;
     public static double LIFT_PTO_DISENGAGE_POSITION = 0.55;
+
+    public static Map<String, EOAOffset> EOA_OFFSETS = new HashMap<>(
+            Map.of("auto12", new EOAOffset(17.288, -32.73))
+    );//17.288, -32.73
 
 }
