@@ -131,7 +131,7 @@ public class RedFar12 extends NextFTCOpMode {
                 //PRELOAD SHOOTING
                 //new FollowPath(paths.preload),
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                RobotNF.robot.shootBalls(0.18,0.4),
+                shootBalls(0.18,0.4),
 
 
                 //FIRST INTAKE
@@ -144,7 +144,7 @@ public class RedFar12 extends NextFTCOpMode {
 
                 //FIRST RETURN
                 followCancelable(paths.FirstReturn, 15000),//new FollowPath(paths.intake),
-                RobotNF.robot.shootBalls(0.21,0.4, 3, paths.FirstReturn),
+               shootBalls(0.21,0.4, 3, paths.FirstReturn),
 
                 RobotNF.robot.intakeClearingSpecial(0.25),
 
@@ -156,7 +156,7 @@ public class RedFar12 extends NextFTCOpMode {
                 //SECOND RETURN
 
                 followCancelable(paths.SecondReturn, 10000),
-                RobotNF.robot.shootBalls(0.23,0.4, 3, paths.SecondReturn),
+                shootBalls(0.23,0.4, 3, paths.SecondReturn),
 
 
                 //EXTRA INTAKE
@@ -187,7 +187,7 @@ public class RedFar12 extends NextFTCOpMode {
 
 
 
-                RobotNF.robot.shootBalls(0.23, 0.7, 1, paths.firstReturnn),
+                shootBalls(0.23, 0.7, 1, paths.firstReturnn),
 
 
                 //SET TURRET TO END POS
