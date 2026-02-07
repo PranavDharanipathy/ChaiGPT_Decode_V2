@@ -46,7 +46,7 @@ public class PPConstants {
             .centripetalScaling(0.00062)
             ;
 
-    public static PathConstraints autoPathConstraints = new PathConstraints(0.994, 50, 1.5, 1.5);
+    public static PathConstraints autoPathConstraints = new PathConstraints(0.994, 50, 10, 1.0);
     public static PathConstraints teleOpPathConstraints = new PathConstraints(0.994, 50, 1.6, 1.5);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -62,6 +62,8 @@ public class PPConstants {
 
             .xVelocity(-41.2745147944275)
             .yVelocity(-61.15854729822397);
+
+
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(3.75)
