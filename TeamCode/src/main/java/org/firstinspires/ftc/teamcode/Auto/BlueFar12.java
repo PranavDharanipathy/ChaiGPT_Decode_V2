@@ -145,7 +145,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 //PRELOAD SHOOTING
                 //new FollowPath(paths.preload),
                 new WaitUntil(() -> FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= FlywheelNF.INSTANCE.flywheel.getTargetVelocity() - 100),
-                RobotNF.robot.shootBalls(0.18,0.8),
+                shootBalls(0.18,0.8),
 
 
                 //FIRST INTAKE
@@ -158,7 +158,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
                 //FIRST RETURN
                 followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
-                RobotNF.robot.shootBalls(0.21,0.8, 3, paths.FirstReturn),
+                shootBalls(0.21,0.8, 3, paths.FirstReturn),
 
                 RobotNF.robot.intakeClearingSpecial(0.25),
 
@@ -170,7 +170,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 //SECOND RETURN
 
                 followCancelable(paths.SecondReturn, 3500),
-                RobotNF.robot.shootBalls(0.23,0.8, 3, paths.SecondReturn),
+                shootBalls(0.23,0.8, 3, paths.SecondReturn),
 
 
                 //EXTRA INTAKE
@@ -198,7 +198,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
 
-                RobotNF.robot.shootBalls(0.23, 0.7, 1, paths.firstReturnn),
+                shootBalls(0.23, 0.7, 1, paths.firstReturnn),
 
 
                 //SET TURRET TO END POS

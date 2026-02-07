@@ -32,8 +32,6 @@ public class EOALocalizationOffsetTuner extends TeleOpBaseOpMode {
     public static double X_OFFSET;
     public static double Y_OFFSET;
 
-    private Rev9AxisImuWrapped rev9AxisImuWrapped;
-
     private Telemetry telemetry;
 
     @Override
@@ -41,7 +39,11 @@ public class EOALocalizationOffsetTuner extends TeleOpBaseOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);
+        initializeDevices();
+
+        applyComponentTraits();
+
+        waitForStart();
 
         while (opModeIsActive()) {
 
@@ -50,33 +52,26 @@ public class EOALocalizationOffsetTuner extends TeleOpBaseOpMode {
 
             controller1.getInformation();
 
-            if (controller1.dpad_upHasJustBeenPressed) {
-                follower.setPose(autoPose);
-            }
-            else if (controller1.dpad_downHasJustBeenPressed) {
+            if (controller1.main_buttonHasJustBeenPressed) {
 
+                Pose pose = localizationType == CurrentLocalization.AUTO ? autoPose : teleOpPose;
+                follower.setPose(pose);
             }
 
             follower.update();
 
-            telemetry.addLine("dpad up for auto mode (set up position before clicking)");
-            telemetry.addLine("dpad up for teleop mode (set up position before clicking)");
+            telemetry.addLine("main button for setting pose (set up position before clicking)");
 
-            Pose currentPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS));
+            Pose currentPose = follower.getPose();
 
             if (localizationType == CurrentLocalization.TELEOP) {
 
-                telemetry.addData("distance to auto pose", autoPose.minus(currentPose));
-
                 telemetry.addData("pose in current format (teleop)", currentPose);
-                telemetry.addData("pose in auto format", EOALocalization.teleOpFormatToAutoFormat(currentPose, rev9AxisImuWrapped, X_OFFSET, Y_OFFSET));
             }
             else { //is auto
 
-                telemetry.addData("distance to teleop pose", teleOpPose.minus(currentPose));
-
                 telemetry.addData("pose in current format (auto)", currentPose);
-                telemetry.addData("pose in teleop format", EOALocalization.autoFormatToTeleOpFormat(currentPose, rev9AxisImuWrapped, X_OFFSET, Y_OFFSET));
+                telemetry.addData("pose in teleop format", EOALocalization.autoFormatToTeleOpFormat(currentPose, X_OFFSET, Y_OFFSET).toString());
             }
 
             telemetry.update();
