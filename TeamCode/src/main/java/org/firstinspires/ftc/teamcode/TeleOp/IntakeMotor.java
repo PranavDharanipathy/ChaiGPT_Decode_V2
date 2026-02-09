@@ -73,11 +73,15 @@ public class IntakeMotor extends VMotor {
     }
 
     public void setPosition(double targetPosition) {
+
         this.targetPosition = targetPosition;
+        reZeroedTargetPosition = null;
     }
 
     public void setReZeroedPosition(double targetPosition) {
-        this.targetPosition = targetPosition - startPosition;
+
+        this.targetPosition = targetPosition + startPosition;
+        reZeroedTargetPosition = targetPosition;
     }
 
     public void setPower(double power) {
@@ -85,6 +89,7 @@ public class IntakeMotor extends VMotor {
     }
 
     private double setpower;
+    private Double reZeroedTargetPosition = null;
     private double startPosition;
     private double targetPosition;
     private double filteredVolts = 0;
@@ -144,7 +149,12 @@ public class IntakeMotor extends VMotor {
             d = dt > 0 ? kd * filteredDerivative : 0;
 
             //feedforward
-            realKf = targetPosition > liftTouchesGroundPosition ? Constants.getLiftKfFromRegression(targetPosition) : kf;
+            if (reZeroedTargetPosition == null) {
+                realKf = targetPosition > liftTouchesGroundPosition ? Constants.getLiftKfFromRegression(targetPosition) : kf;
+            }
+            else {
+                realKf = targetPosition > liftTouchesGroundPosition ? Constants.getLiftKfFromRegression(reZeroedTargetPosition) : kf;
+            }
 
             f = realKf * targetPosition;
 
