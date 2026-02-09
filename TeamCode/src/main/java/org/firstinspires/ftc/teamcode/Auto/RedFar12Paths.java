@@ -103,9 +103,9 @@ public class RedFar12Paths {
                                 //new Pose(49.707, 54.634).mirror(,
                                 new Pose(49, 42.5).mirror(),
                                 //new Pose(43.73200, 68).mirror(, //y = 49
-                                new Pose(31.244, 46).mirror(),
-                                new Pose(24, 48).mirror(),
-                                new Pose(13 /*15.5*/, 52).mirror()
+                                new Pose(31.244, 44).mirror(),
+                                new Pose(24, 46).mirror(),
+                                new Pose(13 /*15.5*/, 50).mirror()
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -239,7 +239,7 @@ public class RedFar12Paths {
                 .addPath(
                         new BezierLine(
                                 new Pose(64, 9.5).mirror(),
-                                new Pose(40, 11).mirror()
+                                new Pose(40, 16).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(0)

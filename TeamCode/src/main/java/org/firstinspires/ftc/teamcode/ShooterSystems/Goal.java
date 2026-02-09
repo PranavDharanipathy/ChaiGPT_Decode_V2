@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -30,8 +32,8 @@ public class Goal {
     public enum GoalCoordinates {
 
         //           CLOSE ALLIANCE                  CLOSE OPPONENT                           FAR
-        RED(new GoalCoordinate(65,-72), new GoalCoordinate(40,-72), new GoalCoordinate(67,-74)),
-        BLUE(new GoalCoordinate(75, 72), new GoalCoordinate(54, 72), new GoalCoordinate(72, 67));
+        RED(new GoalCoordinate(69,-78), new GoalCoordinate(40,-72), new GoalCoordinate(68,-72)),
+        BLUE(new GoalCoordinate(74, 72), new GoalCoordinate(54, 72), new GoalCoordinate(74, 73));
 
         private GoalCoordinate closeAlliance;
         private GoalCoordinate closeOpponent;
@@ -59,18 +61,18 @@ public class Goal {
             return closeOpponent;
         }
 
-        public GoalCoordinate getCloseCoordinate(double turretY, GoalCoordinates allianceUsingGoalCoordinates) {
+        public GoalCoordinate getCloseCoordinate(double y, GoalCoordinates allianceUsingGoalCoordinates) {
 
-            boolean isClose = allianceUsingGoalCoordinates == RED ? turretY < RED_CLOSE_GOAL_COORDINATE_SWITCH : turretY > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = allianceUsingGoalCoordinates == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
-            return isClose ? closeAlliance : closeOpponent;
+            return isOpponent ? closeOpponent : closeAlliance;
         }
 
-        public GoalCoordinate getCloseCoordinate(double turretY, CurrentAlliance.ALLIANCE alliance) {
+        public GoalCoordinate getCloseCoordinate(double y, CurrentAlliance.ALLIANCE alliance) {
 
-                boolean isClose = alliance == CurrentAlliance.ALLIANCE.RED_ALLIANCE ? turretY < RED_CLOSE_GOAL_COORDINATE_SWITCH : turretY > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
-                return isClose ? closeAlliance : closeOpponent;
+            return isOpponent ? closeOpponent : closeAlliance;
         }
 
         public GoalCoordinate getFarCoordinate() {
@@ -87,6 +89,20 @@ public class Goal {
 
         public void setBlueCloseGoalCoordinateSwitch(double blueCloseGoalCoordinateSwitch) {
             BLUE_CLOSE_GOAL_COORDINATE_SWITCH = blueCloseGoalCoordinateSwitch;
+        }
+
+        public boolean isAllianceClose(double y, CurrentAlliance.ALLIANCE alliance) {
+
+            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isOpponent;
+        }
+
+        public boolean isAllianceClose(double y, GoalCoordinates allianceUsingGoalCoordinates) {
+
+            boolean isOpponent = allianceUsingGoalCoordinates == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isOpponent;
         }
     }
 

@@ -65,7 +65,9 @@ public strictfp class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 445_200;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 452_200;
+        public static double FAR_SIDE_FLYWHEEL_CATCH_VELOCITY = 530_000;
+        public static double FAR_SIDE_FLYWHEEL_VELOCITY_MARGIN = 40_000;
 
         public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
@@ -79,7 +81,7 @@ public strictfp class ShooterInformation {
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
-        public static double MIN_TURRET_POSITION_IN_DEGREES = -173, MAX_TURRET_POSITION_IN_DEGREES = 173;
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -155, MAX_TURRET_POSITION_IN_DEGREES = 155;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;

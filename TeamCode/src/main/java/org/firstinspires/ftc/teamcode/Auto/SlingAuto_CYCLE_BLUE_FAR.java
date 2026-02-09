@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.FlywheelNF;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -31,7 +33,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @Autonomous (name = "Sling Auto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
 
-    public static double[] TURRET_POSITIONS = {8300, 8300, 8300, 8300, 8400};
+    public static double[] TURRET_POSITIONS = {8150, 8300, 8300, 8300, 8400};
 
     private Telemetry telemetry;
 
@@ -52,6 +54,8 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
         );
     }
 
+    private ElapsedTime universalTimer = new ElapsedTime();
+
     @Override
     public void onInit() {
 
@@ -71,7 +75,23 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
         HoodNF.INSTANCE.hood.setPosition(0.16);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
 
-        auto().schedule();
+        universalTimer.reset();
+
+        //auto().schedule();
+        //auto
+        new SequentialGroup(
+                new ParallelRaceGroup(
+                        auto(),
+                        new WaitUntil(() -> universalTimer.milliseconds() > 29_000)
+                ),
+
+                TurretNF.INSTANCE.goToHomePositionCmd(),
+                FlywheelNF.INSTANCE.setVel(0, true),
+                TransferNF.INSTANCE.antiVeryStrong(),
+                IntakeNF.INSTANCE.fullReverse(),
+
+                new FollowPath(paths.movementRP, true)
+        ).schedule();
     }
 
     @Override

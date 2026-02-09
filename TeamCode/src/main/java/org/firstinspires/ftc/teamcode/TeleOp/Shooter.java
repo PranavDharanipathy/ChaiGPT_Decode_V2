@@ -197,7 +197,7 @@ public class Shooter implements SubsystemInternal {
 
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (currentRobotPose.getX() > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate(turretPose.getY(), goalCoordinates);
+            goalCoordinate = goalCoordinates.getCloseCoordinate(futureRobotPose.getY(), goalCoordinates);
         }
         else {
             goalCoordinate = goalCoordinates.getFarCoordinate();
@@ -283,12 +283,19 @@ public class Shooter implements SubsystemInternal {
         double flywheelTargetVelocity;
 
         if (flywheelTargetVelocityZone == ZONE.FAR) {
-            flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+
+            if (ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY - flywheel.getTargetVelocity() < ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_VELOCITY_MARGIN) {
+                flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+            }
+            else {
+                flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_CATCH_VELOCITY;
+            }
+            //flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
-        else if (
-                goalCoordinate == Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate() || //if we're on blue alliance
-                goalCoordinate == Goal.GoalCoordinates.RED.getCloseOpponentCoordinate() //if we're on red alliance
-        ) {
+        else if (goalCoordinates == Goal.GoalCoordinates.BLUE || futureRobotPose.getY() < Goal.GoalCoordinates.RED_CLOSE_GOAL_COORDINATE_SWITCH) {
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+        }
+        else if (goalCoordinates == Goal.GoalCoordinates.RED || futureRobotPose.getY() > Goal.GoalCoordinates.BLUE_CLOSE_GOAL_COORDINATE_SWITCH) {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
         else if (distanceToGoal < ShooterInformation.ShooterConstants.CLOSE_SIDE_SWITCH || !automaticHoodToggle) { //uses this close velocity if automatic hood isn't being used

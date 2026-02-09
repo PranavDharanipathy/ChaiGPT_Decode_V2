@@ -19,12 +19,14 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TurretNF;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.data.EOALocalization;
 import org.firstinspires.ftc.teamcode.data.EOAOffset;
+import org.firstinspires.ftc.teamcode.data.LocalizationData;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.delays.WaitUntil;
+import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -35,14 +37,14 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 
-@Autonomous(name = "AUTO BLUE FAR 12", group = "AAA_MatchPurpose")
+@Autonomous(name = "AUTO BLUE FAR 12", group = "AAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 @Config
 public class BlueFar12 extends NextFTCOpMode {
 
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8540, 8600, 8590, 8440};
+    public static double[] TURRET_POSITIONS = {8630, 8650, 8700, 8500};
 
 
     public static double hoodPos = 0.11;
@@ -102,7 +104,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 520_000, 120_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 550_000, 60_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
@@ -147,7 +149,6 @@ public class BlueFar12 extends NextFTCOpMode {
 
         EOAOffset offset = Constants.EOA_OFFSETS.get("auto12");
 
-        //EOALocalization.write();
         EOALocalization.write(
                 EOALocalization.autoFormatToTeleOpFormat(
                         PedroComponent.follower().getPose(),
@@ -156,6 +157,15 @@ public class BlueFar12 extends NextFTCOpMode {
                 ),
                 TurretNF.INSTANCE.turret.startPosition
         );
+//        blackboard.put("EOALocalization", new LocalizationData(
+//                EOALocalization.autoFormatToTeleOpFormat(
+//                        PedroComponent.follower().getPose(),
+//                        offset.getXOffset(),
+//                        offset.getYOffset()
+//                ),
+//                TurretNF.INSTANCE.turret.startPosition
+//                )
+//        );
     }
 
     private Command auto() {
@@ -173,8 +183,8 @@ public class BlueFar12 extends NextFTCOpMode {
                 ),
                 shootBalls(
                         new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.38, 0.38},
-                        new double[] {0.85, 0.85},
+                        new double[] {0.4, 0.4},
+                        new double[] {0.95, 0.95},
                         300
                 ),
 
@@ -182,53 +192,50 @@ public class BlueFar12 extends NextFTCOpMode {
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
 
 
-                RobotNF.robot.intakeClearingSpecial(0.5),
+                new ParallelGroup(
+                        RobotNF.robot.intakeClearingSpecial(0.4),
+                        gating( //followCancelable(paths.FirstIntake, 5000),
+                                paths.FirstIntake, 5000,
+                                4000,
+                                200, 1)
+                ),
 
-                gating( //followCancelable(paths.FirstIntake, 5000),
-                        paths.FirstIntake, 5000,
-                        4000,
-                        200, 1),
 
                 //FIRST RETURN
                 followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
                 shootBalls(
                         new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.38, 0.38},
-                        new double[] {0.85, 0.85},
+                        new double[] {0.4, 0.4},
+                        new double[] {0.95, 0.95},
                         300
                 ),
 
-                RobotNF.robot.intakeClearingSpecial(0.25),
-
                 //SECOND INTAKE
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
-                followCancelable(paths.SecondIntake, 4000),//new FollowPath(paths.intake),
-
+                new ParallelGroup(
+                        RobotNF.robot.intakeClearingSpecial(0.25),
+                        followCancelable(paths.SecondIntake, 4000) //new FollowPath(paths.intake),
+                ),
 
                 //SECOND RETURN
 
                 followCancelable(paths.SecondReturn, 3500),
                 shootBalls(
                         new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.38, 0.38},
-                        new double[] {0.85, 0.85},
+                        new double[] {0.4, 0.4},
+                        new double[] {0.95, 0.95},
                         300
                 ),
 
 
                 //EXTRA INTAKE
 
-
-                RobotNF.robot.intakeClearingSpecial(0.5),
-
-
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
-
-                RobotNF.robot.intakeClearingSpecial(0.5),
-
-
-                followCancelable(paths.setupForFirstIntake, 1500),
+                new ParallelGroup(
+                        RobotNF.robot.intakeClearingSpecial(0.5),
+                        followCancelable(paths.setupForFirstIntake, 2000)
+                ),
                 followCancelable(paths.intakeExtra, 1000),
 
                 //INTAKE EXTRA RETURN
@@ -239,9 +246,9 @@ public class BlueFar12 extends NextFTCOpMode {
                 //followCancelable(paths.firstReturnn, 9000),
 
                 shootBalls(
-                        new double[] {0.35, 0.375, 0.45},
-                        new double[] {0.38, 0.38},
-                        new double[] {0.85, 0.85},
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.4, 0.4},
+                        new double[] {0.95, 0.95},
                         300
                 ),
 

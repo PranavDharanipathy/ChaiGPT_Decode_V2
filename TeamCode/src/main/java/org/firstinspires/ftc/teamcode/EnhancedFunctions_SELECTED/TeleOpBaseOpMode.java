@@ -31,6 +31,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
     public void useEOALocalizationData() {
 
         localizationData = EOALocalization.read();
+        //localizationData = (LocalizationData) blackboard.get("EOALocalization");
 
         localizationFromAuto = true;
     }
@@ -143,6 +144,8 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         else {
             follower.setPose(ShooterInformation.Odometry.RELOCALIZATION_POSES.BACK.toPedroPose());
         }
+
+        follower.update();
 
         intake.setLiftPIDFSCoefficients(
                 Constants.LIFT_PIDFS_COEFFICIENTS[0],

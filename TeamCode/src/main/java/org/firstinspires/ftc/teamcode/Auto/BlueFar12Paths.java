@@ -236,7 +236,7 @@ public class BlueFar12Paths {
                 .addPath(
                       new BezierLine(
                               new Pose(64, 9.5),
-                              new Pose(40, 11)
+                              new Pose(40, 16)
                       )
                 )
                 .setConstantHeadingInterpolation(Math.PI)

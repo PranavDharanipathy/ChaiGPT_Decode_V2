@@ -41,11 +41,12 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData("Tick rate", TickrateChecker.getTimePerTick());
         telem.addData("(Predicted) Run speed percentage", "%.2f", TickrateChecker.getRunSpeedPercentage());
 
-        telem.addData(TelemetryMode.RAW_DATA, "EOA Pose", shooter.EOAPose.toString());
+        telem.addData("EOA Pose", shooter.EOAPose.toString());
 
-        telem.addData(TelemetryMode.INFO, "zone", shooter.getZone().toString());
+        telem.addData("zone", shooter.getZone().toString());
+        telem.addData(TelemetryMode.RAW_DATA, "is alliance close?", shooter.accessGoalCoordinates().isAllianceClose(shooter.futureRobotPose.getY(), shooter.accessGoalCoordinates()));
 
-        telem.addData(TelemetryMode.INFO, "hood mode", shooter.usingAutomaticHood() ? "AUTOMATIC" : "STATIC");
+        telem.addData("hood mode", shooter.usingAutomaticHood() ? "AUTOMATIC" : "STATIC");
 
         telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hoodAngler.getPosition());
 

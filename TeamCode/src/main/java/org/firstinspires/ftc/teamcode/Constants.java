@@ -73,8 +73,8 @@ public class Constants {
             return pathChain;
         }
 
-        public static Pose RED_BASE_POSE = new Pose(-45, 33.35, Math.toRadians(180));
-        public static Pose BLUE_BASE_POSE = new Pose(-45, -33.35, Math.toRadians(180));
+        public static Pose RED_BASE_POSE = new Pose(-47.5, 35.85, Math.toRadians(180));
+        public static Pose BLUE_BASE_POSE = new Pose(-47.5, -35.85, Math.toRadians(180));
         public static double[] BASE_POSE_TOLERANCE = {1, 1, Math.toRadians(1)};
 
         public static Pose getBasePose(CurrentAlliance alliance) {
@@ -283,13 +283,13 @@ public class Constants {
             new double[] {550, 550},
             new double[] {0.85, 0.85},
             0.99,
-            2.8,
+            2.8, //3
             -0.4,
             0.4
     );
 
     //lift
-    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04, 0.0275, 0.0015, 0.001, 1.1, 0.1, 0.85, 0.9, 195.0};
+    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04675, 0.0275, 0.0013, 0.001, 1.5, 0.1, 0.85, 0.9, 195.0};
 
     public static double LIFT_MIN_INTEGRAL_LIMIT = -8;
     public static double LIFT_MAX_INTEGRAL_LIMIT = 8;
@@ -297,7 +297,7 @@ public class Constants {
     /// This method is only to be used for when the lift hits the ground.
     /// @return kf from exponential regression.
     public static double getLiftKfFromRegression(double targetPosition) {
-        return 0.100076 * FastMath.pow(0.99536, targetPosition);
+        return 0.11 * FastMath.pow(0.99536, targetPosition);
     }
 
     public static double LIFT_POSITION = 550;
