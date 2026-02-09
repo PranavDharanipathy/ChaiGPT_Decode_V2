@@ -18,20 +18,20 @@ public class IntakeMotor extends VMotor {
 
     public Function function = Function.INTAKE;
 
-    public void setFunction(Function function) {
+    public void setFunction(Function functionNew) {
 
-        //'this.function' is the current Function
-        //'function' is the Function that its being changed to
+        //'function' is the current Function
+        //'functionNew' is the Function that its being changed to
 
-        if (this.function == Function.LIFT && function == Function.INTAKE) resetPIDFS();
+        if (function == Function.LIFT && functionNew == Function.INTAKE) resetPIDFS();
 
-        if (this.function == Function.INTAKE && function == Function.LIFT) {
+        if (function == Function.INTAKE && functionNew == Function.LIFT) {
 
             startTime = getSeconds();
             startPosition = internalMotor.getCurrentPosition();
         }
 
-        this.function = function;
+        function = functionNew;
     }
 
     public Function getFunction() {
@@ -74,6 +74,10 @@ public class IntakeMotor extends VMotor {
 
     public void setPosition(double targetPosition) {
         this.targetPosition = targetPosition;
+    }
+
+    public void setReZeroedPosition(double targetPosition) {
+        this.targetPosition = targetPosition - startPosition;
     }
 
     public void setPower(double power) {

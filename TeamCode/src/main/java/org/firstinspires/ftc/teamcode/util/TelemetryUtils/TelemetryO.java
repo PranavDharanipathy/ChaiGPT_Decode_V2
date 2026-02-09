@@ -16,12 +16,14 @@ public class TelemetryO {
         return telemetry;
     }
 
-    public TelemetryO(Telemetry telemetry) {
-        this.telemetry = telemetry;
-    }
+    public TelemetryO(Telemetry telemetry, boolean addDash) {
 
-    public TelemetryO addDash() {
-        return new TelemetryO(new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry()));
+        if (addDash) {
+            this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        }
+        else {
+            this.telemetry = telemetry;
+        }
     }
 
     private ArrayList<TelemetryMode> enabledModes = new ArrayList<>(Arrays.asList(TelemetryMode.getAll()));

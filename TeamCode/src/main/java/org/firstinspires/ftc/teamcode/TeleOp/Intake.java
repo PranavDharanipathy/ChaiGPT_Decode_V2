@@ -127,7 +127,7 @@ public class Intake extends Subsystem {
 
         if (liftFirstInstance) {
 
-            intake.setPosition(Constants.LIFT_POSITION);
+            intake.setReZeroedPosition(Constants.LIFT_POSITION);
             liftFirstInstance = false;
         }
     }

@@ -16,8 +16,7 @@ public class TelemetrySubsystem implements SubsystemInternal {
 
     public void provideComponents(Telemetry telemetry, boolean addFTCDashboard, BetterGamepad controller2) {
 
-        telem = new TelemetryO(telemetry);
-        if (addFTCDashboard) telem.addDash();
+        telem = new TelemetryO(telemetry, addFTCDashboard);
 
         telem.setTelemetryModes(TelemetryMode.INFO);
 

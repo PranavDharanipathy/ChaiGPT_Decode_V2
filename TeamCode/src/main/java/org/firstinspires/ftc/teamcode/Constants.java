@@ -289,7 +289,7 @@ public class Constants {
     );
 
     //lift
-    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.04675, 0.0275, 0.0013, 0.001, 1.5, 0.1, 0.85, 0.9, 195.0};
+    public static double[] LIFT_PIDFS_COEFFICIENTS = {0.1, 0.0275, 0.0013, 0.001, 1.67, 0.1, 0.85, 0.9, 195.0};
 
     public static double LIFT_MIN_INTEGRAL_LIMIT = -8;
     public static double LIFT_MAX_INTEGRAL_LIMIT = 8;
@@ -297,7 +297,7 @@ public class Constants {
     /// This method is only to be used for when the lift hits the ground.
     /// @return kf from exponential regression.
     public static double getLiftKfFromRegression(double targetPosition) {
-        return 0.11 * FastMath.pow(0.99536, targetPosition);
+        return 0.11 * FastMath.pow(1.05, targetPosition);
     }
 
     public static double LIFT_POSITION = 550;
