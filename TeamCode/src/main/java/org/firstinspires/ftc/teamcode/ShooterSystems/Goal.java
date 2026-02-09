@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -91,16 +89,30 @@ public class Goal {
             BLUE_CLOSE_GOAL_COORDINATE_SWITCH = blueCloseGoalCoordinateSwitch;
         }
 
-        public boolean isAllianceClose(double y, CurrentAlliance.ALLIANCE alliance) {
+        public static boolean onAllianceSide(double y, CurrentAlliance.ALLIANCE alliance) {
+
+            boolean isAlliance = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y > RED_CLOSE_GOAL_COORDINATE_SWITCH : y < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isAlliance;
+        }
+
+        public boolean onAllianceSide(double y) {
+
+            boolean isAlliance = this == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isAlliance;
+        }
+
+        public static boolean onOpponentSide(double y, CurrentAlliance.ALLIANCE alliance) {
 
             boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent;
         }
 
-        public boolean isAllianceClose(double y, GoalCoordinates allianceUsingGoalCoordinates) {
+        public boolean onOpponentSide(double y) {
 
-            boolean isOpponent = allianceUsingGoalCoordinates == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = this == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent;
         }

@@ -43,9 +43,7 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData("EOA Pose", shooter.EOAPose.toString());
 
         telem.addData("zone", shooter.getZone().toString());
-        telem.addData(TelemetryMode.RAW_DATA, "is alliance close?", shooter.accessGoalCoordinates().isAllianceClose(shooter.futureRobotPose.getY(), shooter.accessGoalCoordinates()));
-
-        telem.addData("hood mode", shooter.usingAutomaticHood() ? "AUTOMATIC" : "STATIC");
+        telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.futureRobotPose.getY()));
 
         telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hoodAngler.getPosition());
 

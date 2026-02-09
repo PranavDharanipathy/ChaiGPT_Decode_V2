@@ -81,10 +81,10 @@ public strictfp class ShooterInformation {
         public static int NORMAL_CONTROLLER_RUMBLE_TIME = 300;
 
         //normalized
-        public static double MIN_TURRET_POSITION_IN_DEGREES = -155, MAX_TURRET_POSITION_IN_DEGREES = 155;
+        public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
-        public static double TURRET_DEADBAND_TICKS = 0.1 * TURRET_TICKS_PER_DEGREE;
+        public static double TURRET_DEADBAND_TICKS = 0.01375 * TURRET_TICKS_PER_DEGREE;
 
         public static List<Double> TURRET_PD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0,   -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,    -1000.0,    0.0,     1000.0,    2000.0,    3000.0,    4000.0,     5000.0,   6000.0,      7000.0,    8000.0,    9000.0,     10000.0,    11000.0,    12500.0));
         public static List<Double> TURRET_KPS =          new ArrayList<>(List.of(0.000165,  0.00015,  0.00015,  0.000075,  0.00008,   0.00008,   0.000082,   0.000075,   0.000073,   0.00007,    0.00006,   0.00006,   0.00006,  0.00006,  0.000045,  0.000045,  0.000045,  0.00007,    0.000078,  0.000075,  0.0000835, 0.0000835,  0.0000835,  0.0000765,   0.000074,  0.000073));
@@ -93,7 +93,7 @@ public strictfp class ShooterInformation {
         public static List<Double> TURRET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-13000.0, -12000.0, -11000.0, -10000.0, -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,  -2000.0,   -1000.0,    -200.0,     200.0,    500.0,    1000.0,   2000.0,    3000.0,    4000.0,     5000.0,   6000.0,   7000.0,  8000.0,    9000.0,   10000.0,   11000.0,  12000.0,  12500.0));
         public static List<Double> TURRET_KFS =                   new ArrayList<>(List.of(0.000003, 0.000003, 0.000002, 0.0000012, 0.0000011, 0.0000023, 0.00000135, 0.00000155, 0.0000013, 0.0000012, 0.0000005, 0.0000009, 0.0000012,  0.0000011, 0.0000011, 0.00001,  0.0000041, 0.000006,  0.000006, 0.0000065, 0.0000055, 0.000005, 0.000005, 0.000006, 0.000007, 0.0000027, 0.0000024, 0.000002, 0.0000033));
 
-        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 1850;
+        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2250;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 200;
 

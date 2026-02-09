@@ -144,7 +144,6 @@ public class Shooter implements SubsystemInternal {
     private double turretTimeLookahead = 0;
     private boolean isTurretLookingAhead = false; //initially the bot is stationary
 
-    private boolean automaticHoodToggle = true;
     private double distanceToGoal;
 
     public void update() {
@@ -248,10 +247,9 @@ public class Shooter implements SubsystemInternal {
         }
 
         //hood
-        if (controller2.shareHasJustBeenPressed) automaticHoodToggle = !automaticHoodToggle;
 
         if (flywheelTargetVelocityZone == ZONE.FAR) hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
-        else if (automaticHoodToggle) {
+        else {
 
             Goal.GoalCoordinatesForDistance goalCoordinatesForDistance =
                     goalCoordinates == Goal.GoalCoordinates.BLUE
@@ -262,7 +260,6 @@ public class Shooter implements SubsystemInternal {
 
             hoodPosition = ShooterInformation.Models.getCloseHoodPositionFromRegression(distanceToGoal);
         }
-        else staticHood();
 
         hoodAngler.setPosition(MathUtil.clamp(hoodPosition, ShooterInformation.ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterInformation.ShooterConstants.HOOD_ANGLER_MIN_POSITION));
 
@@ -292,52 +289,16 @@ public class Shooter implements SubsystemInternal {
             }
             //flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
-        else if (goalCoordinates == Goal.GoalCoordinates.BLUE || futureRobotPose.getY() < Goal.GoalCoordinates.RED_CLOSE_GOAL_COORDINATE_SWITCH) {
+        else if (goalCoordinates.onOpponentSide(futureRobotPose.getY())) {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
-        else if (goalCoordinates == Goal.GoalCoordinates.RED || futureRobotPose.getY() > Goal.GoalCoordinates.BLUE_CLOSE_GOAL_COORDINATE_SWITCH) {
-            flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
-        }
-        else if (distanceToGoal < ShooterInformation.ShooterConstants.CLOSE_SIDE_SWITCH || !automaticHoodToggle) { //uses this close velocity if automatic hood isn't being used
+        else if (distanceToGoal < ShooterInformation.ShooterConstants.CLOSE_SIDE_SWITCH) {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
         else {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
         return flywheelTargetVelocity;
-    }
-
-    private void staticHood() {
-
-        if (!(controller2.yHasJustBeenPressed || controller2.xHasJustBeenPressed || controller2.bHasJustBeenPressed || controller2.aHasJustBeenPressed)) {
-            return;
-        }
-
-        if (controller2.yHasJustBeenPressed) { //close
-            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-        }
-        else if (controller2.xHasJustBeenPressed) {
-            ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-        }
-
-        if (controller2.bHasJustBeenPressed) { //far
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION+=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-        }
-        else if (controller2.aHasJustBeenPressed) {
-            ShooterInformation.ShooterConstants.HOOD_FAR_POSITION-=ShooterInformation.ShooterConstants.HOOD_POSITION_MANUAL_INCREMENT;
-        }
-
-        manualUpdateHoodPositions();
-    }
-
-    private void manualUpdateHoodPositions() {
-
-        if (flywheelTargetVelocityZone == ZONE.CLOSE) {
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_CLOSE_POSITION;
-        }
-        else if (flywheelTargetVelocityZone == ZONE.FAR) {
-            hoodPosition = ShooterInformation.ShooterConstants.HOOD_FAR_POSITION;
-        }
     }
 
     private double route(double rawtt) {
@@ -380,11 +341,6 @@ public class Shooter implements SubsystemInternal {
 
     public double rev9AxisImuHeadingDeg() {
         return Math.toDegrees(robotYawRad);
-    }
-
-    /// @return 'true' if using automatic hood and 'false' if using static hood
-    public boolean usingAutomaticHood() {
-        return automaticHoodToggle;
     }
 
     public ZONE getZone() {
