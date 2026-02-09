@@ -11,26 +11,15 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-
-
 @Configurable // Panels
 @Config
 public class BlueFar12Paths {
 
-
-    private static final Logger log = LoggerFactory.getLogger(BlueFar12Paths.class);
-    public PathChain FirstIntake;
-
-
-    public PathChain FirstReturn;
     public PathChain SecondIntake;
-    public PathChain IntakeExtra;
-    public PathChain SecondReturn;
 
+    public PathChain SecondReturn;
+    public PathChain FirstIntake;
+    public PathChain FirstReturn;
 
 
 
@@ -38,6 +27,8 @@ public class BlueFar12Paths {
     public PathChain setupForFirstIntake;
     public PathChain intakeExtra;
     public PathChain firstReturnn;
+
+    public PathChain movementRP;
 
 
     public BlueFar12Paths(Follower follower) {
@@ -54,14 +45,14 @@ public class BlueFar12Paths {
                 .build();
 
 
-        FirstIntake = follower
+        SecondIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(64, 9.5), // y=14.829
                                 new Pose(62, 18),
-                                new Pose(59.049, 28.220),
-                                new Pose(47.902, 38.829),
+                                new Pose(59.049, 28),
+                                new Pose(47.902, 38),
                                 new Pose(19.415, 38.707)
                         )
                 )
@@ -86,7 +77,7 @@ public class BlueFar12Paths {
                    .build();*/
 
 
-        FirstReturn = follower
+        SecondReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
@@ -96,50 +87,25 @@ public class BlueFar12Paths {
                         )
                 )
 
-
                 .setConstantHeadingInterpolation(Math.PI)
-
-
-                /*.setHeadingInterpolation(
-
-
-                        HeadingInterpolator.piecewise(
-                                /new HeadingInterpolator.PiecewiseNode(
-                                        0,
-                                        0.6,
-                                        HeadingInterpolator.tangent
-                                *,
-                                new HeadingInterpolator.PiecewiseNode(
-                                        0.6,
-                                        1,
-                                        HeadingInterpolator.constant(Math.PI)
-                                )
-
-
-                        )
-
-
-                )*/
-                //.setConstantHeadingInterpolation(Math.PI)
-
 
                 .build();
 
 
 
 
-        SecondIntake = follower.pathBuilder()
+        FirstIntake = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(61.610, 18.000),
                                 //new Pose(56.561, 34.268),
                                 new Pose(55.390, 39.732),
                                 //new Pose(49.707, 54.634),
-                                new Pose(49, 49),
+                                new Pose(49, 42.5),
                                 //new Pose(43.73200, 68), //y = 49
-                                new Pose(31.244, 68),
-                                new Pose(23.390, 68),
-                                new Pose(19, 70)
+                                new Pose(31.244, 46),
+                                new Pose(24, 48),
+                                new Pose(13 /*15.5*/, 52)
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -147,48 +113,44 @@ public class BlueFar12Paths {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.35,
+                                        0.45,
                                         HeadingInterpolator.facingPoint(22, 61)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.35,
+                                        0.45,
                                         1,
-                                        HeadingInterpolator.constant(Math.PI)
+                                        HeadingInterpolator.constant(Math.toRadians(145))
                                 )
-//                                    new HeadingInterpolator.PiecewiseNode(
-//                                            0.87,
-//                                            1,
-//                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
-//                                    )
                         )
                 )
                 .build();
 
 
-        SecondReturn = follower
+        FirstReturn = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(
-                                new Pose(12.463, 68.847),
-                                //new Pose(54.876, 45.408),
+                        new BezierCurve(
+                                new Pose(18, 55),
 
+                                new Pose(54, 36),
 
                                 //y = 11 before
-                                new Pose(65.154, 18.924)
+                                new Pose(64, 18.924)
                         )
                 )
-                // .setConstantHeadingInterpolation(Math.PI)
+
                 .setHeadingInterpolation(
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.085,
-                                        HeadingInterpolator.constant(Math.PI)
+                                        0.2,
+                                        HeadingInterpolator.constant(Math.toRadians(142))
                                 ),
+
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.085,
+                                        0.2,
                                         0.8,
-                                        HeadingInterpolator.facingPoint(4, 60)
+                                        HeadingInterpolator.constant(Math.toRadians(170))
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.8,
@@ -205,28 +167,29 @@ public class BlueFar12Paths {
                 .addPath(
                         new BezierLine(
                                 new Pose(65.154, 18.924),
-                                new Pose(148, 65).mirror()
+                                new Pose(148, 52/*60*/).mirror()
                         )
                 )
 
                 .setHeadingInterpolation(
                         HeadingInterpolator.piecewise(
-
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0, 0.22,
-                                        HeadingInterpolator.tangent
+                                        0,
+                                        0.05,
+                                        HeadingInterpolator.constant(Math.PI)
                                 ),
 
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.22, 0.26,
-                                        HeadingInterpolator.facingPoint(5,0)
+                                        0.05,
+                                        0.55,
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(270))
                                 ),
+
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.26, 1,
+                                        0.55,
+                                        1,
                                         HeadingInterpolator.constant(Math.toRadians(270))
                                 )
-
-
                         )
                 )
                 //.setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
@@ -268,15 +231,16 @@ public class BlueFar12Paths {
                 //.setLinearHeadingInterpolation(Math.toRadians(270), Math.PI)
                 .build();
 
-
-
-
-
-
-
-
-
+        movementRP = follower
+                .pathBuilder()
+                .addPath(
+                      new BezierLine(
+                              new Pose(64, 9.5),
+                              new Pose(40, 16)
+                      )
+                )
+                .setConstantHeadingInterpolation(Math.PI)
+                .build();
 
     }
 }
-

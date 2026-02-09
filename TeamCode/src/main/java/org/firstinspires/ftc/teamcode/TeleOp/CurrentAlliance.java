@@ -15,4 +15,18 @@ public class CurrentAlliance {
     public ALLIANCE getAlliance() {
         return alliance;
     }
+
+    public String toString() {
+
+        String string = "INVALID";
+
+        if (alliance == ALLIANCE.BLUE_ALLIANCE) {
+            string = "BLUE";
+        }
+        else if (alliance == ALLIANCE.RED_ALLIANCE) {
+            string = "RED";
+        }
+
+        return string;
+    }
 }

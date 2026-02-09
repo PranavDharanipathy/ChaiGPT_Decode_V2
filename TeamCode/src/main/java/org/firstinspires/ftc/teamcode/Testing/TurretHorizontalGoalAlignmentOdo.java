@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
+import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -128,7 +129,7 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
         Goal.GoalCoordinate goalCoordinate;
 
         if (robotPose.getX() > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goal.GOAL_COORDINATES.getCloseCoordinate();
+            goalCoordinate = goal.GOAL_COORDINATES.getCloseCoordinate(turretPose.getY(), goal == GOAL.RED ? CurrentAlliance.ALLIANCE.RED_ALLIANCE : CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
         }
         else {
             goalCoordinate = goal.GOAL_COORDINATES.getFarCoordinate();

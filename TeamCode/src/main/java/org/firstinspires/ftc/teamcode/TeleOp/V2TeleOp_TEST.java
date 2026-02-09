@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
+import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 import org.firstinspires.ftc.teamcode.util.CommandUtils.CommandScheduler;
 import org.firstinspires.ftc.teamcode.util.RobotResetter;
@@ -13,7 +14,24 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 @TeleOp (name = "V2TeleOp_TEST")
 public class V2TeleOp_TEST extends TeleOpBaseOpMode {
 
-    public static CurrentAlliance alliance = new CurrentAlliance(CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
+    public static CurrentAlliance.ALLIANCE alliance = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
+
+    //sorry for how inefficient this part is
+    public static double RED_CLOSE_ALLIANCE_GOAL_X = Goal.GoalCoordinates.RED.getCloseAllianceCoordinate().getX();
+    public static double RED_CLOSE_ALLIANCE_GOAL_Y = Goal.GoalCoordinates.RED.getCloseAllianceCoordinate().getY();
+    public static double RED_CLOSE_OPPONENT_GOAL_X = Goal.GoalCoordinates.RED.getCloseOpponentCoordinate().getX();
+    public static double RED_CLOSE_OPPONENT_GOAL_Y = Goal.GoalCoordinates.RED.getCloseOpponentCoordinate().getY();
+    public static double RED_FAR_GOAL_X = Goal.GoalCoordinates.RED.getFarCoordinate().getX();
+    public static double RED_FAR_GOAL_Y = Goal.GoalCoordinates.RED.getFarCoordinate().getY();
+
+    public static double BLUE_CLOSE_ALLIANCE_GOAL_X = Goal.GoalCoordinates.BLUE.getCloseAllianceCoordinate().getX();
+    public static double BLUE_CLOSE_ALLIANCE_GOAL_Y = Goal.GoalCoordinates.BLUE.getCloseAllianceCoordinate().getY();
+    public static double BLUE_CLOSE_OPPONENT_GOAL_X = Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate().getX();
+    public static double BLUE_CLOSE_OPPONENT_GOAL_Y = Goal.GoalCoordinates.BLUE.getCloseOpponentCoordinate().getY();
+    public static double BLUE_FAR_GOAL_X =Goal.GoalCoordinates.BLUE.getFarCoordinate().getX();
+    public static double BLUE_FAR_GOAL_Y =Goal.GoalCoordinates.BLUE.getFarCoordinate().getY();
+
+    private CurrentAlliance currentAlliance = new CurrentAlliance(alliance);
 
     private final PedroDrive pedroDrive = new PedroDrive();
 
@@ -30,13 +48,15 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
     @Override
     public void runOpMode() {
 
+        //useEOALocalizationData(); <- not using when testing
+
         initializeDevices();
 
         applyComponentTraits();
 
         //initialize subsystems here
         telemetry.provideComponents(super.telemetry, true, controller2);
-        pedroDrive.provideInitComponents(follower, controller1, controller2, alliance);
+        pedroDrive.provideInitComponents(follower, controller1, controller2, currentAlliance);
         intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, rev9AxisImu, controller1, controller2);
@@ -58,6 +78,26 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             // clear data at start of loop
             clearCacheOfLynxModule();
 
+            pedroDrive.provideInitComponents(follower, controller1, controller2, currentAlliance);
+            shooter.switchAlliance(alliance);
+
+            if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
+
+                shooter.accessGoalCoordinates().setGoalCoordinates(
+                        new Goal.GoalCoordinate(BLUE_CLOSE_ALLIANCE_GOAL_X, BLUE_CLOSE_ALLIANCE_GOAL_Y), //close alliance
+                        new Goal.GoalCoordinate(BLUE_CLOSE_OPPONENT_GOAL_X, BLUE_CLOSE_OPPONENT_GOAL_Y), //close opponent
+                        new Goal.GoalCoordinate(BLUE_FAR_GOAL_X, BLUE_FAR_GOAL_Y) //far
+                );
+            }
+            else {
+
+                shooter.accessGoalCoordinates().setGoalCoordinates(
+                        new Goal.GoalCoordinate(RED_CLOSE_ALLIANCE_GOAL_X, RED_CLOSE_ALLIANCE_GOAL_Y), //close alliance
+                        new Goal.GoalCoordinate(RED_CLOSE_OPPONENT_GOAL_X, RED_CLOSE_OPPONENT_GOAL_Y), //close opponent
+                        new Goal.GoalCoordinate(RED_FAR_GOAL_X, RED_FAR_GOAL_Y) //far
+                );
+            }
+
             controller1.getInformation();
             controller2.getInformation();
 
@@ -72,6 +112,7 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
             //background action processes
             CommandScheduler.update();
 
+            super.telemetry.addData("alliance", currentAlliance.toString());
             telemetry.runInstance(shooter, intake, pedroDrive);
         }
 
@@ -81,4 +122,5 @@ public class V2TeleOp_TEST extends TeleOpBaseOpMode {
         }
 
     }
+
 }

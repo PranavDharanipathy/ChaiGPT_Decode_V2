@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -32,7 +33,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @Autonomous (name = "Sling Auto BLUE FAR", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
 
-    public static double[] TURRET_POSITIONS = {7550, 7050, 7750, 8050};
+    public static double[] TURRET_POSITIONS = {8150, 8300, 8300, 8300, 8400};
 
     private Telemetry telemetry;
 
@@ -53,6 +54,8 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
         );
     }
 
+    private ElapsedTime universalTimer = new ElapsedTime();
+
     @Override
     public void onInit() {
 
@@ -72,7 +75,23 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
         HoodNF.INSTANCE.hood.setPosition(0.16);
         TurretNF.INSTANCE.turret.setPosition(TURRET_POSITIONS[0]);
 
-        auto().schedule();
+        universalTimer.reset();
+
+        //auto().schedule();
+        //auto
+        new SequentialGroup(
+                new ParallelRaceGroup(
+                        auto(),
+                        new WaitUntil(() -> universalTimer.milliseconds() > 29_000)
+                ),
+
+                TurretNF.INSTANCE.goToHomePositionCmd(),
+                FlywheelNF.INSTANCE.setVel(0, true),
+                TransferNF.INSTANCE.antiVeryStrong(),
+                IntakeNF.INSTANCE.fullReverse(),
+
+                new FollowPath(paths.movementRP, true)
+        ).schedule();
     }
 
     @Override
@@ -94,6 +113,8 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
         telemetry.addData("turret start position", TurretNF.INSTANCE.turret.startPosition);
 
         telemetry.addData("hood position", HoodNF.INSTANCE.hood.getPosition());
+
+        telemetry.addData("intake power?", IntakeNF.INSTANCE.intake.getPower());
 
         telemetry.addData("brokeFollowing", brokeFollowing);
         telemetry.addData("pedro busy?", PedroComponent.follower().isBusy());
@@ -124,17 +145,34 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
-                followCancelable(paths.intake, 6000),//new FollowPath(paths.intake),
-                new FollowPath(paths.returnn, true),
+                IntakeNF.INSTANCE.reverse(),
+                new ParallelGroup(
+                        followCancelable(paths.curvedIntake2, 4000), //new FollowPath(paths.intake),
+                        RobotNF.robot.intakeClearingSpecial(1.5)
+                ),
+                new FollowPath(paths.curvedReturn2, true),
                 //shooting balls
-                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.returnn),
+                RobotNF.robot.shootBalls(0.4,0.3),
 
                 //intaking balls at the human player zone
                 TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
-                followCancelable(paths.intake, 6000),//new FollowPath(paths.intake),
-                new FollowPath(paths.returnn, true),
+                new ParallelGroup(
+                        followCancelable(paths.curvedIntake2, 4000),//new FollowPath(paths.intake),
+                        RobotNF.robot.intakeClearingSpecial(1.5)
+                ),
+                new FollowPath(paths.curvedReturn2, true),
                 //shooting balls
-                RobotNF.robot.shootBalls(0.4,0.3, 1, paths.returnn)
+                RobotNF.robot.shootBalls(0.4,0.3),
+
+                //intaking balls at the human player zone
+                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[4]),
+                new ParallelGroup(
+                        followCancelable(paths.normalIntake, 4000),//new FollowPath(paths.intake),
+                        RobotNF.robot.intakeClearingSpecial(1.5)
+                ),
+                new FollowPath(paths.normalReturn, true),
+                //shooting balls
+                RobotNF.robot.shootBalls(0.4,0.3)
         );
     }
 
@@ -151,6 +189,9 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
 
                     private boolean firstTick = true;
                     private double startTime;
+
+                    private boolean cancel = false;
+
                     @Override
                     public boolean isDone() {
 
@@ -160,13 +201,16 @@ public class SlingAuto_CYCLE_BLUE_FAR extends NextFTCOpMode {
                             firstTick = false;
                         }
 
-                        return PedroComponent.follower().atParametricEnd() || System.currentTimeMillis() >= millisTilCancel + startTime;
+                        if (System.currentTimeMillis() >= millisTilCancel + startTime) {
+                            cancel = true;
+                            PedroComponent.follower().breakFollowing();
+
+                            brokeFollowing = true;
+                        }
+
+                        return PedroComponent.follower().atParametricEnd() || cancel;
                     }
-                },
-                new InstantCommand(() -> {
-                    brokeFollowing = true;
-                    PedroComponent.follower().breakFollowing();
-                })
+                }
         );
     }
 

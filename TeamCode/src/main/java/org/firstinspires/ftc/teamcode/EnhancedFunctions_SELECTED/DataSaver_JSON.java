@@ -53,11 +53,7 @@ public class DataSaver_JSON {
 
     /// Reads data from JSON
     public String[] retrieveData() {
-
-        String[] data = gson.fromJson(dataReader, String[].class);
-
-
-        return data;
+        return gson.fromJson(dataReader, String[].class);
     }
 
 
