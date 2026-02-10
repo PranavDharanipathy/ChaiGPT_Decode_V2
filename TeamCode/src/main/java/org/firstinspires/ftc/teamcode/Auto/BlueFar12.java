@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -44,13 +46,13 @@ public class BlueFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8630, 8650, 8700, 8500};
+    public static double[] TURRET_POSITIONS = {8730, 8750, 8800, 8400};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 452_800;
+    public static double flywheel_target = 455_800;
 
 
     private BlueFar12Paths paths;
@@ -101,6 +103,8 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         telemetry.clearAll();
+
+        PedroComponent.follower().setMaxPower(2);
 
 
         //setup
@@ -185,6 +189,7 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
+                        300,
                         300
                 ),
 
@@ -207,7 +212,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300
+                        300,
+                        240
                 ),
 
                 //SECOND INTAKE
@@ -224,6 +230,7 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
+                        300,
                         300
                 ),
 
@@ -249,6 +256,7 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
+                        300,
                         300
                 ),
 
@@ -300,7 +308,7 @@ public class BlueFar12 extends NextFTCOpMode {
         );
     }
 
-    private Command shootBalls(double[] transferTime, double[] minTimeBetweenTransfers, double[] maxTimeBetweenTransfers, double flywheelVelMargin) {
+    private Command shootBalls(double[] transferTime, double[] minTimeBetweenTransfers, double[] maxTimeBetweenTransfers, double flywheelVelMargin, double secondShootFlywheelMargin) {
 
         ElapsedTime timer = new ElapsedTime();
 
@@ -313,7 +321,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
                 new Delay(minTimeBetweenTransfers[0]),
                 new InstantCommand((timer::reset)),
-                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - flywheelVelMargin || timer.seconds() > maxTimeBetweenTransfers[0])),
+                new WaitUntil(() -> (FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - secondShootFlywheelMargin || timer.seconds() > maxTimeBetweenTransfers[0])),
 
                 //2
                 TransferNF.INSTANCE.transfer(),
