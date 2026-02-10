@@ -20,9 +20,9 @@ public class TurretBaseTuner extends OpMode {
 
     private TurretBase turret;
 
-    public static long LOOP_TIME = 70;
+    public static long LOOP_TIME = 60;
 
-    public static double KP =TURRET_PIDFS_COEFFICIENTS.kp;
+    public static double KP = TURRET_PIDFS_COEFFICIENTS.kp;
     public static double[] KI_FAR = {TURRET_PIDFS_COEFFICIENTS.lkiFar, TURRET_PIDFS_COEFFICIENTS.rkiFar};
     public static double[] KI_CLOSE = {TURRET_PIDFS_COEFFICIENTS.lkiClose, TURRET_PIDFS_COEFFICIENTS.rkiClose};
     public static double KD = TURRET_PIDFS_COEFFICIENTS.kd;
@@ -39,6 +39,8 @@ public class TurretBaseTuner extends OpMode {
     public static double[] D_ACTIVATION = {TURRET_PIDFS_COEFFICIENTS.lDActivation, TURRET_PIDFS_COEFFICIENTS.rDActivation};
 
     public static double KF_RESISTANCE = TURRET_PIDFS_COEFFICIENTS.kFResistance;
+
+    public static double LANYARD_EQUILIBRIUM = TURRET_PIDFS_COEFFICIENTS.lanyardEquilibrium;
 
     public static double MIN_I = TURRET_PIDFS_COEFFICIENTS.minI, MAX_I = TURRET_PIDFS_COEFFICIENTS.maxI;
     public static double TARGET_POSITION;
@@ -72,6 +74,7 @@ public class TurretBaseTuner extends OpMode {
                 KD_FILTER,
                 KPOWER_FILTER,
                 KF_RESISTANCE,
+                LANYARD_EQUILIBRIUM,
                 MIN_I, MAX_I
         ));
         turret.setTuning(true);
@@ -96,6 +99,7 @@ public class TurretBaseTuner extends OpMode {
                 KD_FILTER,
                 KPOWER_FILTER,
                 KF_RESISTANCE,
+                LANYARD_EQUILIBRIUM,
                 MIN_I, MAX_I
         ));
         turret.update();

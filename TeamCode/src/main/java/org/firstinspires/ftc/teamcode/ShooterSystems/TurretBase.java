@@ -30,7 +30,7 @@ public class TurretBase {
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter;
+    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter, lanyardEquilibrium;
     public double ki, kf;
 
     private double maxI = 1;
@@ -96,7 +96,6 @@ public class TurretBase {
         reversed = true;
 
         fDirection = -1;
-
     }
 
     private TurretBasePIDFSCoefficients coefficients;
@@ -106,9 +105,13 @@ public class TurretBase {
         this.coefficients = coefficients;
 
         //setting variables that do not change
+
+
         ks = coefficients.ks;
 
         kPowerFilter = coefficients.kPowerFilter;
+
+        lanyardEquilibrium = coefficients.lanyardEquilibrium;
 
         minI = coefficients.minI;
         maxI = coefficients.maxI;
@@ -192,7 +195,7 @@ public class TurretBase {
 
         kiFar = coefficients.kiFar(side);
         kiClose = coefficients.kiClose(side);
-        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, reversed);
+        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, currentPosition, reversed);
 
         kDFilter = coefficients.kDFilter(side);
 
@@ -275,7 +278,7 @@ public class TurretBase {
 
         //feedforward
         double reZeroedTargetPosition = targetPosition - startPosition;
-        f = kf * fDirection * reZeroedTargetPosition;
+        f = kf * fDirection * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
         s = ks * Math.signum(error);

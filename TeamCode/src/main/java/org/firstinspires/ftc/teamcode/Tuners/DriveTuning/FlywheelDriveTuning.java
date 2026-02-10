@@ -19,13 +19,11 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
     public static double KI_FAR = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
     public static double KI_CLOSE = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2];
     public static double KD = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[3];
-    public static double KF = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4];
-    public static double KV = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
-    public static double KA = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
-    public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
-    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
-    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9];
-    public static double kISwitchError = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10];
+    public static double KV = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4];
+    public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
+    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
+    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
+    public static double kISwitchError = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
     public static double I_MIN = Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, I_MAX = Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT;
     public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 
@@ -60,7 +58,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
 
             flywheel.setIConstraints(I_MIN, I_MAX);
             flywheel.setPConstraints(P_MIN, P_MAX);
-            flywheel.setVelocityPIDFVASCoefficients(KP, KI_FAR, KI_CLOSE, KD, KF, KV, KA, KS, kPIDFUnitsPerVolt, kISmash, kISwitchError);
+            flywheel.setVelocityPIDVSCoefficients(KP, KI_FAR, KI_CLOSE, KD, KV, KS, kPIDFUnitsPerVolt, kISmash, kISwitchError);
 
             hoodAngler.setPosition(HOOD_POSITION);
             intake.setPower(INTAKE_POWER);

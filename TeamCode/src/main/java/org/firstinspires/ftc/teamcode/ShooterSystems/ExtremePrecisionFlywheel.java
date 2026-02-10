@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
-import javax.annotation.Nullable;
-
 /// USES EXTERNAL ENCODER
 @Peak
 public final class ExtremePrecisionFlywheel {
@@ -67,10 +65,8 @@ public final class ExtremePrecisionFlywheel {
         return kISwitchTargetVelocity;
     }
     public double kd;
-    public double kf;
     public double unscaledKv;
     public double kv;
-    public double ka;
     public double ks;
 
     private double kPIDFUnitsPerVolt;
@@ -87,23 +83,14 @@ public final class ExtremePrecisionFlywheel {
     private double currentFilteredVelocity;
 
     private double lastCurrentFilteredVelocity = 0;
-
-    private double burstVelocity = 0;
-    private double BURST_DECELERATION_RATE;
-
-    private double targetAcceleration;
-
     private long currentPosition = 0;
     private long lastPosition;
-
-    private final double PI = StrictMath.PI;
 
     /// @param MASS_IN_GRAMS Is the amount of mass in grams that is connected to the motor.
     /// @param SHAFT_DIAMETER Is the diameter of shaft in millimeters connecting to motor.
     /// @param MOTOR_CORE_VOLTAGE Check the website you go the motor from, it may tell you what volt motor core the motor has.
     /// @param MOTOR_RPM Is the RPM of the motor.
-    /// @param BURST_DECELERATION_RATE Is the rate at which the burst decelerates.
-    public void setInternalParameters(double MASS_IN_GRAMS, double SHAFT_DIAMETER, double MOTOR_CORE_VOLTAGE, double MOTOR_RPM, double BURST_DECELERATION_RATE) {
+    public void setInternalParameters(double MASS_IN_GRAMS, double SHAFT_DIAMETER, double MOTOR_CORE_VOLTAGE, double MOTOR_RPM) {
 
         this.MOTOR_RPM = MOTOR_RPM;
 
@@ -112,13 +99,11 @@ public final class ExtremePrecisionFlywheel {
         this.SHAFT_RADIUS = SHAFT_DIAMETER / 2;
         FN = /*gravity*/ 9.80665 * (/*converted mass in g to kg*/ MASS_IN_GRAMS / 1000);
 
-        this.BURST_DECELERATION_RATE = BURST_DECELERATION_RATE;
     }
 
     public double p = 0, i = 0, d = 0;
     private double errorSum = 0;
-    public double f = 0; //constant feedforward - can be enabled or disabled
-    public double v = 0, a = 0;
+    public double v = 0;
     public double s = 0;
 
     public double i_max = Double.MAX_VALUE;
@@ -156,9 +141,9 @@ public final class ExtremePrecisionFlywheel {
     }
 
 
-    public double[] getPIDFVAS() {
+    public double[] getPIDVS() {
 
-        return new double[] {p, i, d, f, v, a, s};
+        return new double[] {p, i, d, v, s};
     }
 
     /// @param kp Proportional
@@ -168,11 +153,7 @@ public final class ExtremePrecisionFlywheel {
     /// <p>
     /// @param kd Derivative
     /// <p>
-    /// @param kf Holding Feedforward
-    /// <p>
     /// @param kv Velocity Feedforward
-    /// <p>
-    /// @param ka Acceleration Feedforward
     /// <p>
     /// @param ks Static Friction
     /// <p>
@@ -181,15 +162,13 @@ public final class ExtremePrecisionFlywheel {
     /// @param kISmash Multiplies I to decrease I when error switches
     /// <p>
     /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
-    public void setVelocityPIDFVASCoefficients(double kp, double kiFar, double kiClose, double kd, double kf, double kv, double ka, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
+    public void setVelocityPIDVSCoefficients(double kp, double kiFar, double kiClose, double kd, double kv, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
         this.kp = kp;
         this.kiFar = kiFar;
         this.kiClose = kiClose;
         this.kd = kd;
-        this.kf = kf;
         this.kv = unscaledKv = kv;
-        this.ka = ka;
         this.ks = ks;
         this.kPIDFUnitsPerVolt = kPIDFUnitsPerVolt;
         this.kISmash = kISmash;
@@ -208,31 +187,15 @@ public final class ExtremePrecisionFlywheel {
             resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
         }
 
-        burstVelocity = 0;
-
         targetVelocity = velocity;
-    }
-
-    /// @param velocity in ticks per second
-    /// @param burst initial burst velocity in ticks per second added to 'velocity'
-    public void setVelocityWithBurst(double velocity, @Nullable Double burst, boolean allowIntegralReset) {
-
-        if (allowIntegralReset && targetVelocity != velocity) {
-            resetIntegral(); //resetting integral when target velocity changes to prevent integral windup
-        }
-
-        if (burst != null) burstVelocity = burst;
-        else burstVelocity = 0;
-
-        targetVelocity = velocity;
-
-        targetVelocity += burstVelocity;
     }
 
     private double velocityEstimate = 0;
 
     private boolean firstTick = true;
     private double startTime;
+
+    private double dt;
 
     private double seconds() {
         return System.nanoTime() * 1e-9;
@@ -251,9 +214,7 @@ public final class ExtremePrecisionFlywheel {
 
         prevTime = currentTime;
         currentTime = seconds() - startTime;
-        double dt = currentTime - prevTime;
-
-        burstVelocity = Math.max(0, burstVelocity - (BURST_DECELERATION_RATE * dt));
+        dt = currentTime - prevTime;
 
         lastCurrentFilteredVelocity = currentFilteredVelocity;
 
@@ -265,8 +226,6 @@ public final class ExtremePrecisionFlywheel {
         encoder.runVelocityCalculation(velocityEstimate);
         currentFilteredVelocity = encoder.getRealVelocity();
         //currentFilteredVelocity = velocityEstimate;
-
-        //telemetry.addData("current vel", currentVelocity);
 
         double error = targetVelocity - currentFilteredVelocity;
 
@@ -301,26 +260,13 @@ public final class ExtremePrecisionFlywheel {
         if (!MathUtil.valueWithinRangeIncludingPoles(d, -1, 1)) d = 0;
         d = MathUtil.clamp(d, -0.2, 0.2);
 
-        //positional feedforward for holding
-        f = targetVelocity != 0 ? kf : 0;
-
-        //velocity feedforward
-        v = kv * targetVelocity;
-
-        targetAcceleration = -targetVelocity / dt;
-        a = ka * targetAcceleration;
-
         //static friction
-        double freeSpeed = (MOTOR_RPM * PI) / 30; // in rad/s
+        double freeSpeed = (MOTOR_RPM * Math.PI) / 30; // in rad/s
         double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculate accurately
         double T = ks * FN * SHAFT_RADIUS;
-        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt : 0;
+        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * Math.signum(error) : 0;
 
-        double PIDFVAPower = p + i + d + (usingHoldingFeedforward ? f : 0) + v + a;
-
-        //telemetry.addData("PIDFVAPower", PIDFVAPower);
-
-        power = PIDFVAPower + (Math.signum(PIDFVAPower) >= 0 ? s : -s);
+        power = p + i + d + v + s;
 
         if (targetVelocity == 0) power = 0;
 
@@ -389,14 +335,6 @@ public final class ExtremePrecisionFlywheel {
         return lastCurrentFilteredVelocity;
     }
 
-    public double getBurstVelocity() {
-        return burstVelocity;
-    }
-
-    public double getTargetAcceleration() {
-        return targetAcceleration;
-    }
-
     public double getTargetVelocity() {
         return targetVelocity;
     }
@@ -410,23 +348,14 @@ public final class ExtremePrecisionFlywheel {
     /// @param stabilityMarginOfError Acceptable variation in stability.
     public boolean isAtVelocityAndStable(double velocityMarginOfError, double stabilityMarginOfError) {
 
-        boolean motorIsAtVelocityAndStable = false;
+        double currentSpeed = Math.abs(currentFilteredVelocity);
+        double lastSpeed = Math.abs(lastCurrentFilteredVelocity);
 
-        double currentVelocity; //different for each type of calculation
-        currentVelocity = Math.abs(this.currentFilteredVelocity);
+        boolean isAtVelocity = Math.abs(targetVelocity - currentSpeed) <= velocityMarginOfError;
 
-        if (Math.abs(Math.abs(targetVelocity - lastCurrentFilteredVelocity) - currentVelocity) <= velocityMarginOfError && Math.abs(currentVelocity - lastCurrentFilteredVelocity) < stabilityMarginOfError) motorIsAtVelocityAndStable = true;
+        boolean isStable = Math.abs(currentSpeed - lastSpeed) <= stabilityMarginOfError;
 
-        return motorIsAtVelocityAndStable;
-    }
-
-    // true by default
-    private boolean usingHoldingFeedforward = true;
-
-    /// Enables/disables holding feedforward
-    /// @param state true (using) or false (not using)
-    public void setHoldingFeedforwardState(boolean state) {
-        usingHoldingFeedforward = state;
+        return isAtVelocity && isStable;
     }
 
     public void reset() {
@@ -455,6 +384,11 @@ public final class ExtremePrecisionFlywheel {
 
     public double[] getMotorPowers() {
         return new double[] {leftFlywheel.getPower(), rightFlywheel.getPower()};
+    }
+
+    /// @return the dt used in the loop that ran most recently
+    public double getLoopDt() {
+        return dt;
     }
 
 }

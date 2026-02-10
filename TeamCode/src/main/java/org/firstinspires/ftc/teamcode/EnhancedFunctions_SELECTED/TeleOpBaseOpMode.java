@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
@@ -178,10 +177,9 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight(),
                 ShooterInformation.ShooterConstants.SHAFT_DIAMETER,
                 ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
-                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM,
-                ShooterInformation.ShooterConstants.BURST_DECELERATION_RATE
+                ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM
         );
-        flywheel.setVelocityPIDFVASCoefficients(
+        flywheel.setVelocityPIDVSCoefficients(
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2],
@@ -190,9 +188,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6],
                 Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7],
-                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8],
-                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[9],
-                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[10]
+                Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8]
         );
         flywheel.setVoltageFilterAlpha(Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA);
         flywheel.setIConstraints(Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT);
