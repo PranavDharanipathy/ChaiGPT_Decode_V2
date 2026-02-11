@@ -28,6 +28,9 @@ public class BlueFar12Paths {
     public PathChain intakeExtra;
     public PathChain firstReturnn;
 
+    public PathChain hpIntake;
+    public PathChain hpReturn;
+
     public PathChain movementRP;
 
 
@@ -194,6 +197,44 @@ public class BlueFar12Paths {
                 )
                 //.setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
                 .build();
+
+
+        hpIntake= follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(65, 14),
+                                new Pose(136, 16).mirror()
+                        )
+                )
+                .setNoDeceleration()
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0,
+                                        0.7,
+                                        HeadingInterpolator.constant(Math.PI)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.7,
+                                        1,
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(200))
+                                )
+                        )
+                )
+                .build();
+
+        hpReturn = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(136, 10.5).mirror(),
+                                new Pose(74, 12.5).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.PI)
+                .build();
+
 
 
         intakeExtra = follower

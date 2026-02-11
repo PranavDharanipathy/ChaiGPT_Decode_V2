@@ -119,7 +119,7 @@ public class BlueFar12 extends NextFTCOpMode {
         new SequentialGroup(
                 new ParallelRaceGroup(
                         auto(),
-                        new WaitUntil(() -> universalTimer.milliseconds() > 29_000)
+                        new WaitUntil(() -> universalTimer.milliseconds() > 35_000)
                 ),
 
                 TurretNF.INSTANCE.goToHomePositionCmd(),
@@ -259,6 +259,20 @@ public class BlueFar12 extends NextFTCOpMode {
                         300,
                         300
                 ),
+
+                followCancelable(paths.hpIntake, 1000),
+
+                new FollowPath(paths.hpReturn),
+
+                shootBalls(
+                        new double[] {0.35, 0.375, 0.4},
+                        new double[] {0.4, 0.4},
+                        new double[] {0.95, 0.95},
+                        300,
+                        320
+                ),
+
+
 
                 //SET TURRET TO END POS
                 TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition),
