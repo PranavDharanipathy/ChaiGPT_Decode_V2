@@ -263,8 +263,6 @@ public class Constants {
     public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.06;
     public static double FLYWHEEL_MAX_PROPORTIONAL_LIMIT = 1;
 
-    public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
-
     public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 1000;
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 1000;
 
