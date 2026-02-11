@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 
-import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -11,8 +9,6 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
 
-@Configurable // Panels
-@Config
 public class RedFar12Paths {
 
     public PathChain SecondIntake;

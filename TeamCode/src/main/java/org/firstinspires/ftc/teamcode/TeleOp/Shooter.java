@@ -55,7 +55,7 @@ public class Shooter implements SubsystemInternal {
 
         this.follower = follower;
 
-        poseVelocityTracker = new PoseVelocityTracker(follower, rev9AxisImuWrapped);
+        poseVelocityTracker = new PoseVelocityTracker(follower);
 
         this.flywheel = flywheel;
 
@@ -109,8 +109,6 @@ public class Shooter implements SubsystemInternal {
         }
     }
 
-    public Pose EOAPose;
-
     public void start(Goal.GoalCoordinates goalCoordinates) {
 
         this.goalCoordinates = goalCoordinates;
@@ -141,6 +139,7 @@ public class Shooter implements SubsystemInternal {
     public Pose futureRobotPose;
     public Pose currentRobotPose;
     public Pose turretPose;
+    public Pose EOAPose;
     private double turretTimeLookahead = 0;
     private boolean isTurretLookingAhead = false; //initially the bot is stationary
 

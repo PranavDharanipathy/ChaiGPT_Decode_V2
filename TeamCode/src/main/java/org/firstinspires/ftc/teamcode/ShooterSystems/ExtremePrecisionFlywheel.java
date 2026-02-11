@@ -260,6 +260,9 @@ public final class ExtremePrecisionFlywheel {
         if (!MathUtil.valueWithinRangeIncludingPoles(d, -1, 1)) d = 0;
         d = MathUtil.clamp(d, -0.2, 0.2);
 
+        //velocity feedforward
+        v = kv * targetVelocity;
+
         //static friction
         double freeSpeed = (MOTOR_RPM * Math.PI) / 30; // in rad/s
         double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculate accurately
