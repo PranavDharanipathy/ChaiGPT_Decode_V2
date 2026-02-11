@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.WaitCommand;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -94,7 +91,7 @@ public class RedFar15 extends NextFTCOpMode {
     public void onUpdate() {
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
         telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
-        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
+        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getError());
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
         telemetry.update();

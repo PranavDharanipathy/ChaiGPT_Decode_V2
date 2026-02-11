@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
-import org.firstinspires.ftc.teamcode.util.InterpolationData;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -219,6 +218,8 @@ public class TurretBase {
 
             lastTargetPosition = targetPosition;
             targetPosition = position;
+
+            initialError = null; //null means that it's to be determined
         }
     }
 
@@ -239,6 +240,7 @@ public class TurretBase {
     }
 
     private double prevError, error;
+    private Double initialError = null;
     private double prevTime, currTime;
 
     private ElapsedTime timer = new ElapsedTime();
@@ -252,6 +254,8 @@ public class TurretBase {
         double dt = currTime - prevTime;
 
         error = targetPosition - currentPosition;
+
+        if (initialError == null) initialError = error;
 
         chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
 
@@ -281,7 +285,7 @@ public class TurretBase {
         f = kf * fDirection * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
-        s = ks * Math.signum(error);
+        s = ks * Math.signum(error != 0 ? error : initialError);
 
         double rawPower = p + i + d + f + s;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
@@ -309,8 +313,18 @@ public class TurretBase {
         return Math.abs(error);
     }
 
-    public double getRawPositionError() {
+    public double getError() {
         return error;
+    }
+
+    /// @return the absolute value of the error
+    public double getErrorAbs() {
+        return Math.abs(error);
+    }
+
+    /// @return What the error was when the PID started working towards the new target position
+    public double getInitialError() {
+        return initialError;
     }
 
     public double[] getServoPowers() {
