@@ -154,7 +154,7 @@ public class Shooter implements SubsystemInternal {
         poseVelocityTracker.update();
         TurretHelper.update(turret);
 
-        robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
+        robotYawRad = follower.getPose().getHeading(); //rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
         PoseVelocity robotVelocity = poseVelocityTracker.getPoseVelocity();
         double translationalVelocity = ShooterInformation.Calculator.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
         //turret

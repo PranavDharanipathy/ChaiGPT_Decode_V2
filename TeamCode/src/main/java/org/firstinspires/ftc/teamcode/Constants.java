@@ -271,20 +271,20 @@ public class Constants {
     //turret
     public static TurretBasePIDFSCoefficients TURRET_PIDFS_COEFFICIENTS = new TurretBasePIDFSCoefficients(
             0.0,
-            new double[] {0.0, 0.0},
-            new double[] {0.0, 0.0},
+            new double[] {0.00000002, 0.00000002},
+            new double[] {0.00000051, 0.00000049},
             0.0,
             null,
-            0.04,
-            new double[] {2000, 2000},
-            new double[] {0.0, 0.0},
-            new double[] {100, 100},
-            new double[] {1, 1},
+            0.035,
+            new double[] {1000, 1000},
+            new double[] {0.66, 0.66},
+            new double[] {200, 200},
+            new double[] {0.9, 0.9},
             1,
-            1,
+            2.25,
             -850,
-            -0.4,
-            0.4
+            -0.3,
+            0.3
     );
 
     //lift

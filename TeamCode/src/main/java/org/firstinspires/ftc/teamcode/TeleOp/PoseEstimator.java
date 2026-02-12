@@ -15,4 +15,10 @@ public class PoseEstimator {
         this.rev9AxisImuWrapped = rev9AxisImuWrapped;
 
     }
+
+    public void update() {
+
+        follower.update();
+        rev9AxisImuWrapped.updateVelocities();
+    }
 }

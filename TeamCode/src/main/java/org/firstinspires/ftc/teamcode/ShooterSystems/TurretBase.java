@@ -37,7 +37,7 @@ public class TurretBase {
 
     public double dActivation = 0;
 
-    private double iSwitch, iSwitchTargetPosition = 0;
+    private double iSwitch;
 
     public double p, i, d, f, s;
 
@@ -263,14 +263,9 @@ public class TurretBase {
         p = kp * error;
 
         //integral
-        if (targetPosition == iSwitchTargetPosition || Math.abs(error) <= iSwitch) {
+        if (Math.abs(error) <= iSwitch) ki = kiClose;
+        else ki = kiFar;
 
-            iSwitchTargetPosition = targetPosition;
-            ki = kiClose;
-        }
-        else {
-            ki = kiFar;
-        }
         if (dt != 0) i += ki * error * dt;
         if (Math.signum(error) != Math.signum(prevError) && error != 0) i *= kISmash;
         i = MathUtil.clamp(i, minI, maxI);
