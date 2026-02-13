@@ -52,7 +52,7 @@ public class BlueFar12 extends NextFTCOpMode {
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 455_800;
+    public static double flywheel_target = 451_800;
 
 
     private BlueFar12Paths paths;

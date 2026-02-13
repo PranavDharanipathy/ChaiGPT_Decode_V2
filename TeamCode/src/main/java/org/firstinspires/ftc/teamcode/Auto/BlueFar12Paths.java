@@ -108,7 +108,7 @@ public class BlueFar12Paths {
                                 //new Pose(43.73200, 68), //y = 49
                                 new Pose(31.244, 46),
                                 new Pose(24, 48),
-                                new Pose(13 /*15.5*/, 52)
+                                new Pose(10 /*15.5*/, 52)
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -240,7 +240,10 @@ public class BlueFar12Paths {
         intakeExtra = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(148, 65).mirror(), new Pose(147, 21).mirror())
+                        new BezierLine(
+                                new Pose(74, 12.5),
+                                new Pose(7, 12.5)
+                        )
                 )
                 //.setNoDeceleration()
                 .setConstantHeadingInterpolation(Math.toRadians(270))
@@ -251,7 +254,7 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(150, 26).mirror(),
+                                new Pose(160, 26).mirror(),
                                 new Pose(125, 30).mirror(),
                                 new Pose(82, 11).mirror()
                         )
@@ -277,7 +280,7 @@ public class BlueFar12Paths {
                 .addPath(
                       new BezierLine(
                               new Pose(64, 9.5),
-                              new Pose(40, 16)
+                              new Pose(34, 16)
                       )
                 )
                 .setConstantHeadingInterpolation(Math.PI)
