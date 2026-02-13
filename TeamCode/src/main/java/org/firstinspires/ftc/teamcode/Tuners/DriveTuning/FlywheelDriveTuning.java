@@ -15,15 +15,15 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 @TeleOp (group = "tuning")
 public class FlywheelDriveTuning extends TeleOpBaseOpMode {
 
-    public static double KP = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[0];
-    public static double KI_FAR = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[1];
-    public static double KI_CLOSE = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[2];
-    public static double KD = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[3];
-    public static double KV = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[4];
-    public static double KS = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[5];
-    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[6];
-    public static double kISmash = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[7];
-    public static double kISwitchError = Constants.FLYWHEEL_PIDFVAS_COEFFICIENTS[8];
+    public static double KP = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[0];
+    public static double KI_FAR = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[1];
+    public static double KI_CLOSE = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[2];
+    public static double KD = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[3];
+    public static double KV = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[4];
+    public static double KS = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[5];
+    public static double kPIDFUnitsPerVolt = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[6];
+    public static double kISmash = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[7];
+    public static double kISwitchError = Constants.FLYWHEEL_PIDVS_COEFFICIENTS[8];
     public static double I_MIN = Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, I_MAX = Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT;
     public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 

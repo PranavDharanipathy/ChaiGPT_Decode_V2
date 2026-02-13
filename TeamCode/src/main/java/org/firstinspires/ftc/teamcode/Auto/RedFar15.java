@@ -28,7 +28,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "AUTO RED FAR 15", group = "AAA_MatchPurpose")
+@Autonomous(name = "AUTO RED FAR 15", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 @Config
 public class RedFar15 extends NextFTCOpMode {
 

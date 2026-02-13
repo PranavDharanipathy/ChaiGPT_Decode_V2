@@ -51,7 +51,6 @@ public strictfp class ShooterInformation {
 
         public static double FLYWHEEL_MOTOR_CORE_VOLTAGE = 12;
         public static double FLYWHEEL_MOTOR_RPM = 6000;
-        public static double BURST_DECELERATION_RATE = 400;
 
         /// Min and max limits for hood angler
         public static double HOOD_ANGLER_MIN_POSITION = 0.91;
@@ -84,7 +83,7 @@ public strictfp class ShooterInformation {
         public static double MIN_TURRET_POSITION_IN_DEGREES = -135, MAX_TURRET_POSITION_IN_DEGREES = 135;
 
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
-        public static double TURRET_DEADBAND_TICKS = 0.01375 * TURRET_TICKS_PER_DEGREE;
+        public static double TURRET_DEADBAND_TICKS = 0.013 * TURRET_TICKS_PER_DEGREE;
 
         public static List<Double> TURRET_PD_POSITIONS = new ArrayList<>(List.of(-10000.0,   -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,   -2000.0,    -1000.0,     0.0,       1000.0,    2000.0,    3000.0,     4000.0,      5000.0,   6000.0,     7000.0,     8000.0,     9000.0,   10000.0,  11000.0));
         public static List<Double> TURRET_KPS =          new ArrayList<>(List.of(0.000167,   0.00015,   0.00013,    0.00011,    0.0001,    0.0000975,  0.0000914,  0.000092,  0.00008,    0.000086,  0.0000832,  0.0001175,  0.000092,  0.000095,  0.0000965,   0.000102,  0.000118,  0.000143,    0.000152,  0.000132,  0.00013,  0.00013));
