@@ -247,8 +247,7 @@ public class BlueFar12Paths {
 
 
         firstReturnn = follower
-                .pathBuilder()
-                .addPath(
+                .pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(160, 26).mirror(),
                                 new Pose(125, 30).mirror(),
