@@ -166,7 +166,7 @@ public class BlueFar12Paths {
                 .addPath(
                         new BezierLine(
                                 new Pose(65.154, 18.924),
-                                new Pose(148, 52/*60*/).mirror()
+                                new Pose(157, 52/*60*/).mirror()
                         )
                 )
 
@@ -199,8 +199,9 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(65, 14),
-                                new Pose(136, 16).mirror()
+                            new Pose(157, 52/*60*/).mirror(),
+
+                            new Pose(157, 16).mirror()
                         )
                 )
                 .setNoDeceleration()
@@ -224,8 +225,8 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(136, 10.5).mirror(),
-                                new Pose(74, 12.5).mirror()
+                                new Pose(154, 10.5).mirror(),
+                                new Pose(78, 12.5).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.PI)
@@ -237,8 +238,8 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(74, 12.5),
-                                new Pose(7, 12.5)
+                                new Pose(78, 12.5).mirror(),
+                                new Pose(17, 12.5)
                         )
                 )
                 //.setNoDeceleration()
@@ -274,8 +275,8 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                       new BezierLine(
-                              new Pose(64, 9.5),
-                              new Pose(34, 16)
+                              new Pose(53, 9.5),
+                              new Pose(24, 16)
                       )
                 )
                 .setConstantHeadingInterpolation(Math.PI)

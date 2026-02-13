@@ -45,13 +45,16 @@ public class BlueFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8730, 8850, 8800, 8500};
+    public static double[] TURRET_POSITIONS = {8730, 8650, 8700, 8500};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 451_800;
+    public static double flywheel_target = 458_800;
+
+
+
 
 
     private BlueFar12Paths paths;
@@ -107,7 +110,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 550_000, 60_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 500_000, 40_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
@@ -188,8 +191,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300,
-                        300
+                        200,
+                        200
                 ),
 
                 //FIRST INTAKE
@@ -211,7 +214,7 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300,
+                        200,
                         240
                 ),
 
@@ -229,8 +232,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300,
-                        300
+                        200,
+                        250
                 ),
 
 
@@ -255,8 +258,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300,
-                        300
+                        200,
+                        250
                 ),
 
                 followCancelable(paths.hpIntake, 1000),
@@ -267,8 +270,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        300,
-                        320
+                        200,
+                        250
                 ),
 
 
