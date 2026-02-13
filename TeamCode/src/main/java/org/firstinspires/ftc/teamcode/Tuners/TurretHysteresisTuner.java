@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
+import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.TeleOp.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 @TeleOp(group = "tuning")
 public class TurretHysteresisTuner extends TeleOpBaseOpMode {
 
-    public static Goal.GoalCoordinates GOAL = Goal.GoalCoordinates.BLUE;
+    public static CurrentAlliance.ALLIANCE alliance = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
 
     public static double A_NORMAL = 7.2;
     public static double T_NORMAL = 1.5;
@@ -30,7 +31,7 @@ public class TurretHysteresisTuner extends TeleOpBaseOpMode {
     private Telemetry telemetry;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
 
         initializeDevices();
         applyComponentTraits();
@@ -44,7 +45,7 @@ public class TurretHysteresisTuner extends TeleOpBaseOpMode {
 
         RobotResetter robotReset = new PostAutonomousRobotReset(this);
 
-        shooter.start(GOAL);
+        shooter.start(alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? Goal.GoalCoordinates.BLUE : Goal.GoalCoordinates.RED);
 
         while (opModeIsActive()) {
 

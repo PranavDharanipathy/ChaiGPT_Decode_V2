@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.chaigptrobotics.systems.DeprecatedSystem;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -24,7 +23,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBasePIDFSCoefficients;
 import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
-import org.firstinspires.ftc.teamcode.TeleOp.Obelisk;
 import org.firstinspires.ftc.teamcode.data.EOAOffset;
 
 import java.util.HashMap;
@@ -249,8 +247,8 @@ public class Constants {
             /*right motor*/ DcMotorSimple.Direction.FORWARD
     };
 
-    public static double[] FLYWHEEL_PIDFVAS_COEFFICIENTS = {
-            0.0000021, 0.000000007, 0.000007, 0.0000002, 0.0, 0.00000141/*0.00000146*/, 0.0, 0.00013, 0.9, 0.85, 10_000
+    public static double[] FLYWHEEL_PIDVS_COEFFICIENTS = {
+            0.0000028, 0.00000001, 0.00001, 0.0000002, 0.00000141, 0.0001, 0.9, 0.85, 10_000
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 5 /*3.65*/};
@@ -260,32 +258,31 @@ public class Constants {
     public static double FLYWHEEL_MIN_INTEGRAL_LIMIT = -0.5;
     public static double FLYWHEEL_MAX_INTEGRAL_LIMIT = 1;
 
-    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.06;
+    public static double FLYWHEEL_MIN_PROPORTIONAL_LIMIT = -0.1;
     public static double FLYWHEEL_MAX_PROPORTIONAL_LIMIT = 1;
 
-    public static double FLYWHEEL_BURST_DECELERATION_RATE = 250;
+    public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 1000;
+    public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 1000;
 
-    public static double FLYWHEEL_VELOCITY_MARGIN_OF_ERROR = 4400;
-    public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 4400;
-
-    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.03;
+    public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = 0.13;
 
     //turret
     public static TurretBasePIDFSCoefficients TURRET_PIDFS_COEFFICIENTS = new TurretBasePIDFSCoefficients(
-            0.000071,
-            new double[] {0.0000000075, 0.0000000075},
-            new double[] {0.00000015, 0.00000015},
-            0.01,
+            0.0,
+            new double[] {0.00000002, 0.00000002},
+            new double[] {0.00000051, 0.00000049},
+            0.0,
             null,
-            0.03,
-            new double[] {2000, 2000},
-            new double[] {0.85, 0.85},
-            new double[] {550, 550},
-            new double[] {0.85, 0.85},
-            0.99,
-            2.8, //3
-            -0.4,
-            0.4
+            0.035,
+            new double[] {1000, 1000},
+            new double[] {0.66, 0.66},
+            new double[] {200, 200},
+            new double[] {0.9, 0.9},
+            1,
+            2.25,
+            -850,
+            -0.3,
+            0.3
     );
 
     //lift

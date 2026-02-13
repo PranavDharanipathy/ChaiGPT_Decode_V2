@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.util.Encoder;
-import org.firstinspires.ftc.teamcode.util.InterpolationData;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -30,7 +29,7 @@ public class TurretBase {
     private final CRServoImplEx leftTurretBase, rightTurretBase;
     private final Encoder encoder;
 
-    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter;
+    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter, lanyardEquilibrium;
     public double ki, kf;
 
     private double maxI = 1;
@@ -38,7 +37,7 @@ public class TurretBase {
 
     public double dActivation = 0;
 
-    private double iSwitch, iSwitchTargetPosition = 0;
+    private double iSwitch;
 
     public double p, i, d, f, s;
 
@@ -96,7 +95,6 @@ public class TurretBase {
         reversed = true;
 
         fDirection = -1;
-
     }
 
     private TurretBasePIDFSCoefficients coefficients;
@@ -106,9 +104,13 @@ public class TurretBase {
         this.coefficients = coefficients;
 
         //setting variables that do not change
+
+
         ks = coefficients.ks;
 
         kPowerFilter = coefficients.kPowerFilter;
+
+        lanyardEquilibrium = coefficients.lanyardEquilibrium;
 
         minI = coefficients.minI;
         maxI = coefficients.maxI;
@@ -192,7 +194,7 @@ public class TurretBase {
 
         kiFar = coefficients.kiFar(side);
         kiClose = coefficients.kiClose(side);
-        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, reversed);
+        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, currentPosition, reversed);
 
         kDFilter = coefficients.kDFilter(side);
 
@@ -216,6 +218,8 @@ public class TurretBase {
 
             lastTargetPosition = targetPosition;
             targetPosition = position;
+
+            initialError = null; //null means that it's to be determined
         }
     }
 
@@ -236,6 +240,7 @@ public class TurretBase {
     }
 
     private double prevError, error;
+    private Double initialError = null;
     private double prevTime, currTime;
 
     private ElapsedTime timer = new ElapsedTime();
@@ -250,20 +255,17 @@ public class TurretBase {
 
         error = targetPosition - currentPosition;
 
+        if (initialError == null) initialError = error;
+
         chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
 
         //proportional
         p = kp * error;
 
         //integral
-        if (targetPosition == iSwitchTargetPosition || Math.abs(error) <= iSwitch) {
+        if (Math.abs(error) <= iSwitch) ki = kiClose;
+        else ki = kiFar;
 
-            iSwitchTargetPosition = targetPosition;
-            ki = kiClose;
-        }
-        else {
-            ki = kiFar;
-        }
         if (dt != 0) i += ki * error * dt;
         if (Math.signum(error) != Math.signum(prevError) && error != 0) i *= kISmash;
         i = MathUtil.clamp(i, minI, maxI);
@@ -275,10 +277,10 @@ public class TurretBase {
 
         //feedforward
         double reZeroedTargetPosition = targetPosition - startPosition;
-        f = kf * fDirection * reZeroedTargetPosition;
+        f = kf * fDirection * (reZeroedTargetPosition - lanyardEquilibrium);
 
         //static friction feedforward
-        s = ks * Math.signum(error);
+        s = ks * Math.signum(error != 0 ? error : initialError);
 
         double rawPower = p + i + d + f + s;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
@@ -306,8 +308,18 @@ public class TurretBase {
         return Math.abs(error);
     }
 
-    public double getRawPositionError() {
+    public double getError() {
         return error;
+    }
+
+    /// @return the absolute value of the error
+    public double getErrorAbs() {
+        return Math.abs(error);
+    }
+
+    /// @return What the error was when the PID started working towards the new target position
+    public double getInitialError() {
+        return initialError;
     }
 
     public double[] getServoPowers() {

@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.TurretNF;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.data.EOALocalization;
 import org.firstinspires.ftc.teamcode.data.EOAOffset;
-import org.firstinspires.ftc.teamcode.data.LocalizationData;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 
@@ -138,7 +137,7 @@ public class BlueFar12 extends NextFTCOpMode {
         telemetry.addData("flywheel target vel: ", FlywheelNF.INSTANCE.flywheel.getTargetVelocity());
         telemetry.addData("flywheel current vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
         telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
-        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
+        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getError());
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
 
@@ -183,7 +182,7 @@ public class BlueFar12 extends NextFTCOpMode {
                 //new FollowPath(paths.preload),
                 new WaitUntil(() -> (
                         FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
-                        && Math.abs(TurretNF.INSTANCE.turret.getRawPositionError()) < 200
+                        && Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
                 ),
                 shootBalls(
                         new double[] {0.35, 0.375, 0.4},

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -14,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@Configurable // Panels
-@Config
 public class BlueFar15Paths {
 
     private static final Logger log = LoggerFactory.getLogger(BlueFar15Paths.class);

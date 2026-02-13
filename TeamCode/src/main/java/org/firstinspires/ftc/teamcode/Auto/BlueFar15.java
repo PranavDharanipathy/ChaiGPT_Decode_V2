@@ -28,7 +28,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "AUTO BLUE FAR 15", group = "Autonomous")
+@Autonomous(name = "AUTO BLUE FAR 15", group = "AAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 @Config
 public class BlueFar15 extends NextFTCOpMode {
 
@@ -97,7 +97,7 @@ public class BlueFar15 extends NextFTCOpMode {
     public void onUpdate() {
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
         telemetry.addData("turret Current: ", TurretNF.INSTANCE.turret.getCurrentPosition());
-        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getRawPositionError());
+        telemetry.addData("turret error: ", TurretNF.INSTANCE.turret.getError());
         telemetry.addData("turret target pos: ", TurretNF.INSTANCE.turret.getTargetPosition());
 
         telemetry.update();

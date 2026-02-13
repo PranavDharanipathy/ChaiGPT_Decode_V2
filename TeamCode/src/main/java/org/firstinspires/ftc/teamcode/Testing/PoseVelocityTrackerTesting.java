@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.pedroPathing.PoseVelocityTracker;
 import org.firstinspires.ftc.teamcode.util.Rev9AxisImuWrapped;
 
+@Config
 @TeleOp(group = "testing")
 public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
 
@@ -26,9 +28,7 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
 
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Rev9AxisImuWrapped rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);
-
-        poseVelocityTracker = new PoseVelocityTracker(follower, rev9AxisImuWrapped);
+        poseVelocityTracker = new PoseVelocityTracker(follower);
 
         waitForStart();
 
@@ -43,7 +43,6 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
             PoseVelocity botVel = poseVelocityTracker.getPoseVelocity();
 
             telemetry.addData("raw pose", botPose.toString());
-            telemetry.addData("clean pose", ShooterInformation.Calculator.getBotPose(botPose, rev9AxisImuWrapped.getYaw()));
 
             telemetry.addData("future pose",
                     ShooterInformation.Calculator.getFutureRobotPose(
@@ -54,6 +53,15 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
             );
 
             telemetry.addData("bot vel", "x: %.2f, y: %.2f, heading: %.2f", botVel.getXVelocity(), botVel.getYVelocity(), botVel.getAngularVelocity());
+
+            double[][] histories = poseVelocityTracker.getHistories();
+            double[] xVelHistory = histories[0];
+            double[] yVelHistory = histories[1];
+            double[] angVelHistory = histories[2];
+
+            telemetry.addData("xVelHistory", "P:%.2f, C:%.2f", xVelHistory[0], xVelHistory[1]);
+            telemetry.addData("yVelHistory", "P:%.2f, C:%.2f", yVelHistory[0], yVelHistory[1]);
+            telemetry.addData("angVelHistory", "P:%.2f, C:%.2f", angVelHistory[0], angVelHistory[1]);
 
             telemetry.update();
         }
