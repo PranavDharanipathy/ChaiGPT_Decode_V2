@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.data.EOAOffset;
 import org.firstinspires.ftc.teamcode.pedroPathing.PPConstants;
 
 
+import java.util.Optional;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.delays.WaitUntil;
@@ -41,17 +43,15 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @Autonomous(name = "AUTO BLUE FAR 12", group = "AAA_MatchPurpose", preselectTeleOp = "V2TeleOp_BLUE")
 @Config
 public class BlueFar12 extends NextFTCOpMode {
-
-
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8730, 8650, 8700, 8600};
+    public static double[] TURRET_POSITIONS = {8630, 8550, 8500, 8500};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 450_800;
+    public static double flywheel_target = 452_800;
 
 
 
@@ -74,8 +74,6 @@ public class BlueFar12 extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE
         );
     }
-
-
 
 
     public void onInit() {
@@ -110,7 +108,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 540_000, 30_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 510_000, 30_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
@@ -192,7 +190,7 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
                         100,
-                        200
+                        100
                 ),
 
                 //FIRST INTAKE
@@ -214,8 +212,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        500,
-                        400
+                        600,
+                        500
                 ),
 
                 //SECOND INTAKE
