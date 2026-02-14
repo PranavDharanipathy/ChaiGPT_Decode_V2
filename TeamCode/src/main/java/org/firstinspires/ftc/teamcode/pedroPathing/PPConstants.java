@@ -43,8 +43,7 @@ public class PPConstants {
 
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.1,0.0005,0,0.025))
 
-            .centripetalScaling(0.00062)
-            ;
+            .centripetalScaling(0.00062);
 
     public static PathConstraints autoPathConstraints = new PathConstraints(0.994, 50, 1.5, 1.5);
     public static PathConstraints teleOpPathConstraints = new PathConstraints(0.994, 50, 1.6, 1.5);
