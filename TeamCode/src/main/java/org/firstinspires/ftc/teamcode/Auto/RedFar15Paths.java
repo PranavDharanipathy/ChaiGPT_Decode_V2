@@ -9,7 +9,7 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
 
-public class RedFar12Paths {
+public class RedFar15Paths {
 
     public PathChain SecondIntake;
 
@@ -27,7 +27,7 @@ public class RedFar12Paths {
     public PathChain movementRP;
 
 
-    public RedFar12Paths(Follower follower) {
+    public RedFar15Paths(Follower follower) {
 
 
         preload = follower

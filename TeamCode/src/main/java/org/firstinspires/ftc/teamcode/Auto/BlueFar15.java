@@ -41,17 +41,11 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class BlueFar15 extends NextFTCOpMode {
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8630, 8550, 8500, 8500};
+    public static double[] TURRET_POSITIONS = {8530, 8450, 8500, 8400};
 
-
-    public static double hoodPos = 0.11;
-
-
-    public static double flywheel_target = 452_800;
-
-
-
-
+    //CHANGED HOOD POS FROM 0.11 to 0.19(shoots slightly higher)
+    public static double hoodPos = 0.19;
+    public static double flywheel_target = 451_800;
 
     private BlueFar15Paths paths;
 
@@ -104,7 +98,7 @@ public class BlueFar15 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 510_000, 30_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 500_000, 40_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);

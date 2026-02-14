@@ -51,8 +51,8 @@ public class BlueFar15Paths {
                                 new Pose(64, 9.5), // y=14.829
                                 new Pose(62, 18),
                                 new Pose(59.049, 28),
-                                new Pose(47.902, 38),
-                                new Pose(19.415, 38.707)
+                                new Pose(47.902, 36),
+                                new Pose(19.415, 36.707)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.PI)
@@ -201,7 +201,7 @@ public class BlueFar15Paths {
                         new BezierLine(
                             new Pose(172, 54/*60*/).mirror(),
 
-                            new Pose(169, 9).mirror()
+                            new Pose(172, 9).mirror()
                         )
                 )
                 .setNoDeceleration()
@@ -225,7 +225,7 @@ public class BlueFar15Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(169, 10.5).mirror(),
+                                new Pose(172, 10.5).mirror(),
                                 new Pose(78, 12.5).mirror()
                         )
                 )
@@ -238,8 +238,8 @@ public class BlueFar15Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(54, 12.5),
-                                new Pose(12, 12.5)
+                                new Pose(78, 12.5),
+                                new Pose(18, 12.5)
                         )
                 )
                 //.setNoDeceleration()
@@ -250,7 +250,7 @@ public class BlueFar15Paths {
         firstReturnn = follower
                 .pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(170, 26).mirror(),
+                                new Pose(18, 12.5),
                                 new Pose(125, 30).mirror(),
                                 new Pose(82, 11).mirror()
                         )

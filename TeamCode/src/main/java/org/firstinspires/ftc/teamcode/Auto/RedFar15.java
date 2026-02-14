@@ -38,23 +38,23 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Autonomous(name = "AUTO RED FAR 12", group = "AAAA_MatchPurpose", preselectTeleOp = "V2TeleOp_RED")
 @Config
-public class RedFar12 extends NextFTCOpMode {
+public class RedFar15 extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {-8530, -8550, -8500, -8600};
+    public static double[] TURRET_POSITIONS = {-8530, -8650, -8500, -8600};
 
     public static double hoodPos = 0.11;
 
-    public static double flywheel_target = 452_800;
+    public static double flywheel_target = 453_800;
 
 
 
 
-    private RedFar12Paths paths;
+    private RedFar15Paths paths;
 
 
-    public RedFar12() {
+    public RedFar15() {
         addComponents(
                 new SubsystemComponent(
                         RobotNF.robot,
@@ -80,7 +80,7 @@ public class RedFar12 extends NextFTCOpMode {
         PedroComponent.follower().setStartingPose(new Pose(64, 9.5, Math.PI).mirror());
 
 
-        paths = new RedFar12Paths(PedroComponent.follower());
+        paths = new RedFar15Paths(PedroComponent.follower());
 
 
         telemetry.addData("flywheel vel: ", FlywheelNF.INSTANCE.flywheel.getRealVelocity());
