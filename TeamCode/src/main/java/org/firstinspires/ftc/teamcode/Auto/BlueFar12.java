@@ -45,13 +45,13 @@ public class BlueFar12 extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8730, 8650, 8700, 8500};
+    public static double[] TURRET_POSITIONS = {8730, 8650, 8700, 8600};
 
 
     public static double hoodPos = 0.11;
 
 
-    public static double flywheel_target = 458_800;
+    public static double flywheel_target = 450_800;
 
 
 
@@ -110,7 +110,7 @@ public class BlueFar12 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 500_000, 40_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 540_000, 30_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
@@ -185,13 +185,13 @@ public class BlueFar12 extends NextFTCOpMode {
                 //new FollowPath(paths.preload),
                 new WaitUntil(() -> (
                         FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
-                        && Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                        && Math.abs(TurretNF.INSTANCE.turret.getError()) < 100
                 ),
                 shootBalls(
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        200,
+                        100,
                         200
                 ),
 
@@ -214,8 +214,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        200,
-                        240
+                        500,
+                        400
                 ),
 
                 //SECOND INTAKE
@@ -232,8 +232,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        200,
-                        250
+                        300,
+                        450
                 ),
 
 
@@ -243,9 +243,9 @@ public class BlueFar12 extends NextFTCOpMode {
 
                 new ParallelGroup(
                         RobotNF.robot.intakeClearingSpecial(0.5),
-                        followCancelable(paths.setupForFirstIntake, 2000)
+                        followCancelable(paths.setupForFirstIntake, 4000)
                 ),
-                followCancelable(paths.intakeExtra, 1000),
+                followCancelable(paths.intakeExtra, 4000),
 
                 //INTAKE EXTRA RETURN
 
@@ -270,8 +270,8 @@ public class BlueFar12 extends NextFTCOpMode {
                         new double[] {0.35, 0.375, 0.4},
                         new double[] {0.4, 0.4},
                         new double[] {0.95, 0.95},
-                        200,
-                        250
+                        300,
+                        450
                 ),
 
 

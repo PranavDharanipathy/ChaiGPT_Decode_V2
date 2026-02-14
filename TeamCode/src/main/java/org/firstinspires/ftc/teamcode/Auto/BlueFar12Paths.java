@@ -82,7 +82,7 @@ public class BlueFar12Paths {
                         new BezierCurve(
                                 new Pose(8.929, 38.363),
                                 new Pose(50.760, 28.759),
-                                new Pose(61.992, 18.622)
+                                new Pose(61.992, 12.622)
                         )
                 )
 
@@ -96,7 +96,7 @@ public class BlueFar12Paths {
         FirstIntake = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(61.610, 18.000),
+                                new Pose(61.610, 12.000),
                                 //new Pose(56.561, 34.268),
                                 new Pose(55.390, 39.732),
                                 //new Pose(49.707, 54.634),
@@ -113,7 +113,7 @@ public class BlueFar12Paths {
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
                                         0.45,
-                                        HeadingInterpolator.facingPoint(22, 61)
+                                        HeadingInterpolator.facingPoint(22, 59)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.45,
@@ -166,7 +166,7 @@ public class BlueFar12Paths {
                 .addPath(
                         new BezierLine(
                                 new Pose(65.154, 18.924),
-                                new Pose(157, 52/*60*/).mirror()
+                                new Pose(172, 54/*60*/).mirror()
                         )
                 )
 
@@ -199,9 +199,9 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                            new Pose(157, 52/*60*/).mirror(),
+                            new Pose(172, 54/*60*/).mirror(),
 
-                            new Pose(157, 16).mirror()
+                            new Pose(169, 9).mirror()
                         )
                 )
                 .setNoDeceleration()
@@ -225,7 +225,7 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(154, 10.5).mirror(),
+                                new Pose(169, 10.5).mirror(),
                                 new Pose(78, 12.5).mirror()
                         )
                 )
@@ -238,8 +238,8 @@ public class BlueFar12Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(78, 12.5).mirror(),
-                                new Pose(17, 12.5)
+                                new Pose(54, 12.5),
+                                new Pose(12, 12.5)
                         )
                 )
                 //.setNoDeceleration()
@@ -250,7 +250,7 @@ public class BlueFar12Paths {
         firstReturnn = follower
                 .pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(160, 26).mirror(),
+                                new Pose(170, 26).mirror(),
                                 new Pose(125, 30).mirror(),
                                 new Pose(82, 11).mirror()
                         )
