@@ -1,39 +1,37 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class BlueFar15Paths {
 
-    private static final Logger log = LoggerFactory.getLogger(BlueFar15Paths.class);
-    public PathChain FirstIntake;
-
-    public PathChain FirstReturn;
     public PathChain SecondIntake;
-    public PathChain IntakeExtra;
+
     public PathChain SecondReturn;
+    public PathChain FirstIntake;
+    public PathChain FirstReturn;
+
+
 
     public PathChain preload;
     public PathChain setupForFirstIntake;
     public PathChain intakeExtra;
     public PathChain firstReturnn;
 
-    public PathChain SecondsetupForFirstIntake;
+    public PathChain hpIntake;
+    public PathChain hpReturn;
 
-    public PathChain SecondintakeExtra;
+    public PathChain movementRP;
 
-    public PathChain SecondfirstReturnn;
 
     public BlueFar15Paths(Follower follower) {
+
 
         preload = follower
                 .pathBuilder()
@@ -45,14 +43,15 @@ public class BlueFar15Paths {
                 .setConstantHeadingInterpolation(Math.PI)
                 .build();
 
-        FirstIntake = follower
+
+        SecondIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(64, 14.829), // y=14.829
+                                new Pose(64, 9.5), // y=14.829
                                 new Pose(62, 18),
-                                new Pose(59.049, 28.220),
-                                new Pose(47.902, 38.829),
+                                new Pose(59.049, 28),
+                                new Pose(47.902, 38),
                                 new Pose(19.415, 38.707)
                         )
                 )
@@ -60,61 +59,52 @@ public class BlueFar15Paths {
                 .build();
 
 
-            /*FirstIntake = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(65.780, 11.537),
-                                    new Pose(42.146, 9.366),
-                                    new Pose(56.585, 25.683),
-                                    new Pose(42.537, 39.268),
-                                    new Pose(7.220, 36.683)
-                            )
-                    )
-                    .setTangentHeadingInterpolation()
-                    .build();*/
 
-        FirstReturn = follower
+
+           /*FirstIntake = follower
+                   .pathBuilder()
+                   .addPath(
+                           new BezierCurve(
+                                   new Pose(65.780, 11.537),
+                                   new Pose(42.146, 9.366),
+                                   new Pose(56.585, 25.683),
+                                   new Pose(42.537, 39.268),
+                                   new Pose(7.220, 36.683)
+                           )
+                   )
+                   .setTangentHeadingInterpolation()
+                   .build();*/
+
+
+        SecondReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(8.929, 38.363),
                                 new Pose(50.760, 28.759),
-                                new Pose(61.992, 18.622)
+                                new Pose(61.992, 12.622)
                         )
                 )
-                .setReversed()
-                .setHeadingInterpolation(
-                        HeadingInterpolator.piecewise(
-                                new HeadingInterpolator.PiecewiseNode(
-                                        0,
-                                        0.6,
-                                        HeadingInterpolator.tangent
-                                ),
-                                new HeadingInterpolator.PiecewiseNode(
-                                        0.6,
-                                        1,
-                                        HeadingInterpolator.constant(Math.PI)
-                                )
-                        )
-                )
-                //.setConstantHeadingInterpolation(Math.PI)
+
+                .setConstantHeadingInterpolation(Math.PI)
 
                 .build();
 
 
-        SecondIntake = follower.pathBuilder()
+
+
+        FirstIntake = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(61.610, 18.000),
+                                new Pose(61.610, 12.000),
                                 //new Pose(56.561, 34.268),
                                 new Pose(55.390, 39.732),
                                 //new Pose(49.707, 54.634),
-                                new Pose(49, 49),
+                                new Pose(49, 42.5),
                                 //new Pose(43.73200, 68), //y = 49
-                                new Pose(31.244, 68),
-                                new Pose(23.390, 68),
-                                new Pose(19, 70)
+                                new Pose(31.244, 46),
+                                new Pose(24, 48),
+                                new Pose(10 /*15.5*/, 52)
                         )
                 )
                 //.setConstantHeadingInterpolation(Math.PI)
@@ -122,46 +112,44 @@ public class BlueFar15Paths {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.35,
-                                        HeadingInterpolator.facingPoint(22, 61)
+                                        0.45,
+                                        HeadingInterpolator.facingPoint(22, 59)
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.35,
+                                        0.45,
                                         1,
-                                        HeadingInterpolator.constant(Math.PI)
+                                        HeadingInterpolator.constant(Math.toRadians(145))
                                 )
-//                                    new HeadingInterpolator.PiecewiseNode(
-//                                            0.87,
-//                                            1,
-//                                            HeadingInterpolator.linear(Math.PI, Math.toRadians(137))
-//                                    )
                         )
                 )
                 .build();
 
-        SecondReturn = follower
+
+        FirstReturn = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(
-                                new Pose(12.463, 68.847),
-                                //new Pose(54.876, 45.408),
+                        new BezierCurve(
+                                new Pose(18, 55),
+
+                                new Pose(54, 36),
 
                                 //y = 11 before
-                                new Pose(65.154, 18.924)
+                                new Pose(64, 18.924)
                         )
                 )
-                // .setConstantHeadingInterpolation(Math.PI)
+
                 .setHeadingInterpolation(
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        0.085,
-                                        HeadingInterpolator.constant(Math.PI)
+                                        0.2,
+                                        HeadingInterpolator.constant(Math.toRadians(142))
                                 ),
+
                                 new HeadingInterpolator.PiecewiseNode(
-                                        0.085,
+                                        0.2,
                                         0.8,
-                                        HeadingInterpolator.facingPoint(4, 60)
+                                        HeadingInterpolator.constant(Math.toRadians(170))
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.8,
@@ -171,78 +159,128 @@ public class BlueFar15Paths {
                         )
                 )
                 .build();
+
 
         setupForFirstIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
                                 new Pose(65.154, 18.924),
-                                new Pose(151, 65).mirror()
+                                new Pose(172, 54/*60*/).mirror()
                         )
                 )
-                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
+
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0,
+                                        0.05,
+                                        HeadingInterpolator.constant(Math.PI)
+                                ),
+
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.05,
+                                        0.55,
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(270))
+                                ),
+
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.55,
+                                        1,
+                                        HeadingInterpolator.constant(Math.toRadians(270))
+                                )
+                        )
+                )
+                //.setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
                 .build();
+
+
+        hpIntake= follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                            new Pose(172, 54/*60*/).mirror(),
+
+                            new Pose(169, 9).mirror()
+                        )
+                )
+                .setNoDeceleration()
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0,
+                                        0.7,
+                                        HeadingInterpolator.constant(Math.PI)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.7,
+                                        1,
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(200))
+                                )
+                        )
+                )
+                .build();
+
+        hpReturn = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(169, 10.5).mirror(),
+                                new Pose(78, 12.5).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.PI)
+                .build();
+
+
 
         intakeExtra = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(151, 65).mirror(), new Pose(151, 21).mirror())
+                        new BezierLine(
+                                new Pose(54, 12.5),
+                                new Pose(12, 12.5)
+                        )
                 )
-                .setNoDeceleration()
+                //.setNoDeceleration()
                 .setConstantHeadingInterpolation(Math.toRadians(270))
                 .build();
+
 
         firstReturnn = follower
-                .pathBuilder()
-                .addPath(
+                .pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(150, 26).mirror(),
+                                new Pose(170, 26).mirror(),
                                 new Pose(125, 30).mirror(),
                                 new Pose(82, 11).mirror()
                         )
                 )
                 .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(270), Math.PI)
-                .build();
-
-
-
-        SecondsetupForFirstIntake = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(
-                                new Pose(65.154, 11.924),
-                                new Pose(151, 65).mirror()
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0, 0.10,
+                                        HeadingInterpolator.facingPoint(0, 8)
+                                ),
+                                new HeadingInterpolator.PiecewiseNode(
+                                        0.10, 1,
+                                        HeadingInterpolator.constant(Math.PI)
+                                )
                         )
                 )
-                .setLinearHeadingInterpolation(Math.PI, Math.toRadians(270))
+                //.setLinearHeadingInterpolation(Math.toRadians(270), Math.PI)
                 .build();
 
-        SecondintakeExtra = follower
+        movementRP = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(151, 65).mirror(), new Pose(151, 21).mirror())
+                      new BezierLine(
+                              new Pose(53, 9.5),
+                              new Pose(24, 16)
+                      )
                 )
-                .setNoDeceleration()
-                .setConstantHeadingInterpolation(Math.toRadians(270))
+                .setConstantHeadingInterpolation(Math.PI)
                 .build();
-
-        SecondfirstReturnn = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierCurve(
-                                new Pose(150, 26).mirror(),
-                                new Pose(125, 30).mirror(),
-                                new Pose(82, 11).mirror()
-                        )
-                )
-                .setNoDeceleration()
-                .setLinearHeadingInterpolation(Math.toRadians(270), Math.PI)
-                .build();
-
-
-
-
 
     }
 }
