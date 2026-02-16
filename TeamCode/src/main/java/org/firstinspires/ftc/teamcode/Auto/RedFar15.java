@@ -44,9 +44,9 @@ public class RedFar15 extends NextFTCOpMode {
 
     public static double[] TURRET_POSITIONS = {-8530, -8650, -8500, -8600};
 
-    public static double hoodPos = 0.11;
+    public static double hoodPos = 0.19;
 
-    public static double flywheel_target = 453_800;
+    public static double flywheel_target = 452_800;
 
 
 
@@ -102,7 +102,10 @@ public class RedFar15 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 550_000, 60_000);
+        //FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 620_000, 100_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 520_000, 40_000);
+
+
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
