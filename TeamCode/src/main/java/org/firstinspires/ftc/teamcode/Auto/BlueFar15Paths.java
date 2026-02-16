@@ -215,7 +215,7 @@ public class BlueFar15Paths {
                                 new HeadingInterpolator.PiecewiseNode(
                                         0.7,
                                         1,
-                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(200))
+                                        HeadingInterpolator.linear(Math.PI, Math.toRadians(270))
                                 )
                         )
                 )

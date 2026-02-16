@@ -98,7 +98,7 @@ public class BlueFar15 extends NextFTCOpMode {
 
 
         //setup
-        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 500_000, 40_000);
+        FlywheelNF.INSTANCE.setVelCatch(flywheel_target, 520_000, 40_000);
         IntakeNF.INSTANCE.intake.setPower(Constants.INTAKE_POWER);
         HoodNF.INSTANCE.hood.setPosition(hoodPos);
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
