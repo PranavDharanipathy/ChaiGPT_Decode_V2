@@ -169,4 +169,21 @@ public strictfp class MathUtil {
 
         return y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
     }
+
+    public static double normalizeAngleRad(double angleRad) {
+        return FastMath.atan2(Math.sin(angleRad), Math.cos(angleRad));
+    }
+
+    public static double normalizeAngleDeg(double angleDeg) {
+        return Math.toDegrees(FastMath.atan2(Math.sin(Math.toRadians(angleDeg)), Math.cos(Math.toRadians(angleDeg))));
+    }
+
+    /// @param theta - how much the coordinates are being rotated in radians
+    public double[] rotateCartesian(double x, double y, double theta) {
+
+        double xNew = x * Math.cos(theta) - y * Math.sin(theta);
+        double yNew = x * Math.sin(theta) + y * Math.cos(theta);
+
+        return new double[] {xNew, yNew};
+    }
 }

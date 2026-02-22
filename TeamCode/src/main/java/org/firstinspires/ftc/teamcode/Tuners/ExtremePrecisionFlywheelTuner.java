@@ -42,14 +42,12 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
     public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 
     public static double VELOCITY;
-    public static double BURST_VELOCITY;
-
     public static double VELOCITY_MARGIN_OF_ERROR = Constants.FLYWHEEL_VELOCITY_MARGIN_OF_ERROR;
     public static double STABILITY_MARGIN_OF_ERROR = Constants.FLYWHEEL_STABILITY_MARGIN_OF_ERROR;
 
     public static double FLYWHEEL_VOLTAGE_FILTER_ALPHA = Constants.FLYWHEEL_VOLTAGE_FILTER_ALPHA;
 
-    public static double MASS_IN_GRAMS = ShooterInformation.ShooterConstants.BASE_FLYWHEEL_ASSEMBLY_WEIGHT;
+    public static double TOTAL_MASS_IN_GRAMS = ShooterInformation.ShooterConstants.getTotalFlywheelAssemblyWeight();
     public static double SHAFT_DIAMETER = ShooterInformation.ShooterConstants.SHAFT_DIAMETER;
     public static double MOTOR_CORE_VOLTAGE = ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE;
     public static double MOTOR_RPM = ShooterInformation.ShooterConstants.FLYWHEEL_MOTOR_RPM;
@@ -78,7 +76,7 @@ public class ExtremePrecisionFlywheelTuner extends LinearOpMode {
         rightFlywheel = hardwareMap.get(DcMotorEx.class, Constants.MapSetterConstants.rightFlywheelMotorDeviceName);
 
         flywheel = new ExtremePrecisionFlywheel(leftFlywheel, rightFlywheel);
-        flywheel.setInternalParameters(MASS_IN_GRAMS, SHAFT_DIAMETER, MOTOR_CORE_VOLTAGE, MOTOR_RPM);
+        flywheel.setInternalParameters(TOTAL_MASS_IN_GRAMS, SHAFT_DIAMETER, MOTOR_CORE_VOLTAGE, MOTOR_RPM);
 
         if (isStopRequested()) return;
         waitForStart();

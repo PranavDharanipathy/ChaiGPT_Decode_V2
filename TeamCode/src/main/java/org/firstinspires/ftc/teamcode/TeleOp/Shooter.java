@@ -3,14 +3,18 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.chaigptrobotics.shenanigans.Peak;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 
+import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.Goal;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
+import org.firstinspires.ftc.teamcode.ShooterSystems.PIPELINES;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretBase;
 import org.firstinspires.ftc.teamcode.ShooterSystems.TurretHelper;
@@ -44,16 +48,19 @@ public class Shooter implements SubsystemInternal {
     public HoodAngler hoodAngler;
 
     private Follower follower;
+    private Limelight3A limelight;
 
     private Rev9AxisImuWrapped rev9AxisImuWrapped;
 
     private PoseVelocityTracker poseVelocityTracker;
 
-    public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Rev9AxisImu rev9AxisImu, BetterGamepad controller1, BetterGamepad controller2) {
+    public void provideComponents(ExtremePrecisionFlywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Limelight3A unstartedLimelight, Rev9AxisImu rev9AxisImu, BetterGamepad controller1, BetterGamepad controller2) {
 
         rev9AxisImuWrapped = new Rev9AxisImuWrapped(rev9AxisImu);
 
         this.follower = follower;
+
+        limelight = unstartedLimelight;
 
         poseVelocityTracker = new PoseVelocityTracker(follower);
 
@@ -99,19 +106,27 @@ public class Shooter implements SubsystemInternal {
 
         if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
 
+            limelight.pipelineSwitch(PIPELINES.BLUE_PIPELINE.getPipelineIndex());
             goalCoordinates = Goal.GoalCoordinates.BLUE;
             turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
         }
         else {
 
+            limelight.pipelineSwitch(PIPELINES.RED_PIPELINE.getPipelineIndex());
             goalCoordinates = Goal.GoalCoordinates.RED;
             turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
         }
+
     }
 
     public void start(Goal.GoalCoordinates goalCoordinates) {
 
+        limelight.start();
+
         this.goalCoordinates = goalCoordinates;
+
+        PIPELINES pipeline = goalCoordinates == Goal.GoalCoordinates.BLUE ? PIPELINES.BLUE_PIPELINE : PIPELINES.RED_PIPELINE;
+        limelight.pipelineSwitch(pipeline.getPipelineIndex());
 
         if (goalCoordinates == Goal.GoalCoordinates.BLUE) turretAngularOffset *= ShooterInformation.ShooterConstants.BLUE_TURRET_ANGULAR_OFFSET_DIRECTION;
         else turretAngularOffset *= ShooterInformation.ShooterConstants.RED_TURRET_ANGULAR_OFFSET_DIRECTION;
@@ -126,7 +141,7 @@ public class Shooter implements SubsystemInternal {
 
     private boolean shooterToggle = false;
 
-    private double hoodPosition = 0.4;
+    private double hoodPosition;
 
     private double turretPosition;
 
@@ -168,7 +183,7 @@ public class Shooter implements SubsystemInternal {
                 turretStartPosition-=ShooterInformation.ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
         }
 
-        currentRobotPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), robotYawRad);
+        currentRobotPose = follower.getPose();
 
         //hysteresis control is only used if the robot is moving fast enough
         isTurretLookingAhead = Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1];
@@ -191,7 +206,7 @@ public class Shooter implements SubsystemInternal {
             futureRobotPose = currentRobotPose;
         }
 
-        turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(futureRobotPose, robotYawRad, turretCurrentPosition, turretStartPosition);
+        turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(futureRobotPose, turretCurrentPosition, turretStartPosition);
 
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (currentRobotPose.getX() > ShooterInformation.ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
@@ -201,7 +216,24 @@ public class Shooter implements SubsystemInternal {
             goalCoordinate = goalCoordinates.getFarCoordinate();
         }
 
-        double angleToGoal = Goal.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
+        double angleToGoal;
+
+        LLResult llResult = limelight.getLatestResult();
+
+        if (limelight.isConnected() && llResult != null && llResult.isValid()) { //using limelight
+
+            double txRad = Math.toRadians(llResult.getTx());
+            double distanceToGoal = ShooterInformation.Models.getDistanceFromRegression(llResult.getTy());
+
+            double turretRotation = Math.toDegrees(FastMath.atan2(distanceToGoal * Math.sin(txRad), (distanceToGoal * Math.cos(txRad)) + ShooterInformation.CameraConstants.CAMERA_TO_POINT_OF_ROTATION_2D));
+
+            double reZeroedPosition = turretCurrentPosition - turretStartPosition;
+            angleToGoal = turretRotation + (reZeroedPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
+        }
+        else { //using odometry
+            angleToGoal = Goal.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
+        }
+
         double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + turretAngularOffset);
         tt = route(rawtt);
 
@@ -279,14 +311,7 @@ public class Shooter implements SubsystemInternal {
         double flywheelTargetVelocity;
 
         if (flywheelTargetVelocityZone == ZONE.FAR) {
-
-            if (ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY - flywheel.getTargetVelocity() < ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_VELOCITY_MARGIN) {
-                flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
-            }
-            else {
-                flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_CATCH_VELOCITY;
-            }
-            //flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
+            flywheelTargetVelocity = ShooterInformation.ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
         }
         else if (goalCoordinates.onOpponentSide(futureRobotPose.getY())) {
             flywheelTargetVelocity = ShooterInformation.ShooterConstants.OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;

@@ -13,7 +13,7 @@ public @interface Aura {
 
     int level() default 0;
 
-    String[] auraLevels() default {"zeta", "gamma", "delta", "theta", "beta", "alpha", "omega", "giga", "tera", "sigma", "mew"};
+    String[] auraLevels() default {"zeta", "gamma", "delta", "theta", "beta", "alpha", "omega", "giga", "tera", "sigma", "mu"};
     String[] auraStats() default {"GOOD", "LOCKED IN", "COOKING", "CRAZY", "+AURA", "W AURA", "INSANITY", "AURA FARMING", "AURA SWEATING", "AURA MAXING", "PEAK"};
 
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.BetterGamepad;
 import org.firstinspires.ftc.teamcode.EnhancedFunctions_SELECTED.TickrateChecker;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
@@ -15,6 +16,8 @@ public class TelemetrySubsystem implements SubsystemInternal {
     private BetterGamepad controller2;
 
     public void provideComponents(Telemetry telemetry, boolean addFTCDashboard, BetterGamepad controller2) {
+
+        telemetry.setMsTransmissionInterval(Constants.TELEMETRY_MS_TRANSMISSION_INTERVAL);
 
         telem = new TelemetryO(telemetry, addFTCDashboard);
 
@@ -67,7 +70,7 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData(TelemetryMode.RAW_DATA, "f i", "%.5f", shooter.flywheel.i);
         telem.addData(TelemetryMode.RAW_DATA, "f d", "%.5f", shooter.flywheel.d);
         telem.addData(TelemetryMode.RAW_DATA, "f v", "%.5f", shooter.flywheel.v);
-        telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getMotorPowers()[0]);
+        telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getPower());
 
         telem.addData(TelemetryMode.RAW_DATA, "turret current position", shooter.turret.getCurrentPosition());
         telem.addData(TelemetryMode.RAW_DATA, "turret target position", shooter.turret.getTargetPosition());

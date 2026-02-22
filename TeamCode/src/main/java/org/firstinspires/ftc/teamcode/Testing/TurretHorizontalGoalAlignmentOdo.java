@@ -123,8 +123,8 @@ public class TurretHorizontalGoalAlignmentOdo extends OpMode {
 
         double robotYawRad = rev9AxisImu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-        Pose robotPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), robotYawRad);
-        Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, robotYawRad, turretCurrentPosition, turretStartPosition);
+        Pose robotPose = follower.getPose();
+        Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, turretCurrentPosition, turretStartPosition);
 
         Goal.GoalCoordinate goalCoordinate;
 

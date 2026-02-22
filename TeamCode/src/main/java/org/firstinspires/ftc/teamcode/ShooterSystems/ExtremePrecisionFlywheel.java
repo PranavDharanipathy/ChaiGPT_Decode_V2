@@ -161,7 +161,7 @@ public final class ExtremePrecisionFlywheel {
     /// <p>
     /// @param kISmash Multiplies I to decrease I when error switches
     /// <p>
-    /// @param kISwitchError amount at error that the error must be less then to switch to using kiClose from kiFar
+    /// @param kISwitchError amount at error that the error must be less than to switch to using kiClose from kiFar
     public void setVelocityPIDVSCoefficients(double kp, double kiFar, double kiClose, double kd, double kv, double ks, double kPIDFUnitsPerVolt, double kISmash, double kISwitchError) {
 
         this.kp = kp;
@@ -265,9 +265,9 @@ public final class ExtremePrecisionFlywheel {
 
         //static friction
         double freeSpeed = (MOTOR_RPM * Math.PI) / 30; // in rad/s
-        double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculate accurately
+        double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculated accurately
         double T = ks * FN * SHAFT_RADIUS;
-        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * Math.signum(error) : 0;
+        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * (error >= 0 ? 1 : 0 /*engages or turns off*/) : 0;
 
         power = p + i + d + v + s;
 
@@ -383,6 +383,10 @@ public final class ExtremePrecisionFlywheel {
     private void resetIntegral() {
         errorSum = 0;
         i = 0;
+    }
+
+    public double getPower() {
+        return power;
     }
 
     public double[] getMotorPowers() {

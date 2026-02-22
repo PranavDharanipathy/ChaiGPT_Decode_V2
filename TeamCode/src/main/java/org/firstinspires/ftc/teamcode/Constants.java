@@ -188,11 +188,10 @@ public class Constants {
 
     public static double CONTROL_HUB_HZ = 80;
 
+    public static int TELEMETRY_MS_TRANSMISSION_INTERVAL = 20;
+
     /// Height of goal in inches
     public static double HEIGHT_OF_GOAL = 53.996063;
-
-    /// Height of AprilTag on goal in inches
-    public static double HEIGHT_OF_GOAL_APRIL_TAG = 27;
 
     public static float TRIGGER_THRESHOLD = 0.2f;
 
@@ -248,7 +247,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDVS_COEFFICIENTS = {
-            0.0000028, 0.00000001, 0.00001, 0.0000002, 0.00000141, 0.0001, 0.9, 0.85, 10_000
+            0.000005, 0.00000004, 0.0000215, 0.0000004, 0.00000141, 0.0001, 0.76, 0.833, 10_000
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 5 /*3.65*/};
@@ -304,6 +303,6 @@ public class Constants {
 
     public static Map<String, EOAOffset> EOA_OFFSETS = new HashMap<>(
             Map.of("auto12", new EOAOffset(17.288, -32.73))
-    );//17.288, -32.73
+    );
 
 }

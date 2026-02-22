@@ -2,7 +2,7 @@ package com.chaigptrobotics.shenanigans;
 
 public class EmojiArray {
 
-    /// An array of chosen emojis as strings - they count as more than one character and os can't be put into a 'char'
+    /// An array of chosen emojis as strings - they count as more than one character and so can't be put into a 'char'
     public static String[] emojis = {
             "\uD83E\uDD26\u200D♂\uFE0F", //🤦‍♂️
             "\uD83E\uDD23", //🤣

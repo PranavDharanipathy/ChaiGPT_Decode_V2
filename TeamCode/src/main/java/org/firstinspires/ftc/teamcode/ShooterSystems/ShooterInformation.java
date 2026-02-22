@@ -22,7 +22,7 @@ public strictfp class ShooterInformation {
         public static double CAMERA_HEIGHT = 11;
 
         /// Camera poll Hz rate
-        public static int CAMERA_POLL_RATE = 90;
+        public static int CAMERA_POLL_RATE = 50;
 
         /// Distance in inches
         public static double CAMERA_TO_POINT_OF_ROTATION_2D = 6.28085;
@@ -41,10 +41,10 @@ public strictfp class ShooterInformation {
         /// Weight of the flywheel assembly in grams
         public static double BASE_FLYWHEEL_ASSEMBLY_WEIGHT = 334;
 
-        /// Weight of an moment-of-inertia disc that goes on the flywheel in grams
-        public static double MOI_DISC_WEIGHT = 34;
+        /// Weight of a moment-of-inertia disc that goes on the flywheel in grams
+        public static double MOI_DISC_WEIGHT = 150;
 
-        public static int NUMBER_OF_MOI_DISCS = 0;
+        public static int NUMBER_OF_MOI_DISCS = 8;
 
         /// Shaft diameter in millimeter
         public static double SHAFT_DIAMETER = 8;
@@ -64,9 +64,7 @@ public strictfp class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 452_200;
-        public static double FAR_SIDE_FLYWHEEL_CATCH_VELOCITY = 530_000;
-        public static double FAR_SIDE_FLYWHEEL_VELOCITY_MARGIN = 40_000;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 452_300;
 
         public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
         public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
@@ -94,7 +92,7 @@ public strictfp class ShooterInformation {
 
         public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2250;
 
-        public static double TURRET_HOME_POSITION_INCREMENT = 200;
+        public static double TURRET_HOME_POSITION_INCREMENT = 150;
 
         public static double HOOD_POSITION_MANUAL_INCREMENT = 0.05;
 
@@ -121,21 +119,16 @@ public strictfp class ShooterInformation {
 
     public static class Calculator {
 
-        /// @return The normalized bot pose as a {@link Pose}
-        public static Pose getBotPose(Pose rawPose, double headingRad) {
-            return rawPose.withHeading(headingRad);
-        }
-
         /// Field-relative
-        public static Pose getTurretPoseFromBotPose(Pose normalizedRobotPose, double headingRad, double turretPositionTicks, double turretStartPositionTicks) {
+        public static Pose getTurretPoseFromBotPose(Pose botPose, double turretPositionTicks, double turretStartPositionTicks) {
 
             double reZeroedTurretTicks = turretPositionTicks - turretStartPositionTicks;
             double turretRotation = Math.toRadians(reZeroedTurretTicks / ShooterConstants.TURRET_TICKS_PER_DEGREE);
 
-            double turretHeading = headingRad + turretRotation + Math.toRadians(ShooterConstants.TURRET_ANGULAR_OFFSET);
+            double turretHeading = botPose.getHeading() + turretRotation + Math.toRadians(ShooterConstants.TURRET_ANGULAR_OFFSET);
 
-            double turretX = normalizedRobotPose.getX() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(headingRad));
-            double turretY = normalizedRobotPose.getY() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(headingRad));
+            double turretX = botPose.getX() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(botPose.getHeading()));
+            double turretY = botPose.getY() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(botPose.getHeading()));
 
             return new Pose(
                     turretX,
