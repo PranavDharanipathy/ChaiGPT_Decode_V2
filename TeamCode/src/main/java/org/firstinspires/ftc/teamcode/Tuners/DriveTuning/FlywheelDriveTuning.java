@@ -74,7 +74,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
             telemetry.addData("d", "%.5f", flywheel.d);
             telemetry.addData("v", "%.5f", flywheel.v);
 
-            telemetry.addData("flywheel power", "%.5f", flywheel.getMotorPowers()[0]);
+            telemetry.addData("flywheel power", "%.5f", flywheel.getPower());
             telemetry.update();
         }
     }

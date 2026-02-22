@@ -67,7 +67,7 @@ public class TelemetrySubsystem implements SubsystemInternal {
         telem.addData(TelemetryMode.RAW_DATA, "f i", "%.5f", shooter.flywheel.i);
         telem.addData(TelemetryMode.RAW_DATA, "f d", "%.5f", shooter.flywheel.d);
         telem.addData(TelemetryMode.RAW_DATA, "f v", "%.5f", shooter.flywheel.v);
-        telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getMotorPowers()[0]);
+        telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getPower());
 
         telem.addData(TelemetryMode.RAW_DATA, "turret current position", shooter.turret.getCurrentPosition());
         telem.addData(TelemetryMode.RAW_DATA, "turret target position", shooter.turret.getTargetPosition());
