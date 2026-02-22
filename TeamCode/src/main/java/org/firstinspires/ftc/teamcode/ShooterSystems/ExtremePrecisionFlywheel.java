@@ -267,7 +267,7 @@ public final class ExtremePrecisionFlywheel {
         double freeSpeed = (MOTOR_RPM * Math.PI) / 30; // in rad/s
         double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculated accurately
         double T = ks * FN * SHAFT_RADIUS;
-        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * Math.signum(error) : 0;
+        s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * (error >= 0 ? 1 : 0) : 0;
 
         power = p + i + d + v + s;
 
