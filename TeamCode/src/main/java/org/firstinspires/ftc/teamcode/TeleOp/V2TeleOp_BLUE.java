@@ -39,7 +39,7 @@ public class V2TeleOp_BLUE extends TeleOpBaseOpMode {
         pedroDrive.provideInitComponents(follower, controller1, controller2, alliance);
         intake.provideComponents(super.intake, liftPTO, intakeBeambreak, transferBeambreak, controller1, controller2);
         literalTransfer.provideComponents(transfer, transferBeambreak, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, rev9AxisImu, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, unstartedCamera.ll(), rev9AxisImu, controller1, controller2);
 
         //setup lynx module
         setUpLynxModule();

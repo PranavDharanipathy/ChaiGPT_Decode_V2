@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class AdafruitBeambreakSensor {
 
-    private DigitalChannel receiver;
-    private DigitalChannel power;
+    private final DigitalChannel receiver;
+    private final DigitalChannel power;
 
     public AdafruitBeambreakSensor(HardwareMap hardwareMap, String powerDevice, String receiverDevice) {
 

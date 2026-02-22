@@ -265,7 +265,7 @@ public final class ExtremePrecisionFlywheel {
 
         //static friction
         double freeSpeed = (MOTOR_RPM * Math.PI) / 30; // in rad/s
-        double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculate accurately
+        double ke = VbackEMF / freeSpeed; // using ke instead of kt - #1 ks will compensate, #2 ke can more easily be calculated accurately
         double T = ks * FN * SHAFT_RADIUS;
         s = targetVelocity != 0 ? (T / ke) * kPIDFUnitsPerVolt * Math.signum(error) : 0;
 

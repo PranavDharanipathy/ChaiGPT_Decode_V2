@@ -39,7 +39,7 @@ public class TurretHysteresisTuner extends TeleOpBaseOpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, rev9AxisImu, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, unstartedCamera.ll(), rev9AxisImu, controller1, controller2);
 
         waitForStart();
 

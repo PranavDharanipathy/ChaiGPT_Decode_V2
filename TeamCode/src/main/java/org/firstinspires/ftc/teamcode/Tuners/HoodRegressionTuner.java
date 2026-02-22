@@ -93,8 +93,8 @@ public class HoodRegressionTuner extends TeleOpBaseOpMode {
             follower.update();
 
             double robotYawRad = rev9AxisImuWrapped.getYaw(AngleUnit.RADIANS);
-            Pose robotPose = ShooterInformation.Calculator.getBotPose(follower.getPose(), robotYawRad);
-            Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, robotYawRad, 0, 0);
+            Pose robotPose = follower.getPose();
+            Pose turretPose = ShooterInformation.Calculator.getTurretPoseFromBotPose(robotPose, 0, 0);
 
             double distanceToGoal = Goal.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goal.getCoordinate());
 

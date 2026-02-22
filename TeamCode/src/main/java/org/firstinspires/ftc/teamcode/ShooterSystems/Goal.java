@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ShooterSystems;
 
+import com.pedropathing.geometry.Pose;
+
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.TeleOp.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -31,7 +33,7 @@ public class Goal {
 
         //           CLOSE ALLIANCE                  CLOSE OPPONENT                           FAR
         RED(new GoalCoordinate(69,-78), new GoalCoordinate(40,-72), new GoalCoordinate(68,-72)),
-        BLUE(new GoalCoordinate(74, 72), new GoalCoordinate(54, 72), new GoalCoordinate(74, 73));
+        BLUE(new GoalCoordinate(74, 72), new GoalCoordinate(54, 72), new GoalCoordinate(72, 70));
 
         private GoalCoordinate closeAlliance;
         private GoalCoordinate closeOpponent;
@@ -131,6 +133,59 @@ public class Goal {
 
         public GoalCoordinate getCoordinate() {
             return coord;
+        }
+    }
+
+    public static class AprilTagCoordinate {
+
+        private double x, y, z, yaw;
+
+        public AprilTagCoordinate(double x, double y, double z, double yaw) {
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public double getZ() {
+            return z;
+        }
+
+        public double getYaw() {
+            return yaw;
+        }
+    }
+
+    public enum AprilTagCoordinates {
+
+        RED(new AprilTagCoordinate(-56,29.1339,57.5, Math.toRadians(32.3226))),
+        BLUE(new AprilTagCoordinate(56,29.1339,57.5, Math.toRadians(32.3226)));
+
+        private AprilTagCoordinate coord;
+
+        AprilTagCoordinates(AprilTagCoordinate coord) {
+            this.coord = coord;
+        }
+
+        public AprilTagCoordinate getAprilTagCoordinate() {
+            return coord;
+        }
+
+        public Pose getAsPedroPose() {
+            return new Pose(coord.getX(), coord.getZ(), coord.getYaw());
+        }
+
+        public static Pose toPedroPose(AprilTagCoordinate aprilTagCoordinate) {
+            return new Pose(aprilTagCoordinate.getX(), aprilTagCoordinate.getZ(), aprilTagCoordinate.getYaw());
         }
     }
 

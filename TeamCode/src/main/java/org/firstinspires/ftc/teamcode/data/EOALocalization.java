@@ -23,6 +23,11 @@ public class EOALocalization {
         return new Pose(autoPose.getY() - 72 + xOffset, -autoPose.getX() + 72 + yOffset, autoPose.getHeading() + Math.toRadians(90));
     }
 
+    /// Write pose of 0,0,0 and turret start position of 0
+    public static void blank() {
+        write(new Pose(), 0);
+    }
+
     public static void write(double x, double y, double headingRad, double turretStartPosition) {
 
         File file = AppUtil.getInstance().getSettingsFile(Constants.IOConstants.EOA_LOCALIZATION_DATA_FILE_NAME);

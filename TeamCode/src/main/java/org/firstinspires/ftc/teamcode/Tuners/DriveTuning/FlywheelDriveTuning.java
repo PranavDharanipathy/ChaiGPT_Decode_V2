@@ -27,7 +27,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
     public static double I_MIN = Constants.FLYWHEEL_MIN_INTEGRAL_LIMIT, I_MAX = Constants.FLYWHEEL_MAX_INTEGRAL_LIMIT;
     public static double P_MIN = Constants.FLYWHEEL_MIN_PROPORTIONAL_LIMIT, P_MAX = Constants.FLYWHEEL_MAX_PROPORTIONAL_LIMIT;
 
-    public static double TRANSFER_VELOCITY = 1200;
+    public static double TRANSFER_VELOCITY = 2000;
     public static double INTAKE_POWER = 1;
     public static double FLYWHEEL_VELOCITY = 405000;
     public static double HOOD_POSITION = 0.2;

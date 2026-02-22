@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.ShooterSystems.Camera;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ExtremePrecisionFlywheel;
 import org.firstinspires.ftc.teamcode.ShooterSystems.HoodAngler;
 import org.firstinspires.ftc.teamcode.ShooterSystems.ShooterInformation;
@@ -51,7 +52,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
     public AdafruitBeambreakSensor intakeBeambreak, transferBeambreak;
 
-    public Limelight3A unstartedLimelight;
+    public Camera unstartedCamera;
 
     public Follower follower;
 
@@ -106,7 +107,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
 
         transfer = new BasicVeloMotor(hardwareMap, Constants.MapSetterConstants.transferMotorDeviceName);
 
-        unstartedLimelight = hardwareMap.get(Limelight3A.class, Constants.MapSetterConstants.limelight3AUSBDeviceName);
+        unstartedCamera = new Camera(hardwareMap, Constants.MapSetterConstants.limelight3AUSBDeviceName);
 
         intakeBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.intakeBeambreakSensorNames[0], Constants.MapSetterConstants.intakeBeambreakSensorNames[1]);
         transferBeambreak = new AdafruitBeambreakSensor(hardwareMap, Constants.MapSetterConstants.transferBeambreakSensorNames[0], Constants.MapSetterConstants.transferBeambreakSensorNames[1]);
@@ -170,7 +171,7 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
                 Constants.TRANSFER_VELO_PIDF_COEFFICIENTS[3]
         );
 
-        unstartedLimelight.setPollRateHz(ShooterInformation.CameraConstants.CAMERA_POLL_RATE);
+        unstartedCamera.setPollRateHz(ShooterInformation.CameraConstants.CAMERA_POLL_RATE);
 
         flywheel.initVoltageSensor(hardwareMap);
         flywheel.setInternalParameters(
@@ -200,6 +201,9 @@ public abstract class TeleOpBaseOpMode extends LinearOpMode {
         hoodAngler.setServoDirections(Constants.HOOD_ANGLER_SERVO_DIRECTIONS);
 
         rev9AxisImu.initialize(Constants.IMUConstants.getRev9AxisIMUParams());
+
+        //clear
+        EOALocalization.blank();
     }
 
 }

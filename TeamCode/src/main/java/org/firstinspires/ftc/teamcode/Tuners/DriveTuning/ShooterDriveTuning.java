@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.RobotResetter;
 public class ShooterDriveTuning extends TeleOpBaseOpMode {
 
     //shooter tuning
-    public static double TRANSFER_VELOCITY = 1200;
+    public static double TRANSFER_VELOCITY = 2000;
     public static double INTAKE_POWER = 1;
     public static double FLYWHEEL_VELOCITY = 405_000;
     public static double HOOD_POSITION = 0.2;
