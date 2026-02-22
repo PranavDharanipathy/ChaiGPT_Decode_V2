@@ -188,11 +188,10 @@ public class Constants {
 
     public static double CONTROL_HUB_HZ = 80;
 
+    public static int TELEMETRY_MS_TRANSMISSION_INTERVAL = 20;
+
     /// Height of goal in inches
     public static double HEIGHT_OF_GOAL = 53.996063;
-
-    /// Height of AprilTag on goal in inches
-    public static double HEIGHT_OF_GOAL_APRIL_TAG = 27;
 
     public static float TRIGGER_THRESHOLD = 0.2f;
 
