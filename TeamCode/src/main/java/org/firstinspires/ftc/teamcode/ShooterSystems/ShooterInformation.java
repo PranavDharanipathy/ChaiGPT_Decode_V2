@@ -64,11 +64,11 @@ public strictfp class ShooterInformation {
             return getTotalFlywheelAssemblyWeight() + ShooterConstants.TURRET_WEIGHT;
         }
 
-        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 452_300;
+        public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 408_000;
 
-        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 370_000;
-        public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 376_000;
-        public static double OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 390_000;
+        public static double CLOSER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 340_000;
+        public static double FARTHER_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 345_000;
+        public static double OPPONENT_SIDE_CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 375_000;
 
         /** Distance to goal when shooting at close where flywheel velocity switches from farther close to closer close when
         bot is within this distance to the goal. */
@@ -83,14 +83,14 @@ public strictfp class ShooterInformation {
         public static double TURRET_TICKS_PER_DEGREE = 73.5179487179; //it should include the turret gear ratio -> (encoder rotations per turret rotation) * (8192 / 360)
         public static double TURRET_DEADBAND_TICKS = 0.013 * TURRET_TICKS_PER_DEGREE;
 
-        public static List<Double> TURRET_PD_POSITIONS = new ArrayList<>(List.of(-10000.0,   -9000.0,   -8000.0,   -7000.0,    -6000.0,    -5000.0,    -4000.0,    -3000.0,   -2000.0,    -1000.0,     0.0,       1000.0,    2000.0,    3000.0,     4000.0,      5000.0,   6000.0,     7000.0,     8000.0,     9000.0,   10000.0,  11000.0));
-        public static List<Double> TURRET_KPS =          new ArrayList<>(List.of(0.000167,   0.00015,   0.00013,    0.00011,    0.0001,    0.0000975,  0.0000914,  0.000092,  0.00008,    0.000086,  0.0000832,  0.0001175,  0.000092,  0.000095,  0.0000965,   0.000102,  0.000118,  0.000143,    0.000152,  0.000132,  0.00013,  0.00013));
-        public static List<Double> TURRET_KDS =          new ArrayList<>(List.of(  0.0016,    0.002,    0.0021,    0.002185,    0.0024,     0.0033,    0.003484,    0.0038,    0.0045,     0.00485,    0.0053,     0.004,     0.0037,    0.0035,    0.0032,      0.003,     0.003,    0.00275,      0.0025,    0.00235,   0.0025,   0.0025));
+        public static List<Double> TURRET_PD_POSITIONS = new ArrayList<>(List.of(-11000.0,  -10000.0,    -9000.0,   -8000.0,   -7000.0,   -6000.0,    -5000.0,    -4000.0,    -3000.0,   -2000.0,  -1000.0,     0.0,      1000.0,    2000.0,    3000.0,   4000.0,   5000.0,   6000.0,    7000.0,    8000.0,   9000.0,   10000.0,   11000.0,    12000.0,   13000.0));
+        public static List<Double> TURRET_KPS =          new ArrayList<>(List.of(0.000285,   0.000279,   0.000285,   0.0002,    0.0002,   0.00014,    0.00011,    0.00009,    0.00008,   0.00007,  0.00005,   0.00005,   0.000092,  0.0000975,  0.0001,   0.00011,  0.00012,  0.00012,  0.00012,    0.00011,  0.00011,  0.0001,    0.00014,    0.0002,    0.00033));
+        public static List<Double> TURRET_KDS =          new ArrayList<>(List.of(  0.003,    0.00318,     0.003,      0.003,    0.003,     0.0028,     0.0024,     0.0022,     0.0022,    0.002,    0.002,     0.002,     0.00385,   0.00375,   0.0032,   0.00353,  0.0035,   0.0032,    0.0032,     0.003,    0.003,   0.0035,    0.0031,     0.0025,     0.002));
 
-        public static List<Double> TURRET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-10000.0,    -9000.0,    -8000.0,    -7000.0,    -6000.0,   -5000.0,   -4000.0,   -3000.0,  -2000.0,  -1000.0,     0.0,      1000.0,    2000.0,     3000.0,    4000.0,    5000.0,      6000.0,    7000.0,     8000.0,      9000.0,  10000.0,   11000.0));
-        public static List<Double> TURRET_KFS =                   new ArrayList<>(List.of(0.00000115, 0.00000115, 0.00000112, 0.00000121, 0.00000122, 0.0000011, 0.0000011, 0.000001, 0.000001, 0.0000005, 0.0000091, 0.0000074, 0.0000067,  0.0000055, 0.0000039,  0.000004,  0.00000335, 0.0000024,  0.00000245,  0.000003, 0.000006,  0.0000067));
+        public static List<Double> TURRET_FEEDFORWARD_POSITIONS = new ArrayList<>(List.of(-110000.0, -10000.0,   -9000.0,    -8000.0,    -7000.0,    -6000.0,    -5000.0,     -4000.0,    -3000.0,   -2000.0,    -1000.0,     0.0,       1000.0,    2000.0,    3000.0,     4000.0,     5000.0,   6000.0,     7000.0,     8000.0,   9000.0,    10000.0,   11000.0,    12000.0,   13000.0));
+        public static List<Double> TURRET_KFS =                   new ArrayList<>(List.of( 0.000003, 0.0000021,  0.0000021,  0.000002,  0.00000175, 0.00000185,  0.0000018,  0.00000185, 0.0000025, 0.0000025,   0.000003,  0.000011,   0.000008,  0.000007,  0.0000032,   0.000003,  0.000003, 0.000003,  0.0000031,  0.0000029, 0.000003,  0.00000305, 0.0000035,  0.000004,  0.000006));
 
-        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2250;
+        public static double TURRET_KF_RESISTANCE_ENGAGE_ERROR = 2000;
 
         public static double TURRET_HOME_POSITION_INCREMENT = 150;
 

@@ -188,7 +188,7 @@ public class Constants {
 
     public static double CONTROL_HUB_HZ = 80;
 
-    public static int TELEMETRY_MS_TRANSMISSION_INTERVAL = 20;
+    public static int TELEMETRY_MS_TRANSMISSION_INTERVAL = 25;
 
     /// Height of goal in inches
     public static double HEIGHT_OF_GOAL = 53.996063;
@@ -247,7 +247,7 @@ public class Constants {
     };
 
     public static double[] FLYWHEEL_PIDVS_COEFFICIENTS = {
-            0.000005, 0.00000004, 0.0000215, 0.0000004, 0.00000141, 0.0001, 0.76, 0.833, 10_000
+            0.00000465, 0.00000004, 0.0000215, 0.0000004, 0.00000141, 0.0001, 0.76, 0.833, 10_000
     };
 
     public static double[] FLYWHEEL_VELOCITY_KALMAN_FILTER_PARAMETERS = {1800, 400, 45, 5 /*3.65*/};
@@ -269,17 +269,17 @@ public class Constants {
     public static TurretBasePIDFSCoefficients TURRET_PIDFS_COEFFICIENTS = new TurretBasePIDFSCoefficients(
             0.0,
             new double[] {0.00000002, 0.00000002},
-            new double[] {0.00000051, 0.00000049},
+            new double[] {0.00000051, 0.00000043},
             0.0,
             null,
-            0.035,
+            0.04,
             new double[] {1000, 1000},
-            new double[] {0.66, 0.66},
+            new double[] {0.75, 0.75},
             new double[] {200, 200},
             new double[] {0.9, 0.9},
             1,
-            2.25,
-            -850,
+            new double[] {6, 3},
+            1000,
             -0.3,
             0.3
     );

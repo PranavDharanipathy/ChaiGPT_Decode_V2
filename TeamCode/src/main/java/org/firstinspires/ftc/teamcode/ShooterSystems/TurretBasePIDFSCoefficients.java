@@ -32,7 +32,7 @@ public class TurretBasePIDFSCoefficients {
 
     public double lanyardEquilibrium;
 
-    public double kFResistance;
+    public double[] kFResistance;
 
     public double minI, maxI;
 
@@ -58,7 +58,7 @@ public class TurretBasePIDFSCoefficients {
             double[] dActivation,
             double[] kDFilter,
             double kPowerFilter,
-            double kFResistance,
+            double[] kFResistance,
             double lanyardEquilibrium,
             double minI,
             double maxI
@@ -155,11 +155,20 @@ public class TurretBasePIDFSCoefficients {
         return TURRET_KDS.get(TURRET_KDS.size() - 1);
     }
 
+    public double kFResistanceTargetPosition = 0;
+
     public double kf(double targetPosition, double lastTargetPosition, double startPosition, double currentPosition, boolean reversed) {
 
         boolean reversalNeeded = kfReversalNeeded(targetPosition, lastTargetPosition, startPosition, reversed);
 
-        double reversingValue = reversalNeeded && Math.abs(targetPosition - currentPosition) >= ShooterInformation.ShooterConstants.TURRET_KF_RESISTANCE_ENGAGE_ERROR ? kFResistance : 1;
+        double reversingValue = reversalNeeded && Math.abs(targetPosition - currentPosition) >= ShooterInformation.ShooterConstants.TURRET_KF_RESISTANCE_ENGAGE_ERROR ? kFResistance[0] : 1;
+
+        if (reversingValue == kFResistance[0]) {
+            kFResistanceTargetPosition = targetPosition;
+        }
+        else if (targetPosition == kFResistanceTargetPosition && reversingValue == 1) {
+            reversingValue = kFResistance[0];
+        }
 
         double reZeroedTargetPosition = targetPosition - startPosition;
 
