@@ -33,7 +33,7 @@ public class Goal {
 
         //           CLOSE ALLIANCE                  CLOSE OPPONENT                           FAR
         RED(new GoalCoordinate(69,-78), new GoalCoordinate(40,-72), new GoalCoordinate(68,-72)),
-        BLUE(new GoalCoordinate(74, 72), new GoalCoordinate(54, 72), new GoalCoordinate(72, 70));
+        BLUE(new GoalCoordinate(70, 75), new GoalCoordinate(54, 72), new GoalCoordinate(72, 73));
 
         private GoalCoordinate closeAlliance;
         private GoalCoordinate closeOpponent;
@@ -80,8 +80,8 @@ public class Goal {
         }
 
         // (lateral) y value after which (once y is greater) close goal coordinate switches from alliance to opponent
-        public static double RED_CLOSE_GOAL_COORDINATE_SWITCH = -10;
-        public static double BLUE_CLOSE_GOAL_COORDINATE_SWITCH = 10;
+        public static double RED_CLOSE_GOAL_COORDINATE_SWITCH = -25;
+        public static double BLUE_CLOSE_GOAL_COORDINATE_SWITCH = 25;
 
         public void setRedCloseGoalCoordinateSwitch(double redCloseGoalCoordinateSwitch) {
             RED_CLOSE_GOAL_COORDINATE_SWITCH = redCloseGoalCoordinateSwitch;

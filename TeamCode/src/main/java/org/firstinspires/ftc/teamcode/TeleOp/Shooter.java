@@ -218,21 +218,7 @@ public class Shooter implements SubsystemInternal {
 
         double angleToGoal;
 
-        LLResult llResult = limelight.getLatestResult();
-
-        if (limelight.isConnected() && llResult != null && llResult.isValid()) { //using limelight
-
-            double txRad = Math.toRadians(llResult.getTx());
-            double distanceToGoal = ShooterInformation.Models.getDistanceFromRegression(llResult.getTy());
-
-            double turretRotation = Math.toDegrees(FastMath.atan2(distanceToGoal * Math.sin(txRad), (distanceToGoal * Math.cos(txRad)) + ShooterInformation.CameraConstants.CAMERA_TO_POINT_OF_ROTATION_2D));
-
-            double reZeroedPosition = turretCurrentPosition - turretStartPosition;
-            angleToGoal = turretRotation + (reZeroedPosition / ShooterInformation.ShooterConstants.TURRET_TICKS_PER_DEGREE);
-        }
-        else { //using odometry
-            angleToGoal = Goal.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
-        }
+        angleToGoal = Goal.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
 
         double rawtt = (angleToGoal - Math.toDegrees(robotYawRad) + turretAngularOffset);
         tt = route(rawtt);

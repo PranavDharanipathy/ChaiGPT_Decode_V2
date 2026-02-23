@@ -38,7 +38,7 @@ public class TurretBaseTuner extends OpMode {
 
     public static double[] D_ACTIVATION = {TURRET_PIDFS_COEFFICIENTS.lDActivation, TURRET_PIDFS_COEFFICIENTS.rDActivation};
 
-    public static double KF_RESISTANCE = TURRET_PIDFS_COEFFICIENTS.kFResistance;
+    public static double[] KF_RESISTANCE = TURRET_PIDFS_COEFFICIENTS.kFResistance;
 
     public static double LANYARD_EQUILIBRIUM = TURRET_PIDFS_COEFFICIENTS.lanyardEquilibrium;
 
