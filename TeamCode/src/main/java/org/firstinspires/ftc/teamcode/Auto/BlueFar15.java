@@ -45,11 +45,11 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class BlueFar15 extends NextFTCOpMode {
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8750, 8750, 8700, 8700};
+    public static double[] TURRET_POSITIONS = {8850, 8950, 9100, 9200};
 
     //CHANGED HOOD POS FROM 0.11 to 0.19(shoots slightly higher)
     public static double hoodPos = 0.19;
-    public static double flywheel_target = 410_000;
+    public static double flywheel_target = 415_000;
 
     private BlueFar15Paths paths;
 
@@ -232,7 +232,7 @@ public class BlueFar15 extends NextFTCOpMode {
 
 
                 //FIRST RETURN
-                followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
+                followCancelable(paths.FirstReturn, 4000),//new FollowPath(paths.intake),
 
                 resetShootTimer(),
                 new ParallelRaceGroup(
@@ -267,7 +267,7 @@ public class BlueFar15 extends NextFTCOpMode {
 
                 //SECOND RETURN
 
-                followCancelable(paths.SecondReturn, 3500),
+                followCancelable(paths.SecondReturn, 4500),
 
                 resetShootTimer(),
                 new ParallelRaceGroup(

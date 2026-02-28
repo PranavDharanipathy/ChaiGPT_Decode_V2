@@ -33,7 +33,7 @@ public class Goal {
 
         //           CLOSE ALLIANCE                  CLOSE OPPONENT                           FAR
         RED(new GoalCoordinate(69,-78), new GoalCoordinate(40,-72), new GoalCoordinate(68,-72)),
-        BLUE(new GoalCoordinate(70, 75), new GoalCoordinate(54, 72), new GoalCoordinate(72, 73));
+        BLUE(new GoalCoordinate(73, 75), new GoalCoordinate(54, 72), new GoalCoordinate(77, 73));
 
         private GoalCoordinate closeAlliance;
         private GoalCoordinate closeOpponent;
