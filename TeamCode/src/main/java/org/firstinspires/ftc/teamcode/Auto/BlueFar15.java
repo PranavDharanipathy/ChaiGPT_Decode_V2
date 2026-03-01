@@ -7,9 +7,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.RobotCoreLynxController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -32,7 +29,6 @@ import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -45,7 +41,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class BlueFar15 extends NextFTCOpMode {
     private Telemetry telemetry;
 
-    public static double[] TURRET_POSITIONS = {8850, 8950, 9100, 9200};
+    public static double[] TURRET_POSITIONS = {8750, 8750, 8800, 8900, 8750};
 
     //CHANGED HOOD POS FROM 0.11 to 0.19(shoots slightly higher)
     public static double hoodPos = 0.19;
@@ -303,12 +299,12 @@ public class BlueFar15 extends NextFTCOpMode {
                         RobotNF.robot.intakeClearingSpecial(0.5),
                         followCancelable(paths.setupForFirstIntake, 7000)
                 ),
-                followCancelable(paths.intakeExtra, 4000),
+                followCancelable(paths.hpIntake, 4000),
 
                 //INTAKE EXTRA RETURN
 
 
-                new FollowPath(paths.firstReturnn, true),
+                new FollowPath(paths.hpReturn, true),
 
                 //followCancelable(paths.firstReturnn, 9000),
 
@@ -339,16 +335,16 @@ public class BlueFar15 extends NextFTCOpMode {
                         //END OF SEQUENTIALGROUP
                 ),
 
-                followCancelable(paths.hpIntake, 1000),
+                followCancelable(paths.intake, 1000),
 
-                new FollowPath(paths.hpReturn),
+                new FollowPath(paths.returnn),
 
 
                 resetShootTimer(),
                 new ParallelRaceGroup(
 
                         new SequentialGroup(
-                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[4]),
 
                                 new WaitUntil(() -> (
                                         FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)

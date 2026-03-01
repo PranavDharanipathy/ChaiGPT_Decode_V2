@@ -21,8 +21,12 @@ public class RedFar15Paths {
 
     public PathChain preload;
     public PathChain setupForFirstIntake;
-    public PathChain intakeExtra;
-    public PathChain firstReturnn;
+    public PathChain hpIntake;
+    public PathChain hpReturn;
+
+    public PathChain intake;
+    public PathChain returnn;
+
 
     public PathChain movementRP;
 
@@ -79,7 +83,8 @@ public class RedFar15Paths {
                         new BezierCurve(
                                 new Pose(8.929, 38.363).mirror(),
                                 new Pose(50.760, 28.759).mirror(),
-                                new Pose(61.992, 18.622).mirror()
+                                new Pose(61.992, 18.622).mirror(),
+        new Pose(61.992, 18.622).mirror()
                         )
                 )
 
@@ -131,7 +136,8 @@ public class RedFar15Paths {
                                 new Pose(54, 36).mirror(),
 
                                 //y = 11 before
-                                new Pose(64, 18.924).mirror()
+                                new Pose(64, 18.924).mirror(),
+        new Pose(64, 18.924).mirror()
                         )
                 )
 
@@ -192,7 +198,7 @@ public class RedFar15Paths {
                 .build();
 
 
-        intakeExtra = follower
+        hpIntake = follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(
@@ -205,12 +211,13 @@ public class RedFar15Paths {
                 .build();
 
 
-        firstReturnn = follower
+        hpReturn = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(150, 26),
                                 new Pose(125, 30),
+                                new Pose(82, 11),
                                 new Pose(82, 11)
                         )
                 )

@@ -46,7 +46,7 @@ public class RedFar15 extends NextFTCOpMode {
 
     public static double hoodPos = 0.19;
 
-    public static double flywheel_target = 412_800;
+    public static double flywheel_target = 415_800;
 
 
 
@@ -94,6 +94,9 @@ public class RedFar15 extends NextFTCOpMode {
 
     private ElapsedTime universalTimer = new ElapsedTime();
 
+    private ElapsedTime shootTime = new ElapsedTime();
+
+
     @Override
     public void onStartButtonPressed() {
 
@@ -111,6 +114,7 @@ public class RedFar15 extends NextFTCOpMode {
         TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]);
 
         universalTimer.reset();
+        shootTime.reset();
 
         //auto
         new SequentialGroup(
@@ -169,28 +173,51 @@ public class RedFar15 extends NextFTCOpMode {
 //        );
     }
 
+    Command resetShootTimer() {
+        return new InstantCommand(
+                () -> shootTime.reset());
+    }
+
     private Command auto() {
 
 
         return new SequentialGroup(
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
+
 
 
                 //PRELOAD SHOOTING
                 //new FollowPath(paths.preload),
-                new WaitUntil(() -> (
-                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
-                        && Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
-                ),
-                shootBalls(
-                        new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.4, 0.4},
-                        new double[] {0.95, 0.95},
-                        300
+
+
+                resetShootTimer(),
+                new ParallelRaceGroup(
+
+                        new SequentialGroup(
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
+
+                                new WaitUntil(() -> (
+                                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+
+                                        //&& Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                                ),
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[0]),
+                                shootBalls(
+                                        new double[] {0.35, 0.375, 0.4},
+                                        new double[] {0, 0},
+                                        new double[] {0.4, 0.4},
+                                        300
+                                )
+                        ),
+                        new WaitUntil(() -> shootTime.seconds() > 9)
+
+
+                        //END OF SEQUENTIALGROUP
                 ),
 
+
+
                 //FIRST INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
+
 
 
                 new ParallelGroup(
@@ -203,16 +230,33 @@ public class RedFar15 extends NextFTCOpMode {
 
 
                 //FIRST RETURN
-                followCancelable(paths.FirstReturn, 3000),//new FollowPath(paths.intake),
-                shootBalls(
-                        new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.4, 0.4},
-                        new double[] {0.95, 0.95},
-                        300
+                followCancelable(paths.FirstReturn, 4000),//new FollowPath(paths.intake),
+
+                resetShootTimer(),
+                new ParallelRaceGroup(
+
+                        new SequentialGroup(
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
+
+                                new WaitUntil(() -> (
+                                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                                        //&& Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                                ),
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[1]),
+                                shootBalls(
+                                        new double[] {0.35, 0.375, 0.4},
+                                        new double[] {0, 0},
+                                        new double[] {0.4, 0.4},
+                                        300
+                                )
+                        ),
+                        new WaitUntil(() -> shootTime.seconds() > 9)
+
+
+                        //END OF SEQUENTIALGROUP
                 ),
 
                 //SECOND INTAKE
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
                 new ParallelGroup(
                         RobotNF.robot.intakeClearingSpecial(0.25),
                         followCancelable(paths.SecondIntake, 4000) //new FollowPath(paths.intake),
@@ -220,51 +264,119 @@ public class RedFar15 extends NextFTCOpMode {
 
                 //SECOND RETURN
 
-                followCancelable(paths.SecondReturn, 3500),
-                shootBalls(
-                        new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.4, 0.4},
-                        new double[] {0.95, 0.95},
-                        300
+                followCancelable(paths.SecondReturn, 4500),
+
+                resetShootTimer(),
+                new ParallelRaceGroup(
+
+                        new SequentialGroup(
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
+
+                                new WaitUntil(() -> (
+                                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                                        //&& Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                                ),
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[2]),
+
+                                shootBalls(
+                                        new double[] {0.35, 0.375, 0.4},
+                                        new double[] {0, 0},
+                                        new double[] {0.4, 0.4},
+                                        300
+                                )
+                        ),
+                        new WaitUntil(() -> shootTime.seconds() > 9)
+
+
+                        //END OF SEQUENTIALGROUP
                 ),
 
 
                 //EXTRA INTAKE
 
-                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
 
                 new ParallelGroup(
                         RobotNF.robot.intakeClearingSpecial(0.5),
-                        followCancelable(paths.setupForFirstIntake, 2000)
+                        followCancelable(paths.setupForFirstIntake, 7000)
                 ),
-                followCancelable(paths.intakeExtra, 1000),
+                followCancelable(paths.hpIntake, 4000),
 
                 //INTAKE EXTRA RETURN
 
 
-                new FollowPath(paths.firstReturnn, true),
+                new FollowPath(paths.hpReturn, true),
 
                 //followCancelable(paths.firstReturnn, 9000),
 
-                shootBalls(
-                        new double[] {0.35, 0.375, 0.4},
-                        new double[] {0.4, 0.4},
-                        new double[] {0.95, 0.95},
-                        300
+
+                resetShootTimer(),
+                new ParallelRaceGroup(
+
+                        new SequentialGroup(
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
+
+                                new WaitUntil(() -> (
+                                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                                        //&& Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                                ),
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]- TurretNF.INSTANCE.turret.startPosition),
+
+                                shootBalls(
+                                        new double[] {0.35, 0.375, 0.4},
+                                        new double[] {0, 0},
+                                        new double[] {0.4, 0.4},
+                                        300
+
+                                )
+                        ),
+                        new WaitUntil(() -> shootTime.seconds() > 9)
+
+
+                        //END OF SEQUENTIALGROUP
                 ),
 
-                //SET TURRET TO END POS
+                followCancelable(paths.hpIntake, 1000),
+
+                new FollowPath(paths.hpReturn),
+
+
+                resetShootTimer(),
+                new ParallelRaceGroup(
+
+                        new SequentialGroup(
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+
+                                new WaitUntil(() -> (
+                                        FlywheelNF.INSTANCE.flywheel.getRealVelocity() >= flywheel_target - 1000)
+                                        //&& Math.abs(TurretNF.INSTANCE.turret.getError()) < 200
+                                ),
+
+                                TurretNF.INSTANCE.setPosition(TURRET_POSITIONS[3]),
+                                shootBalls(
+                                        new double[] {0.35, 0.375, 0.4},
+                                        new double[] {0, 0},
+                                        new double[] {0.4, 0.4},
+                                        300
+                                )
+                        ),
+                        new WaitUntil(() -> shootTime.seconds() > 9)
+
+
+                        //END OF SEQUENTIALGROUP
+                ),
+
+
+
+                // compensate paths fo rstart pos
+    //makes sure it shoots  3 balls
+
                 TurretNF.INSTANCE.setPosition(TurretNF.INSTANCE.turret.startPosition),
+
                 IntakeNF.INSTANCE.reverse()
 
         );
+
     }
-
-
-    // compensate paths fo rstart pos
-    //makes sure it shoots  3 balls
-
-
 
 
 
